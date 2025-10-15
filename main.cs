@@ -64,8 +64,8 @@ namespace Password_manager
                 else
                 {
                     reader.Close();
-                    
-                    query = String.Format("insert into users(username, password, role_id) values('{0}', '{1}', 2 );", user, pass);
+                    string hashedPass = BCrypt.Net.BCrypt.EnhancedHashPassword(pass, 13);
+                    query = String.Format("insert into users(username, password, role_id) values('{0}', '{1}', 2 );", user, hashedPass);
                     MySqlCommand cmd2 = new MySqlCommand(query, conn);
 
                     cmd2.ExecuteNonQuery();
