@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 
@@ -24,6 +25,9 @@ namespace Password_manager
             pass = "root";
             connectionString = String.Format("server={0};user id={1}; password={2}; database={3}", server, user, pass, database);
             conn = new MySqlConnection(connectionString);
+
+            this.Height = 600;
+            this.Width = 470;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -155,6 +159,28 @@ namespace Password_manager
             {
                 conn.Close();
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            groupBox1.Visible = false;
+            groupBox2.Visible = true;
+
+            this.Height = 600;
+            this.Width = 470;
+
+            groupBox2.Location = new Point(-10, -12);
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            groupBox2.Visible = false;
+            groupBox1.Visible = true;
+
+            this.Height = 600;
+            this.Width = 470;
+
         }
     }
 }
