@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 
@@ -185,7 +186,7 @@ namespace Password_manager
             groupBox1.Visible = false;
             groupBox2.Visible = true;
 
-            this.Height = 600;
+            this.Height = 700;
             this.Width = 470;
 
             groupBox2.Location = new Point(-10, -12);
@@ -211,6 +212,65 @@ namespace Password_manager
         {
             this.Close();
             
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            string password = textBox4.Text;
+
+            string specialCharsPattern = @"[^a-zA-Z0-9\s]";
+            string nubersPattern = @"\d+";
+            string uppercasePattern = @"[A-Z]+";
+
+            Regex specialChars = new Regex(specialCharsPattern);
+            Regex nubers = new Regex(nubersPattern);
+            Regex uppercase = new Regex(uppercasePattern);
+
+
+
+            if (uppercase.IsMatch(password))
+            {
+                label9.ForeColor = System.Drawing.Color.Green;
+            }
+            else
+            {
+                label9.ForeColor = System.Drawing.Color.Red;
+            }
+            if (specialChars.IsMatch(password))
+            {
+                label7.ForeColor = System.Drawing.Color.Green;
+            }
+            else
+            {
+                label7.ForeColor = System.Drawing.Color.Red;
+            }
+
+            if (nubers.IsMatch(password))
+            {
+                label8.ForeColor = System.Drawing.Color.Green;
+            }
+            else
+            {
+                label8.ForeColor = System.Drawing.Color.Red;
+            }
+
+            if (password.Length >= 12)
+            {
+                label6.ForeColor = System.Drawing.Color.Green;
+            }
+            else
+            {
+                label6.ForeColor = System.Drawing.Color.Red;
+            }
+
+            if (label6.ForeColor == System.Drawing.Color.Green && label7.ForeColor == System.Drawing.Color.Green && label8.ForeColor == System.Drawing.Color.Green && label9.ForeColor == System.Drawing.Color.Green)
+            {
+                button2.Enabled = true;
+            }
+            else
+            {
+                button2.Enabled = false;
+            }
         }
     }
 }
