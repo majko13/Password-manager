@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 
@@ -28,6 +29,16 @@ namespace Password_manager
 
             this.Height = 600;
             this.Width = 470;
+
+            string path = Path.Combine(Environment.CurrentDirectory, "exit_button.png");
+            pictureBox1.Image = new Bitmap(path);
+            
+
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.Location = new System.Drawing.Point(575, 15);
+            pictureBox1.Size = new System.Drawing.Size(35, 35);
+
+
         }
 
         private void button1_Click(object sender, EventArgs e)
