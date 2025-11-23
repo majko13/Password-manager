@@ -48,7 +48,7 @@
             this.panel4.BackColor = System.Drawing.SystemColors.Highlight;
             this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel4.Location = new System.Drawing.Point(401, 8);
-            this.panel4.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.panel4.Margin = new System.Windows.Forms.Padding(5);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(8, 460);
             this.panel4.TabIndex = 14;
@@ -58,7 +58,7 @@
             this.panel3.BackColor = System.Drawing.SystemColors.Highlight;
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(8, 0);
-            this.panel3.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.panel3.Margin = new System.Windows.Forms.Padding(5);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(401, 8);
             this.panel3.TabIndex = 13;
@@ -68,7 +68,7 @@
             this.panel2.BackColor = System.Drawing.SystemColors.Highlight;
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel2.Location = new System.Drawing.Point(8, 468);
-            this.panel2.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.panel2.Margin = new System.Windows.Forms.Padding(5);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(401, 8);
             this.panel2.TabIndex = 12;
@@ -78,7 +78,7 @@
             this.panel1.BackColor = System.Drawing.SystemColors.Highlight;
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.panel1.Margin = new System.Windows.Forms.Padding(5);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(8, 476);
             this.panel1.TabIndex = 11;
@@ -101,7 +101,7 @@
             this.button1.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold);
             this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Location = new System.Drawing.Point(57, 138);
-            this.button1.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.button1.Margin = new System.Windows.Forms.Padding(8);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(291, 45);
             this.button1.TabIndex = 9;
@@ -118,7 +118,7 @@
             this.Column4});
             this.dataGridView1.GridColor = System.Drawing.Color.Black;
             this.dataGridView1.Location = new System.Drawing.Point(57, 199);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(8);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersWidth = 51;
@@ -157,6 +157,7 @@
             this.pictureBox1.Size = new System.Drawing.Size(100, 50);
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // users
             // 
@@ -173,7 +174,7 @@
             this.Controls.Add(this.dataGridView1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "users";
             this.Text = "users";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

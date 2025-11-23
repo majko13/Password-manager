@@ -52,7 +52,7 @@
             this.panel4.BackColor = System.Drawing.SystemColors.Highlight;
             this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel4.Location = new System.Drawing.Point(1032, 7);
-            this.panel4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel4.Margin = new System.Windows.Forms.Padding(4);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(7, 456);
             this.panel4.TabIndex = 24;
@@ -62,7 +62,7 @@
             this.panel3.BackColor = System.Drawing.SystemColors.Highlight;
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(7, 0);
-            this.panel3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel3.Margin = new System.Windows.Forms.Padding(4);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1032, 7);
             this.panel3.TabIndex = 23;
@@ -72,7 +72,7 @@
             this.panel2.BackColor = System.Drawing.SystemColors.Highlight;
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel2.Location = new System.Drawing.Point(7, 463);
-            this.panel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1032, 7);
             this.panel2.TabIndex = 22;
@@ -82,7 +82,7 @@
             this.panel1.BackColor = System.Drawing.SystemColors.Highlight;
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(7, 470);
             this.panel1.TabIndex = 21;
@@ -91,9 +91,9 @@
             // 
             this.groupBox4.BackColor = System.Drawing.SystemColors.Highlight;
             this.groupBox4.Location = new System.Drawing.Point(295, 152);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox4.Size = new System.Drawing.Size(1, 250);
             this.groupBox4.TabIndex = 20;
             this.groupBox4.TabStop = false;
@@ -198,6 +198,7 @@
             this.pictureBox1.Size = new System.Drawing.Size(100, 50);
             this.pictureBox1.TabIndex = 25;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // shared
             // 
@@ -216,7 +217,7 @@
             this.Controls.Add(this.comboBox1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "shared";
             this.Text = "shared";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

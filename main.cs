@@ -30,13 +30,21 @@ namespace Password_manager
             this.Height = 600;
             this.Width = 470;
 
-            string path = Path.Combine(Environment.CurrentDirectory, "exit_button.png");
-            pictureBox1.Image = new Bitmap(path);
-            
+
+            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_;
+
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.Location = new System.Drawing.Point(575, 15);
             pictureBox1.Size = new System.Drawing.Size(35, 35);
+            pictureBox1.Location = new System.Drawing.Point(445, 10);
+
+            pictureBox2.Image = Properties.Resources.cross_square_svgrepo_com__3_;
+
+
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox2.Location = new System.Drawing.Point(445, 10);
+            pictureBox2.Size = new System.Drawing.Size(35, 35);
+
 
 
         }
@@ -192,6 +200,17 @@ namespace Password_manager
             this.Height = 600;
             this.Width = 470;
 
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            
         }
     }
 }
