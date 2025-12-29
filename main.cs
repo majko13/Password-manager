@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -13,19 +14,13 @@ namespace Password_manager
     {
 
         private MySqlConnection conn;
-        private string server;
-        private string database;
-        private string user;
-        private string pass;
         private string connectionString;
         public main()
         {
             InitializeComponent();
-            server = "localhost";
-            database = "password_manager";
-            user = "root";
-            pass = "root";
-            connectionString = String.Format("server={0};user id={1}; password={2}; database={3}", server, user, pass, database);
+
+            connectionString = ConfigurationManager.ConnectionStrings["MySQLConnection"].ConnectionString;
+            
             conn = new MySqlConnection(connectionString);
 
             this.Height = 600;
