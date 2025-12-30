@@ -23,6 +23,7 @@ namespace Password_manager
 
             this.Height = 600;
             this.Width = 470;
+            this.AcceptButton = button1;
 
             pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
@@ -180,6 +181,7 @@ namespace Password_manager
             groupBox2.Visible = true;
             this.Height = 700;
             this.Width = 470;
+            this.AcceptButton = button2;
             groupBox2.Location = new Point(-10, -12);
         }
 
@@ -187,18 +189,19 @@ namespace Password_manager
         {
             groupBox2.Visible = false;
             groupBox1.Visible = true;
+            this.AcceptButton = button1;
             this.Height = 600;
             this.Width = 470;
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Application.Exit();
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Application.Exit();
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)

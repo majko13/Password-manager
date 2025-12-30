@@ -70,12 +70,13 @@
             // button1
             // 
             this.button1.BackColor = System.Drawing.SystemColors.Highlight;
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.button1.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
             this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Location = new System.Drawing.Point(55, 412);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(375, 45);
-            this.button1.TabIndex = 2;
+            this.button1.TabIndex = 3;
             this.button1.Text = "LOG IN";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -88,7 +89,7 @@
             this.textBox1.Location = new System.Drawing.Point(200, 189);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(150, 23);
-            this.textBox1.TabIndex = 5;
+            this.textBox1.TabIndex = 1;
             // 
             // textBox2
             // 
@@ -99,7 +100,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.PasswordChar = '*';
             this.textBox2.Size = new System.Drawing.Size(150, 23);
-            this.textBox2.TabIndex = 6;
+            this.textBox2.TabIndex = 2;
             // 
             // groupBox1
             // 
@@ -128,7 +129,7 @@
             this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(375, 44);
-            this.button3.TabIndex = 15;
+            this.button3.TabIndex = 4;
             this.button3.Text = "REGISTER";
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
@@ -205,7 +206,7 @@
             this.button2.Location = new System.Drawing.Point(66, 584);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(375, 45);
-            this.button2.TabIndex = 2;
+            this.button2.TabIndex = 4;
             this.button2.Text = "REGISTER";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
@@ -219,7 +220,7 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.PasswordChar = '*';
             this.textBox4.Size = new System.Drawing.Size(186, 23);
-            this.textBox4.TabIndex = 5;
+            this.textBox4.TabIndex = 2;
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // textBox3
@@ -230,7 +231,7 @@
             this.textBox3.Location = new System.Drawing.Point(235, 173);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(186, 23);
-            this.textBox3.TabIndex = 6;
+            this.textBox3.TabIndex = 1;
             // 
             // textBox5
             // 
@@ -241,7 +242,7 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.PasswordChar = '*';
             this.textBox5.Size = new System.Drawing.Size(150, 23);
-            this.textBox5.TabIndex = 7;
+            this.textBox5.TabIndex = 3;
             // 
             // groupBox2
             // 
@@ -332,7 +333,7 @@
             this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(375, 45);
-            this.button4.TabIndex = 16;
+            this.button4.TabIndex = 5;
             this.button4.Text = "LOG IN";
             this.button4.UseVisualStyleBackColor = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
