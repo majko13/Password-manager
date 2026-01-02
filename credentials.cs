@@ -32,9 +32,9 @@ namespace Password_manager
                 conn.Close();
                 string query;
                 conn.Open();
-               
 
-                query = String.Format("SELECT * FROM credentials WHERE user_id = '{0}'", user_id);  
+
+                query = String.Format("SELECT * FROM credentials WHERE user_id = '{0}'", user_id);
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
 
@@ -99,7 +99,7 @@ namespace Password_manager
 
 
 
-            label3.Text = "Acount: "+username;
+            label3.Text = "Acount: " + username;
             pictureBox1.SendToBack();
 
             pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_;
@@ -277,7 +277,7 @@ namespace Password_manager
         {
 
 
-            if(DialogResult.Yes == MessageBox.Show("Opravdu se chcete odhlásit?", "Odhlášení", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+            if (DialogResult.Yes == MessageBox.Show("Opravdu se chcete odhlásit?", "Odhlášení", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
             {
                 closeButtonClicked = true;
                 this.Close();
@@ -291,6 +291,100 @@ namespace Password_manager
             if (!closeButtonClicked)
             {
                 Application.Exit();
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+            if (DialogResult.Yes == MessageBox.Show("Opravdu chcete smazat vybrané záznamy?", "Smazat záznamy", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+            {
+
+                int[] indexs = new int[dataGridView1.SelectedRows.Count];
+                if (dataGridView1.SelectedRows.Count > 0)
+                {
+                    for (int i = 0; i < dataGridView1.SelectedRows.Count; i++)
+                    {
+                        indexs[i] = dataGridView1.SelectedRows[i].Index;
+
+                    }
+
+                    Array.Sort(indexs);
+
+
+
+                    if (indexs[0] > indexs[indexs.Count() - 1])
+                    {
+                        Array.Reverse(indexs);
+                    }
+
+                    for (int index = dataGridView1.SelectedRows.Count - 1; index >= 0; index--)
+                    {
+
+
+
+
+                        int count = 0, group_id = 0;
+
+
+                        string str = dataGridView1.Rows[indexs[index]].Cells[0].Value.ToString();
+
+                        if (int.TryParse(str, out int id))
+                        {
+
+                            try
+                            {
+                                conn.Open();
+
+                                string query = String.Format("SELECT group_id FROM credentials WHERE id = {0} AND group_id IS NOT NULL", id);
+                                MySqlCommand cmd1 = new MySqlCommand(query, conn);
+                                MySqlDataReader reader = cmd1.ExecuteReader();
+
+                                if (reader.Read())
+                                {
+                                    group_id = Convert.ToInt32(reader["group_id"]);
+                                    reader.Close();
+                                    query = String.Format("SELECT (SELECT COUNT(group_id) FROM credentials WHERE group_id = {0}) AS count", group_id);
+
+                                    MySqlCommand cmd2 = new MySqlCommand(query, conn);
+                                    MySqlDataReader reader1 = cmd2.ExecuteReader();
+
+                                    reader1.Read();
+                                    count = Convert.ToInt32(reader1["count"]);
+                                    reader1.Close();
+                                }
+                                if (count == 1)
+                                {
+                                    query = String.Format("DELETE FROM credentials_groups WHERE id = {0}", group_id);
+                                    MySqlCommand cmd3 = new MySqlCommand(query, conn);
+                                    cmd3.ExecuteNonQuery();
+                                    conn.Close();
+                                    //comboBox_load();
+                                    conn.Open();
+                                }
+                                reader.Close();
+
+                                query = String.Format("DELETE FROM credentials WHERE id={0}", id);
+                                MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                                cmd.ExecuteNonQuery();
+
+                                dataGridView1.Rows.RemoveAt(indexs[index]);
+
+                            }
+
+                            catch (MySqlException ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                            }
+
+                            finally
+                            {
+                                conn.Close();
+                            }
+                        }
+                    }
+                }
             }
         }
     }
