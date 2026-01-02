@@ -21,6 +21,7 @@ namespace Password_manager
         private int user_id;
         private bool mouseDown;
         private Point lastLocation;
+        private bool closeButtonClicked = false;
 
 
         private void load()
@@ -269,6 +270,20 @@ namespace Password_manager
             finally
             {
                 conn.Close();
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            closeButtonClicked = true;
+            this.Close();
+        }
+
+        private void credentials_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (!closeButtonClicked)
+            {
+                Application.Exit();
             }
         }
     }

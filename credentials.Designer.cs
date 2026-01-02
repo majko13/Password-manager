@@ -286,6 +286,7 @@
             this.button7.TabIndex = 19;
             this.button7.Text = "Log out";
             this.button7.UseVisualStyleBackColor = false;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // panel1
             // 
@@ -361,6 +362,7 @@
             this.Name = "credentials";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "credentials";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.credentials_FormClosed);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.credentials_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.credentials_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.credentials_MouseUp);
