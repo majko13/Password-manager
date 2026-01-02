@@ -23,18 +23,71 @@ namespace Password_manager
         private Point lastLocation;
         private bool closeButtonClicked = false;
 
+        private void comboBox_load()
+        {
 
+            try
+            {
+                conn.Open();
+
+                List<Item> items = new List<Item>();
+
+
+                string query = String.Format("SELECT * FROM credentials_groups WHERE user_id = {0}", user_id);
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                MySqlDataReader reader = cmd.ExecuteReader();
+                items.Add(new Item(-1, "all", -1));
+                items.Add(new Item(0, "without group", 0));
+                for (int i = 0; reader.Read(); i++)
+                {
+                    items.Add(new Item(Convert.ToInt32(reader["id"]), reader["name"].ToString(), Convert.ToInt32(reader["user_id"])));
+                }
+
+                comboBox1.DataSource = items;
+                comboBox1.DisplayMember = "Name";
+                comboBox1.SelectedIndex = 0;
+
+                reader.Close();
+
+
+
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("credenials_groups load error: " + ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+        }
         private void load()
         {
             dataGridView1.Rows.Clear();
             try
             {
+                Item selectedItem = comboBox1.SelectedItem as Item;
                 conn.Close();
                 string query;
                 conn.Open();
+                if (selectedItem.Id == -1 && selectedItem.User_Id == -1)
+                {
+                    query = String.Format("SELECT * FROM credentials LEFT JOIN credentials_groups ON credentials.group_id = credentials_groups.id WHERE credentials.user_id = '{0}'", user_id);
 
+                }
+                else if (selectedItem.Id == 0 && selectedItem.User_Id == 0)
+                {
 
-                query = String.Format("SELECT * FROM credentials WHERE user_id = '{0}'", user_id);
+                    query = String.Format("SELECT * FROM credentials LEFT JOIN credentials_groups ON credentials.group_id = credentials_groups.id WHERE credentials.user_id = '{0}' AND group_id is null", user_id);
+
+                }
+                else
+                {
+
+                    query = String.Format("SELECT * FROM credentials LEFT JOIN credentials_groups ON credentials.group_id = credentials_groups.id WHERE credentials.user_id = '{0}' AND group_id = {1} AND credentials_groups.user_id = {2}", user_id, selectedItem.Id, selectedItem.User_Id);
+                }
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
 
@@ -49,7 +102,7 @@ namespace Password_manager
                     string password = encryptor.Decrypt(bytes);
 
 
-                    dataGridView1.Rows.Add(reader["id"], reader["username"], password, reader["url"], reader["group_id"]);
+                    dataGridView1.Rows.Add(reader["id"], reader["username"], password, reader["url"], reader["name"]);
 
                 }
                 reader.Close();
@@ -91,6 +144,7 @@ namespace Password_manager
             connectionString = ConfigurationManager.ConnectionStrings["MySQLConnection"].ConnectionString;
             conn = new MySqlConnection(connectionString);
             user_id = id;
+            comboBox_load();
             load();
 
 
@@ -359,7 +413,7 @@ namespace Password_manager
                                     MySqlCommand cmd3 = new MySqlCommand(query, conn);
                                     cmd3.ExecuteNonQuery();
                                     conn.Close();
-                                    //comboBox_load();
+                                    comboBox_load();
                                     conn.Open();
                                 }
                                 reader.Close();
@@ -386,6 +440,42 @@ namespace Password_manager
                     }
                 }
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            int[] ids = new int[dataGridView1.SelectedRows.Count];
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                for (int index = dataGridView1.SelectedRows.Count - 1; index >= 0; index--)
+                {
+                    int i = dataGridView1.SelectedRows[index].Index;
+
+                    string str = dataGridView1.Rows[i].Cells[0].Value.ToString();
+
+                    if (int.TryParse(str, out int id))
+                    {
+                        ids[index] = id;
+                    }
+
+
+                }
+                Form credentials_groups = new credentials_groups(ids, user_id);
+                credentials_groups.Show();
+                credentials_groups.FormClosed += delegate
+                {
+
+                    comboBox_load();
+                    load();
+
+                };
+            }
+            else
+            {
+                MessageBox.Show("Nemáš označený žádný řádek.");
+            }
+
+
         }
     }
 

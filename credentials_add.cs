@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Password_manager
 {
@@ -19,20 +20,17 @@ namespace Password_manager
         {
             InitializeComponent();
 
-            // Lepšie: použite App.config
             connectionString = ConfigurationManager.ConnectionStrings["MySQLConnection"].ConnectionString;
             conn = new MySqlConnection(connectionString);
             user_id = id;
 
-            // Načítanie obrázku
-            string path = Path.Combine(Environment.CurrentDirectory, @"cross-square-svgrepo-com (3).png");
-            if (File.Exists(path))
-            {
-                pictureBox1.Image = new Bitmap(path);
-            }
+            pictureBox1.SendToBack();
+
+            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_;
+
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.Location = new System.Drawing.Point(435, 0);
+            pictureBox1.Location = new System.Drawing.Point(327, -2);
             pictureBox1.Size = new System.Drawing.Size(35, 35);
         }
 
