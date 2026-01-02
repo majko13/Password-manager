@@ -1,11 +1,12 @@
-﻿using MySql.Data.MySqlClient;
+﻿using BCrypt.Net;
+using MySql.Data.MySqlClient;
 using System;
 using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using BCrypt.Net;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Password_manager
 {
@@ -45,7 +46,6 @@ namespace Password_manager
             {
                 conn.Open();
 
-                // BEZPEČNÉ: Použij parametry proti SQL Injection
                 string query = "SELECT id, password FROM users WHERE username = @username";
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@username", user);
@@ -54,18 +54,23 @@ namespace Password_manager
                 {
                     if (reader.Read())
                     {
+                       
                         string hash = reader["password"].ToString();
-                        int userId = reader.GetInt32("id");
+                        string id = reader["id"].ToString();
                         reader.Close();
 
                         if (BCrypt.Net.BCrypt.EnhancedVerify(pass, hash))
                         {
-                            // Ulož ID uživatele pro další použití
-                            // (můžeš použít Properties.Settings.Default.UserId = userId)
-
-                            Form credentials = new credentials();
+                            Form credentials = new credentials(Convert.ToInt32(id), user);
                             credentials.Show();
+
                             this.Hide();
+                            credentials.FormClosed += delegate
+                            {
+                                this.Show();
+                                textBox1.Text = "";
+                                textBox2.Text = "";
+                            };
                         }
                         else
                         {
@@ -122,7 +127,6 @@ namespace Password_manager
 
                 conn.Open();
 
-                // 1. BEZPEČNĚ zkontroluj, zda uživatel již existuje
                 string checkQuery = "SELECT COUNT(*) FROM users WHERE username = @username";
                 MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn);
                 checkCmd.Parameters.AddWithValue("@username", user);
@@ -136,7 +140,6 @@ namespace Password_manager
                     return;
                 }
 
-                // 2. BEZPEČNĚ vlož nového uživatele
                 string hashedPass = BCrypt.Net.BCrypt.EnhancedHashPassword(pass, 13);
                 string insertQuery = "INSERT INTO users (username, password, role_id) VALUES (@username, @password, 2)";
 
@@ -261,7 +264,7 @@ namespace Password_manager
             }
             else
             {
-                button2.Enabled = false;
+                button2.Enabled = true;
             }
         }
     }
