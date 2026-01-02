@@ -275,8 +275,15 @@ namespace Password_manager
 
         private void button7_Click(object sender, EventArgs e)
         {
-            closeButtonClicked = true;
-            this.Close();
+
+
+            if(DialogResult.Yes == MessageBox.Show("Opravdu se chcete odhlásit?", "Odhlášení", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+            {
+                closeButtonClicked = true;
+                this.Close();
+                Form loginForm = new main();
+                loginForm.Show();
+            }
         }
 
         private void credentials_FormClosed(object sender, FormClosedEventArgs e)
