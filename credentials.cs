@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,35 +19,19 @@ namespace Password_manager
         private MySqlConnection conn;
         private string connectionString;
         private int user_id;
+        private bool mouseDown;
+        private Point lastLocation;
 
 
         private void load()
         {
-            MessageBox.Show("kokot");
             dataGridView1.Rows.Clear();
             try
             {
-                //Item selectedItem = comboBox1.SelectedItem as Item;
                 conn.Close();
                 string query;
                 conn.Open();
-                //if (selectedItem.Id == -1 && selectedItem.User_Id == -1)
-                //{
-                //    query = String.Format("SELECT * FROM credentials LEFT JOIN credentials_groups ON credentials.group_id = credentials_groups.id WHERE credentials.user_id = '{0}'", user_id);
-
-                //}
-                //else if (selectedItem.Id == 0 && selectedItem.User_Id == 0)
-                //{
-
-                //    query = String.Format("SELECT * FROM credentials LEFT JOIN credentials_groups ON credentials.group_id = credentials_groups.id WHERE credentials.user_id = '{0}' AND group_id is null", user_id);
-
-                //}
-                //else
-                //{
-
-                //    query = String.Format("SELECT * FROM credentials LEFT JOIN credentials_groups ON credentials.group_id = credentials_groups.id WHERE credentials.user_id = '{0}' AND group_id = {1} AND credentials_groups.user_id = {2}", user_id, selectedItem.Id, selectedItem.User_Id);
-                //}
-
+               
 
                 query = String.Format("SELECT * FROM credentials WHERE user_id = '{0}'", user_id);  
 
@@ -55,7 +40,6 @@ namespace Password_manager
                 MySqlDataReader reader = cmd.ExecuteReader();
 
                 Encryptor encryptor = new Encryptor();
-                MessageBox.Show("kokot");
                 while (reader.Read())
                 {
                     byte[] bytes = (byte[])reader["password"];
@@ -157,6 +141,134 @@ namespace Password_manager
                 Name = name;
                 Id = id;
                 User_Id = user_id;
+            }
+        }
+
+        private void dataGridView1_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.ColumnIndex == 2 && e.RowIndex >= 0)
+            {
+                e.PaintBackground(e.CellBounds, true);
+
+                var cell = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                string cellValue = cell.Value?.ToString();
+
+                if (string.IsNullOrEmpty(cellValue))
+                {
+                    e.PaintContent(e.CellBounds);
+                    e.Handled = true;
+                    return;
+                }
+
+                string maskedPassword = new string('•', cellValue.Length);
+
+                TextRenderer.DrawText(e.Graphics, maskedPassword,
+                                      e.CellStyle.Font,
+                                      new Rectangle(e.CellBounds.X + 2, e.CellBounds.Y,
+                                                   e.CellBounds.Width - 20, e.CellBounds.Height),
+                                      e.CellStyle.ForeColor,
+                                      TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
+
+                if (icons != null && icons.Images.Count > 0)
+                {
+                    int eyeSize = Math.Min(e.CellBounds.Height - 4, 16);
+                    int eyeX = e.CellBounds.Right - eyeSize - 2;
+                    int eyeY = e.CellBounds.Top + (e.CellBounds.Height - eyeSize) / 2;
+
+                    e.Graphics.DrawImage(icons.Images[0], eyeX, eyeY, eyeSize, eyeSize);
+                }
+
+                e.Handled = true;
+            }
+        }
+
+        private void credentials_MouseDown(object sender, MouseEventArgs e)
+        {
+            mouseDown = true;
+            lastLocation = e.Location;
+        }
+
+        private void credentials_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (mouseDown)
+            {
+                this.Location = new Point(
+                    (this.Location.X - lastLocation.X) + e.X, (this.Location.Y - lastLocation.Y) + e.Y);
+
+                this.Update();
+            }
+        }
+
+        private void credentials_MouseUp(object sender, MouseEventArgs e)
+        {
+            mouseDown = false;
+        }
+
+        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                int row = dataGridView1.CurrentCell.RowIndex;
+                int column = dataGridView1.CurrentCell.ColumnIndex;
+                string value = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                string str = dataGridView1.Rows[row].Cells[0].Value.ToString();
+                string columnName = this.dataGridView1.Columns[e.ColumnIndex].Name;
+
+
+                conn.Open();
+
+                if (int.TryParse(str, out int id))
+                {
+                    switch (columnName)
+                    {
+                        case "Column1": columnName = "username"; break;
+                        case "Column2":
+                            columnName = "password";
+                            {
+
+                                Encryptor encryptor = new Encryptor();
+
+                                byte[] bytes = encryptor.Encrypt(value);
+
+
+
+                                string insertQuery = "update credentials set password = @value where id = @id";
+                                using (MySqlCommand command = new MySqlCommand(insertQuery, conn))
+                                {
+                                    command.Parameters.Add("@value", MySqlDbType.VarBinary, -1).Value = bytes;
+                                    command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                                    command.ExecuteNonQuery();
+                                }
+
+                                break;
+                            }
+                        case "Column4": columnName = "url"; break;
+                        default: throw new Exception("Vybrali jste špatný sloupec.");
+                    }
+                    if (columnName != "password")
+                    {
+                        string query = String.Format("update credentials set {0} ='{1}' where id ={2}", columnName, value, id);
+                        MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                        cmd.ExecuteNonQuery();
+
+                    }
+
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            finally
+            {
+                conn.Close();
             }
         }
     }
