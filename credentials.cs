@@ -19,6 +19,7 @@ namespace Password_manager
         private MySqlConnection conn;
         private string connectionString;
         private int user_id;
+        private int group_id;
         private bool mouseDown;
         private Point lastLocation;
         private bool closeButtonClicked = false;
@@ -482,6 +483,51 @@ namespace Password_manager
         {
             load();
         }
-    }
 
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (comboBox1.Items.Count != 2)
+            {
+                try
+                {
+                    conn.Open();
+
+                    string query = String.Format("SELECT group_id FROM credentials WHERE user_id = {0}", user_id);
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    MySqlDataReader reader1 = cmd.ExecuteReader();
+
+                    reader1.Read();
+                    group_id = Convert.ToInt32(reader1["group_id"]);
+                    reader1.Close();
+
+                }
+                catch (MySqlException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+
+
+
+                Form share = new share(user_id);
+
+                share.Show();
+                share.FormClosed += delegate
+                {
+
+                };
+
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Form shared = new shared(user_id);
+            shared.Show();
+        }
+    }
 }

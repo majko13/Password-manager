@@ -121,6 +121,7 @@
             this.button1.TabIndex = 13;
             this.button1.Text = "SHARE GROUP";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // comboBox2
             // 
@@ -141,6 +142,7 @@
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(172, 30);
             this.comboBox1.TabIndex = 11;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // pictureBox1
             // 
@@ -172,6 +174,9 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "share";
             this.Text = "share";
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.share_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.share_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.share_MouseUp);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
