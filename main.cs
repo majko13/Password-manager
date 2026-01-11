@@ -186,6 +186,9 @@ namespace Password_manager
             this.Width = 470;
             this.AcceptButton = button2;
             groupBox2.Location = new Point(-10, -12);
+
+            button5.BackColor = Color.Red;
+            button5.Enabled = true;
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -258,14 +261,31 @@ namespace Password_manager
             if (label6.ForeColor == System.Drawing.Color.Green &&
                 label7.ForeColor == System.Drawing.Color.Green &&
                 label8.ForeColor == System.Drawing.Color.Green &&
-                label9.ForeColor == System.Drawing.Color.Green)
+                label9.ForeColor == System.Drawing.Color.Green&&
+                button5.BackColor == System.Drawing.Color.Green)
             {
                 button2.Enabled = true;
             }
             else
             {
-                button2.Enabled = true;
+                button2.Enabled = false;
             }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Form form = new CAPTCHA();
+
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                button5.BackColor = Color.Green;
+                button5.Enabled = false;
+            } 
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

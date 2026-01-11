@@ -44,6 +44,7 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -119,6 +120,7 @@
             this.groupBox1.Size = new System.Drawing.Size(507, 662);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // button3
             // 
@@ -203,7 +205,7 @@
             this.button2.Enabled = false;
             this.button2.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
             this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Location = new System.Drawing.Point(66, 584);
+            this.button2.Location = new System.Drawing.Point(66, 634);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(375, 45);
             this.button2.TabIndex = 4;
@@ -219,7 +221,7 @@
             this.textBox4.Location = new System.Drawing.Point(235, 266);
             this.textBox4.Name = "textBox4";
             this.textBox4.PasswordChar = '*';
-            this.textBox4.Size = new System.Drawing.Size(186, 23);
+            this.textBox4.Size = new System.Drawing.Size(206, 23);
             this.textBox4.TabIndex = 2;
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
@@ -230,7 +232,7 @@
             this.textBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.textBox3.Location = new System.Drawing.Point(235, 173);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(186, 23);
+            this.textBox3.Size = new System.Drawing.Size(209, 23);
             this.textBox3.TabIndex = 1;
             // 
             // textBox5
@@ -241,11 +243,12 @@
             this.textBox5.Location = new System.Drawing.Point(271, 353);
             this.textBox5.Name = "textBox5";
             this.textBox5.PasswordChar = '*';
-            this.textBox5.Size = new System.Drawing.Size(150, 23);
+            this.textBox5.Size = new System.Drawing.Size(170, 23);
             this.textBox5.TabIndex = 3;
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.button5);
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.label7);
@@ -269,6 +272,19 @@
             this.groupBox2.TabIndex = 7;
             this.groupBox2.TabStop = false;
             this.groupBox2.Visible = false;
+            // 
+            // button5
+            // 
+            this.button5.BackColor = System.Drawing.Color.Red;
+            this.button5.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
+            this.button5.ForeColor = System.Drawing.Color.White;
+            this.button5.Location = new System.Drawing.Point(66, 583);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(375, 45);
+            this.button5.TabIndex = 26;
+            this.button5.Text = "CAPTCHA";
+            this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // label9
             // 
@@ -329,7 +345,7 @@
             this.button4.BackColor = System.Drawing.SystemColors.Highlight;
             this.button4.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.button4.ForeColor = System.Drawing.Color.White;
-            this.button4.Location = new System.Drawing.Point(66, 634);
+            this.button4.Location = new System.Drawing.Point(66, 684);
             this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(375, 45);
@@ -510,6 +526,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button button5;
     }
 }
 
