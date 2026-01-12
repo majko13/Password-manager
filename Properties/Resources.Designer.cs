@@ -63,9 +63,19 @@ namespace Password_manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cross_square_svgrepo_com__3_ {
+        internal static System.Drawing.Bitmap cross_square_svgrepo_com__3_1 {
             get {
-                object obj = ResourceManager.GetObject("cross_square_svgrepo_com__3_", resourceCulture);
+                object obj = ResourceManager.GetObject("cross_square_svgrepo_com__3_1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Red1 {
+            get {
+                object obj = ResourceManager.GetObject("Red1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

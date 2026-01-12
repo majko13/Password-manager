@@ -26,12 +26,12 @@ namespace Password_manager
             this.Width = 470;
             this.AcceptButton = button1;
 
-            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_;
+            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Size = new System.Drawing.Size(35, 35);
             pictureBox1.Location = new System.Drawing.Point(445, 10);
 
-            pictureBox2.Image = Properties.Resources.cross_square_svgrepo_com__3_;
+            pictureBox2.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
             pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox2.Location = new System.Drawing.Point(445, 10);
             pictureBox2.Size = new System.Drawing.Size(35, 35);
@@ -74,14 +74,16 @@ namespace Password_manager
                         }
                         else
                         {
-                            MessageBox.Show("Zadali jste špatné heslo.", "Chyba",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            
+
+                            Form messagebox = new MyMessageBox("You entered worng password", "Warning", MessageBoxIcon.Warning);
+                            messagebox.ShowDialog();
                         }
                     }
                     else
                     {
-                        MessageBox.Show("Nenašel se účet se stejným jménem.", "Chyba",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        Form messagebox = new MyMessageBox("Ther is no account with this username", "Warning", MessageBoxIcon.Warning);
+                        messagebox.ShowDialog();
                     }
                 }
             }
@@ -89,11 +91,18 @@ namespace Password_manager
             {
                 MessageBox.Show("Chyba databáze: " + ex.Message, "Chyba",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                Form messagebox = new MyMessageBox("Ther is no account with this username", "Warning", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Chyba: " + ex.Message, "Chyba",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                Form messagebox = new MyMessageBox("Ther is no account with this username", "Warning", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
             }
             finally
             {
@@ -113,15 +122,18 @@ namespace Password_manager
                 // Validace
                 if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
                 {
-                    MessageBox.Show("Vyplňte všechna pole!", "Upozornění",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    Form messagebox = new MyMessageBox("Vyplňte všechna pole!", "Upozornění", MessageBoxIcon.Warning);
+                    messagebox.ShowDialog();
+
                     return;
                 }
 
                 if (pass != passRe)
                 {
-                    MessageBox.Show("Hesla se neshodují!", "Chyba",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    Form messagebox = new MyMessageBox("Hesla se neshodují!", "Chyba", MessageBoxIcon.Error);
+                    messagebox.ShowDialog();
                     return;
                 }
 
@@ -135,8 +147,9 @@ namespace Password_manager
 
                 if (count > 0)
                 {
-                    MessageBox.Show("Tento uživatel už je zaregistrovaný.", "Chyba",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    Form messagebox = new MyMessageBox("Tento uživatel už je zaregistrovaný.", "Chyba", MessageBoxIcon.Warning);
+                    messagebox.ShowDialog();
                     return;
                 }
 
@@ -151,8 +164,9 @@ namespace Password_manager
 
                 if (rowsAffected > 0)
                 {
-                    MessageBox.Show("Úspěšně si se zaregistroval, můžeš pokračovat na login.", "Úspěch",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    Form messagebox = new MyMessageBox("Úspěšně si se zaregistroval,\nmůžeš pokračovat na login.", "Úspěch", MessageBoxIcon.Information);
+                    messagebox.ShowDialog();
 
                     // Přepni zpět na login a vyčisti pole
                     button4_Click(sender, e);
@@ -163,13 +177,15 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("Chyba databáze: " + ex.Message, "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                Form messagebox = new MyMessageBox("Chyba databáze: " + ex.Message, "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Chyba: " + ex.Message, "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                Form messagebox = new MyMessageBox("Chyba: " + ex.Message, "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
@@ -280,6 +296,19 @@ namespace Password_manager
             {
                 button5.BackColor = Color.Green;
                 button5.Enabled = false;
+
+                if (label6.ForeColor == System.Drawing.Color.Green &&
+                label7.ForeColor == System.Drawing.Color.Green &&
+                label8.ForeColor == System.Drawing.Color.Green &&
+                label9.ForeColor == System.Drawing.Color.Green &&
+                button5.BackColor == System.Drawing.Color.Green)
+                {
+                    button2.Enabled = true;
+                }
+                else
+                {
+                    button2.Enabled = false;
+                }
             } 
         }
 

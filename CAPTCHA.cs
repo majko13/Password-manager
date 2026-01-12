@@ -77,10 +77,10 @@ namespace Password_manager
         public CAPTCHA()
         {
             InitializeComponent();
-
+             
             pictureBox1.SendToBack();
 
-            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_;
+            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Location = new System.Drawing.Point(220, -2);
             pictureBox1.Size = new System.Drawing.Size(35, 35);
@@ -112,7 +112,9 @@ namespace Password_manager
             }
             else
             {
-                MessageBox.Show("CAPTCHA code is incorrect. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("CAPTCHA code is incorrect.\nPlease try again.", "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
+
                 textBox1.Text = "";
                 GenerateCaptcha();
             }

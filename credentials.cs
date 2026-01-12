@@ -157,7 +157,7 @@ namespace Password_manager
             label3.Text = "Acount: " + username;
             pictureBox1.SendToBack();
 
-            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_;
+            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
 
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;

@@ -106,7 +106,7 @@ namespace Password_manager
 
             pictureBox1.SendToBack();
 
-            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_;
+            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
 
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
