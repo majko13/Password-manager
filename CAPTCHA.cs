@@ -80,7 +80,7 @@ namespace Password_manager
              
             pictureBox1.SendToBack();
 
-            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
+            pictureBox1.Image = Properties.Resources.Blue;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Location = new System.Drawing.Point(220, -2);
             pictureBox1.Size = new System.Drawing.Size(35, 35);

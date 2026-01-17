@@ -16,7 +16,10 @@ namespace Password_manager
         private bool mouseDown;
         private Point lastLocation;
 
-        public credentials_add(int id)
+        private byte[] userSalt;
+        private string masterPassword;
+
+        public credentials_add(int id, byte[] salt, string masterPwd)
         {
             InitializeComponent();
 
@@ -24,9 +27,12 @@ namespace Password_manager
             conn = new MySqlConnection(connectionString);
             user_id = id;
 
+            userSalt = salt;
+            masterPassword = masterPwd;
+
             pictureBox1.SendToBack();
 
-            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
+            pictureBox1.Image = Properties.Resources.Blue;
 
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
@@ -66,16 +72,32 @@ namespace Password_manager
                 return;
             }
 
+            if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
+            {
+                MessageBox.Show("Chyba: Neplatné přihlašovací údaje", "Chyba",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             try
             {
                 // ŠIFROVANIE
-                Encryptor encryptor = new Encryptor();
-                byte[] encryptedBytes = encryptor.Encrypt(password);
+                //Encryptor encryptor = new Encryptor();
+                //byte[] encryptedBytes = encryptor.Encrypt(password);
+                byte[] key = SecureEncryptor.DeriveKeyFromPassword(masterPassword, userSalt);
+
+                // 2. Vygeneruj náhodný IV pro tento záznam
+                byte[] iv = SecureEncryptor.GenerateRandomIV();
+
+                // 3. Zašifruj heslo
+                byte[] encryptedBytes = SecureEncryptor.Encrypt(password, key, iv);
+
 
                 conn.Open();
 
-                string insertQuery = @"INSERT INTO credentials(username, password, url, user_id) 
-                               VALUES(@username, @password, @url, @user_id)";
+                string insertQuery = @"INSERT INTO credentials(username, password, url, user_id, iv) 
+                               VALUES(@username, @password, @url, @user_id, @iv)";
+
 
                 using (MySqlCommand command = new MySqlCommand(insertQuery, conn))
                 {
@@ -83,6 +105,7 @@ namespace Password_manager
                     command.Parameters.Add("@password", MySqlDbType.VarBinary).Value = encryptedBytes;
                     command.Parameters.Add("@url", MySqlDbType.VarChar).Value = url;
                     command.Parameters.Add("@user_id", MySqlDbType.Int32).Value = user_id;
+                    command.Parameters.Add("@iv", MySqlDbType.VarBinary, 16).Value = iv; // DŮLEŽIT
 
                     command.ExecuteNonQuery();
 

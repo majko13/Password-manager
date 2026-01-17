@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,6 +8,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,6 +26,39 @@ namespace Password_manager
         private Point lastLocation;
         private bool closeButtonClicked = false;
 
+        private byte[] userSalt;
+        private string masterPassword;
+
+
+        private string DecryptPasswordWithMasterKey(byte[] encryptedBytes, byte[] iv)
+        {
+            try
+            {
+                // 1. Zkontroluj, zda máme potřebné údaje
+                if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
+                {
+                    return "***NENÍ PŘIHLÁŠEN***";
+                }
+
+                // 2. Kontrola IV (přidejte tolerantnější kontrolu)
+                if (iv == null || iv.Length == 0)
+                {
+                    return "***NEVALIDNÍ IV - STARÝ ZÁZNAM***";
+                }
+
+                // 3. Odvoď klíč z master password
+                byte[] key = SecureEncryptor.DeriveKeyFromPassword(masterPassword, userSalt);
+
+                // 4. Dešifruj
+                return SecureEncryptor.Decrypt(encryptedBytes, key, iv);
+            }
+            catch (CryptographicException)
+            {
+                // Špatný klíč nebo poškozená data
+                return "***ŠPATNÝ KLÍČ***";
+            }
+
+        }
         private void comboBox_load()
         {
 
@@ -94,13 +129,15 @@ namespace Password_manager
 
                 MySqlDataReader reader = cmd.ExecuteReader();
 
-                Encryptor encryptor = new Encryptor();
+
                 while (reader.Read())
                 {
-                    byte[] bytes = (byte[])reader["password"];
+                    byte[] encryptedBytes = (byte[])reader["password"];
 
+                    byte[] iv = (byte[])reader["iv"]; // DŮLEŽITÉ: načtěte IV!
 
-                    string password = encryptor.Decrypt(bytes);
+                    string password = DecryptPasswordWithMasterKey(encryptedBytes, iv);
+
 
 
                     dataGridView1.Rows.Add(reader["id"], reader["username"], password, reader["url"], reader["name"]);
@@ -145,19 +182,26 @@ namespace Password_manager
             connectionString = ConfigurationManager.ConnectionStrings["MySQLConnection"].ConnectionString;
             conn = new MySqlConnection(connectionString);
             user_id = id;
+
+            masterPassword = main.CurrentMasterPassword;
+            userSalt = main.CurrentUserSalt;
+
+
+            if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
+            {
+                MessageBox.Show("Chyba: Neplatné přihlašovací údaje", "Chyba",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+                return;
+            }
             comboBox_load();
             load();
-
-
-
-
-
 
 
             label3.Text = "Acount: " + username;
             pictureBox1.SendToBack();
 
-            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
+            pictureBox1.Image = Properties.Resources.Blue;
 
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
@@ -172,7 +216,7 @@ namespace Password_manager
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Form credentials_add = new credentials_add(user_id);
+            Form credentials_add = new credentials_add(user_id, userSalt, masterPassword);
             credentials_add.Show();
             credentials_add.FormClosed += delegate
             {
@@ -282,20 +326,26 @@ namespace Password_manager
                             columnName = "password";
                             {
 
-                                Encryptor encryptor = new Encryptor();
-
-                                byte[] bytes = encryptor.Encrypt(value);
-
-
-
-                                string insertQuery = "update credentials set password = @value where id = @id";
-                                using (MySqlCommand command = new MySqlCommand(insertQuery, conn))
+                                if (!string.IsNullOrEmpty(masterPassword) && userSalt != null)
                                 {
-                                    command.Parameters.Add("@value", MySqlDbType.VarBinary, -1).Value = bytes;
-                                    command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
-                                    command.ExecuteNonQuery();
-                                }
+                                    byte[] key = SecureEncryptor.DeriveKeyFromPassword(masterPassword, userSalt);
+                                    byte[] iv = SecureEncryptor.GenerateRandomIV(); // Nový IV pro každou změnu
+                                    byte[] bytes = SecureEncryptor.Encrypt(value, key, iv);
 
+                                    string insertQuery = "UPDATE credentials SET password = @value, iv = @iv WHERE id = @id";
+                                    using (MySqlCommand command = new MySqlCommand(insertQuery, conn))
+                                    {
+                                        command.Parameters.Add("@value", MySqlDbType.VarBinary, -1).Value = bytes;
+                                        command.Parameters.Add("@iv", MySqlDbType.VarBinary, 16).Value = iv;
+                                        command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                                        command.ExecuteNonQuery();
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Nejste přihlášeni!", "Chyba",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
                                 break;
                             }
                         case "Column4": columnName = "url"; break;
@@ -526,7 +576,7 @@ namespace Password_manager
 
         private void button5_Click(object sender, EventArgs e)
         {
-            Form shared = new shared(user_id);
+            Form shared = new shared(user_id, userSalt, masterPassword);
             shared.Show();
         }
     }

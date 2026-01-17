@@ -28,7 +28,7 @@ namespace Password_manager
                     panel3.BackColor = SystemColors.Highlight;
                     panel4.BackColor = SystemColors.Highlight;
                     button1.BackColor = SystemColors.Highlight;
-                    pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
+                    pictureBox1.Image = Properties.Resources.Blue;
 
                     break;
 
@@ -39,7 +39,7 @@ namespace Password_manager
                     panel3.BackColor = Color.Red;
                     panel4.BackColor = Color.Red;
                     button1.BackColor = Color.Red;
-                    pictureBox1.Image = Properties.Resources.Red1;
+                    pictureBox1.Image = Properties.Resources.Red;
                     break;
 
                 case MessageBoxIcon.Error:
@@ -49,7 +49,7 @@ namespace Password_manager
                     panel3.BackColor = Color.Red;
                     panel4.BackColor = Color.Red;
                     button1.BackColor = Color.Red;
-                    pictureBox1.Image = Properties.Resources.Red1;
+                    pictureBox1.Image = Properties.Resources.Red;
                     break;
 
                 case MessageBoxIcon.Question:
@@ -59,7 +59,7 @@ namespace Password_manager
                     panel3.BackColor = SystemColors.Highlight;
                     panel4.BackColor = SystemColors.Highlight;
                     button1.BackColor = SystemColors.Highlight;
-                    pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
+                    pictureBox1.Image = Properties.Resources.Blue;
                     break;
 
                 default:

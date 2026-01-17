@@ -100,6 +100,7 @@
             // button5
             // 
             this.button5.BackColor = System.Drawing.SystemColors.Highlight;
+            this.button5.Enabled = false;
             this.button5.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold);
             this.button5.ForeColor = System.Drawing.Color.White;
             this.button5.Location = new System.Drawing.Point(386, 164);
@@ -114,6 +115,7 @@
             // button4
             // 
             this.button4.BackColor = System.Drawing.SystemColors.Highlight;
+            this.button4.Enabled = false;
             this.button4.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold);
             this.button4.ForeColor = System.Drawing.Color.White;
             this.button4.Location = new System.Drawing.Point(61, 164);

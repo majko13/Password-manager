@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,35 +24,47 @@ namespace Password_manager
 
         private bool mouseDown;
         private Point lastLocation;
+
+        private byte[] userSalt;
+        private string masterPassword;
         private void comboBox_load()
         {
-
             try
             {
                 conn.Open();
 
                 List<Item> items = new List<Item>();
 
+                string query = @"SELECT 
+            credentials_groups.id, 
+            credentials_groups.name,
+            credentials_groups.user_id 
+            FROM shared_groups 
+            LEFT JOIN credentials_groups ON shared_groups.group_id = credentials_groups.id 
+            WHERE shared_groups.user_id = @user_id";
 
-                string query = String.Format("select  credentials_groups.id , credentials_groups.name ,credentials_groups.user_id from shared_groups left join credentials_groups on shared_groups.group_id =credentials_groups.id where shared_groups.user_id ={0}", user_id);
-                MySqlCommand cmd = new MySqlCommand(query, conn);
-
-                MySqlDataReader reader = cmd.ExecuteReader();
-                items.Add(new Item(-1, "all", -1));
-
-                for (int i = 0; reader.Read(); i++)
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
-                    items.Add(new Item(Convert.ToInt32(reader["id"]), reader["name"].ToString(), Convert.ToInt32(reader["user_id"])));
+                    cmd.Parameters.AddWithValue("@user_id", user_id);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        items.Add(new Item(-1, "all", -1));
+
+                        while (reader.Read())
+                        {
+                            items.Add(new Item(
+                                Convert.ToInt32(reader["id"]),
+                                reader["name"].ToString(),
+                                Convert.ToInt32(reader["user_id"])
+                            ));
+                        }
+                    }
                 }
 
                 comboBox1.DataSource = items;
                 comboBox1.DisplayMember = "Name";
                 comboBox1.SelectedIndex = 0;
-
-                reader.Close();
-
-
-
             }
             catch (MySqlException ex)
             {
@@ -60,64 +74,104 @@ namespace Password_manager
             {
                 conn.Close();
             }
-
         }
         private void load()
         {
             dataGridView1.Rows.Clear();
+
             try
             {
                 Item selectedItem = comboBox1.SelectedItem as Item;
-                conn.Close();
-                string query;
+
+                if (conn.State == ConnectionState.Open)
+                    conn.Close();
+
                 conn.Open();
-                if (selectedItem.Id == -1 && selectedItem.User_Id == -1)
+
+                byte[] userKey = SecureEncryptor.DeriveKeyFromPassword(masterPassword, userSalt);
+
+                // ZMENENÉ: Načítaj z shared_passwords
+                string query = @"SELECT 
+            shared_passwords.id as shared_id,
+            shared_passwords.credential_id,
+            credentials.username as cred_username, 
+            shared_passwords.password as encrypted_password, 
+            credentials.url, 
+            credentials_groups.name as group_name,
+            shared_passwords.iv,
+            credentials.group_id,
+            users.username as owner_name,
+            credentials_groups.user_id as group_owner_id
+            FROM shared_passwords
+            LEFT JOIN credentials ON shared_passwords.credential_id = credentials.id
+            LEFT JOIN credentials_groups ON credentials.group_id = credentials_groups.id
+            LEFT JOIN users ON credentials_groups.user_id = users.id
+            WHERE shared_passwords.user_id = @current_user_id";
+
+                if (selectedItem.Id != -1)
                 {
-                    query = String.Format("SELECT credentials.id, users.username, credentials.username AS credentials_username, credentials.password, credentials.url, credentials_groups.name FROM shared_groups LEFT JOIN credentials ON shared_groups.group_id = credentials.group_id LEFT JOIN credentials_groups ON shared_groups.group_id = credentials_groups.id LEFT JOIN users ON credentials_groups.user_id = users.id WHERE shared_groups.user_id = {0}", user_id);
-
-                }
-                else
-                {
-
-
-                    query = String.Format("SELECT credentials.id, users.username, credentials.username AS credentials_username, credentials.password, credentials.url, credentials_groups.name FROM shared_groups LEFT JOIN credentials ON shared_groups.group_id = credentials.group_id LEFT JOIN credentials_groups ON shared_groups.group_id = credentials_groups.id LEFT JOIN users ON credentials_groups.user_id = users.id WHERE shared_groups.user_id = {0} AND credentials_groups.id = {1} AND credentials_groups.user_id = {2}", user_id, selectedItem.Id, selectedItem.User_Id);
-                }
-
-
-
-                MySqlCommand cmd = new MySqlCommand(query, conn);
-
-                MySqlDataReader reader = cmd.ExecuteReader();
-
-                Encryptor encryptor = new Encryptor();
-
-
-                while (reader.Read())
-                {
-
-                    byte[] bytes = (byte[])reader["password"];
-
-
-                    string password = encryptor.Decrypt(bytes);
-
-
-                    dataGridView1.Rows.Add(reader["id"], reader["username"], reader["credentials_username"], password, reader["url"], reader["name"]);
+                    query += " AND credentials_groups.id = @group_id AND credentials_groups.user_id = @owner_id";
                 }
 
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@current_user_id", user_id);
 
-                reader.Close();
+                    if (selectedItem.Id != -1)
+                    {
+                        cmd.Parameters.AddWithValue("@group_id", selectedItem.Id);
+                        cmd.Parameters.AddWithValue("@owner_id", selectedItem.User_Id);
+                    }
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            byte[] encryptedPassword = (byte[])reader["encrypted_password"];
+                            byte[] iv = (byte[])reader["iv"];
+                            int groupId = Convert.ToInt32(reader["group_id"]);
+                            int credentialId = Convert.ToInt32(reader["credential_id"]);
+
+                            string decryptedPassword = "";
+                            bool canDecrypt = true;
+
+                            try
+                            {
+                                // Použi NOVÚ metódu na desifrovanie zdieľaného hesla
+                                //decryptedPassword = SecureEncryptor.GetSharedPassword(
+                                    //user_id, credentialId, groupId, userKey, conn);
+                            }
+                            catch (Exception ex)
+                            {
+                                decryptedPassword = $"[CHYBA: {ex.Message}]";
+                                canDecrypt = false;
+                            }
+
+                            dataGridView1.Rows.Add(
+                                reader["credential_id"],
+                                reader["owner_name"],
+                                reader["cred_username"],
+                                decryptedPassword,
+                                reader["url"],
+                                reader["group_name"],
+                                canDecrypt ? "Áno" : "Nie"
+                            );
+                        }
+                    }
+                }
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("credenials load error: " + ex.Message);
+                MessageBox.Show("Chyba pri načítaní: " + ex.Message, "Chyba",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
-                conn.Close();
+                if (conn.State == ConnectionState.Open)
+                    conn.Close();
             }
-
         }
-        public shared(int user_id)
+        public shared(int user_id, byte[] salt, string masterPwd)
         {
             InitializeComponent();
 
@@ -125,10 +179,12 @@ namespace Password_manager
             connectionString = ConfigurationManager.ConnectionStrings["MySQLConnection"].ConnectionString;
             conn = new MySqlConnection(connectionString);
             this.user_id = user_id;
+            this.userSalt = salt;
+            this.masterPassword = masterPwd;
 
             pictureBox1.SendToBack();
 
-            pictureBox1.Image = Properties.Resources.cross_square_svgrepo_com__3_1;
+            pictureBox1.Image = Properties.Resources.Blue;
 
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
