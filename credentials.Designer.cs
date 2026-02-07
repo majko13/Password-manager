@@ -370,7 +370,6 @@
             this.Name = "credentials";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "credentials";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.credentials_FormClosed);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.credentials_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.credentials_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.credentials_MouseUp);

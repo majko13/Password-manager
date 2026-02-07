@@ -7,18 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace Password_manager
 {
     public partial class CAPTCHA : Form
     {
-
         private string captchaCode;
         private Random rand = new Random();
-
         private bool mouseDown;
         private Point lastLocation;
+
         private void GenerateCaptcha()
         {
             string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
@@ -28,7 +26,15 @@ namespace Password_manager
                 captchaCode += chars[rand.Next(chars.Length)];
             }
 
-            Bitmap bmp = new Bitmap(265, 104);
+            // Uvolnění předchozího obrázku
+            if (pictureBox2.Image != null)
+            {
+                pictureBox2.Image.Dispose();
+                pictureBox2.Image = null;
+            }
+
+            // PŘIDAT USING pro Bitmap!
+            using (Bitmap bmp = new Bitmap(265, 104))
             using (Graphics g = Graphics.FromImage(bmp))
             {
                 // pozadí
@@ -49,7 +55,10 @@ namespace Password_manager
                     int y1 = rand.Next(bmp.Height);
                     int x2 = rand.Next(bmp.Width);
                     int y2 = rand.Next(bmp.Height);
-                    g.DrawLine(new Pen(Color.Gray), x1, y1, x2, y2);
+                    using (Pen pen = new Pen(Color.Gray))
+                    {
+                        g.DrawLine(pen, x1, y1, x2, y2);
+                    }
                 }
 
                 // kreslení znaků s rotací, posunem a barvou
@@ -60,24 +69,24 @@ namespace Password_manager
                     g.RotateTransform(angle);
 
                     Color color = Color.FromArgb(rand.Next(50, 150), rand.Next(50, 150), rand.Next(50, 150));
-                    Brush brush = new SolidBrush(color);
 
-                    g.DrawString(captchaCode[i].ToString(), new Font("Arial", rand.Next(20,35), FontStyle.Bold), brush, -10, -15);
+                    using (Brush brush = new SolidBrush(color))
+                    using (Font font = new Font("Arial", rand.Next(20, 35), FontStyle.Bold))
+                    {
+                        g.DrawString(captchaCode[i].ToString(), font, brush, 0, -15);
+                    }
 
                     g.ResetTransform();
                 }
-            }
 
-            pictureBox2.Image = bmp;
+                // Vytvořit nový Bitmap pro pictureBox
+                pictureBox2.Image = new Bitmap(bmp);
+            } // Zde se bmp automaticky uvolní
         }
-
-
-
-
         public CAPTCHA()
         {
             InitializeComponent();
-             
+
             pictureBox1.SendToBack();
 
             pictureBox1.Image = Properties.Resources.Blue;
@@ -85,14 +94,26 @@ namespace Password_manager
             pictureBox1.Location = new System.Drawing.Point(220, -2);
             pictureBox1.Size = new System.Drawing.Size(35, 35);
 
-
-
-
             GenerateCaptcha();
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
 
-        
+            // Uvolnění obrázku při zavření formuláře
+            if (pictureBox2.Image != null)
+            {
+                pictureBox2.Image.Dispose();
+                pictureBox2.Image = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             GenerateCaptcha();
@@ -105,7 +126,7 @@ namespace Password_manager
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(textBox1.Text == captchaCode)
+            if (textBox1.Text == captchaCode)
             {
                 this.DialogResult = DialogResult.OK;
                 this.Close();

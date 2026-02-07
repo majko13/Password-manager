@@ -29,65 +29,63 @@ namespace Password_manager
 
         private void load()
         {
-
             try
             {
                 conn.Open();
 
-                string query = String.Format("SELECT (SELECT COUNT(group_id) FROM credentials WHERE user_id = {0}) AS count", user_id);
-
+                // OPRAVENO: Parametrizovaný dotaz
+                string query = "SELECT COUNT(group_id) AS count FROM credentials WHERE user_id = @user_id";
                 MySqlCommand cmd2 = new MySqlCommand(query, conn);
-                MySqlDataReader reader1 = cmd2.ExecuteReader();
+                cmd2.Parameters.AddWithValue("@user_id", user_id);
 
-                reader1.Read();
-                int count = Convert.ToInt32(reader1["count"]);
-                reader1.Close();
+                int count = Convert.ToInt32(cmd2.ExecuteScalar());
 
                 if (count > 0)
                 {
-
                     button1.Enabled = true;
                     comboBox1.Enabled = true;
 
                     List<Item> items = new List<Item>();
 
-
-                    query = String.Format("SELECT * FROM credentials_groups WHERE user_id = {0}", user_id);
+                    // OPRAVENO: Parametrizovaný dotaz
+                    query = "SELECT * FROM credentials_groups WHERE user_id = @user_id";
                     MySqlCommand cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@user_id", user_id);
 
-                    MySqlDataReader reader = cmd.ExecuteReader();
-
-                    while (reader.Read())
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
-
-                        items.Add(new Item(Convert.ToInt32(reader["id"]), reader["name"].ToString(), Convert.ToInt32(reader["user_id"])));
-
+                        while (reader.Read())
+                        {
+                            items.Add(new Item(
+                                Convert.ToInt32(reader["id"]),
+                                reader["name"].ToString(),
+                                Convert.ToInt32(reader["user_id"])
+                            ));
+                        }
                     }
+
                     comboBox1.DataSource = items;
                     comboBox1.DisplayMember = "Name";
-                    comboBox1.SelectedIndex = 0;
-
-
-                    reader.Close();
+                    if (items.Count > 0)
+                        comboBox1.SelectedIndex = 0;
                 }
                 else
                 {
                     button1.Enabled = false;
                     comboBox1.Enabled = false;
                 }
-
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show(ex.Message);
+                // OPRAVENO: Bez detailních chyb
+                Form messagebox = new MyMessageBox("Chyba při načítání skupin", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
                 conn.Close();
             }
-
         }
-
 
 
 
@@ -120,106 +118,110 @@ namespace Password_manager
         private void button1_Click(object sender, EventArgs e)
         {
             Item selectedItem = comboBox1.SelectedItem as Item;
-
+            if (selectedItem == null) return;
 
             try
             {
-
                 conn.Open();
-                for (int i = 0; i < ids.Length; i++)
+
+                // OPRAVENO: Parametrizovaný dotaz v cyklu
+                string query = "UPDATE credentials SET group_id = @group_id WHERE id = @id AND user_id = @user_id";
+
+                foreach (int id in ids)
                 {
-                    string query = String.Format("UPDATE credentials SET group_id = '{0}' WHERE id = {1} AND user_id = {2}", selectedItem.Id.ToString(), ids[i], user_id);
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-
-                    cmd.ExecuteNonQuery();
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@group_id", selectedItem.Id);
+                        cmd.Parameters.AddWithValue("@id", id);
+                        cmd.Parameters.AddWithValue("@user_id", user_id);
+                        cmd.ExecuteNonQuery();
+                    }
                 }
-
-
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show(ex.Message);
+                // OPRAVENO: Bez detailních chyb
+                Form messagebox = new MyMessageBox("Chyba při přiřazování skupiny", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
-
                 conn.Close();
                 this.Close();
             }
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
-            string newGroup = textBox1.Text;
-            if (newGroup == "")
+            string newGroup = textBox1.Text.Trim();
+            if (string.IsNullOrEmpty(newGroup))
             {
-                MessageBox.Show("Musíte zadat název nové skupiny");
+                Form messagebox = new MyMessageBox("Musíte zadat název nové skupiny", "Upozornění", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
+                return;
             }
-            else
+
+            try
             {
-                try
+                conn.Open();
+
+                // 1. Kontrola existence skupiny - OPRAVENO
+                string checkQuery = "SELECT COUNT(*) FROM credentials_groups WHERE name = @name AND user_id = @user_id";
+                using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
                 {
-                    conn.Open();
-                    string query = String.Format("SELECT name FROM credentials_groups WHERE name = '{0}'", newGroup);
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    checkCmd.Parameters.AddWithValue("@name", newGroup);
+                    checkCmd.Parameters.AddWithValue("@user_id", user_id);
 
-
-                    MySqlDataReader reader = cmd.ExecuteReader();
-
-                    if (reader.Read())
+                    int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
+                    if (exists > 0)
                     {
-                        reader.Close();
-                        throw new Exception("Tato skupina už existuje.");
-                    }
-                    else
-                    {
-                        reader.Close();
-                        query = String.Format("insert into credentials_groups(name, user_id) values('{0}', {1});", newGroup, user_id);
-                        MySqlCommand cmd2 = new MySqlCommand(query, conn);
-
-                        cmd2.ExecuteNonQuery();
-
-
-                        query = string.Format("select * from credentials_groups where name = '{0}'", newGroup);
-                        MySqlCommand cmd3 = new MySqlCommand(query, conn);
-
-
-                        MySqlDataReader reader2 = cmd3.ExecuteReader();
-
-                        if (reader2.Read())
-                        {
-                            int id = Convert.ToInt32(reader2["id"]);
-                            reader2.Close();
-                            for (int i = 0; i < ids.Length; i++)
-                            {
-                                query = String.Format("UPDATE credentials SET group_id = '{0}' WHERE id = {1} AND user_id = {2}", id, ids[i], user_id);
-                                MySqlCommand cmd4 = new MySqlCommand(query, conn);
-
-                                cmd4.ExecuteNonQuery();
-                            }
-                            this.Close();
-                        }
-
-
-
+                        Form messagebox = new MyMessageBox("Tato skupina už existuje.", "Varování", MessageBoxIcon.Warning);
+                        messagebox.ShowDialog();
+                        return;
                     }
                 }
 
-                catch (MySqlException ex)
+                // 2. Vložení nové skupiny - OPRAVENO
+                string insertQuery = "INSERT INTO credentials_groups(name, user_id) VALUES(@name, @user_id); SELECT LAST_INSERT_ID();";
+                int newGroupId;
+
+                using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, conn))
                 {
-                    MessageBox.Show(ex.Message);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
+                    insertCmd.Parameters.AddWithValue("@name", newGroup);
+                    insertCmd.Parameters.AddWithValue("@user_id", user_id);
+                    newGroupId = Convert.ToInt32(insertCmd.ExecuteScalar());
                 }
 
+                // 3. Přiřazení záznamů do nové skupiny - OPRAVENO
+                string updateQuery = "UPDATE credentials SET group_id = @group_id WHERE id = @id AND user_id = @user_id";
 
-
-                finally
+                foreach (int id in ids)
                 {
-                    conn.Close();
+                    using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, conn))
+                    {
+                        updateCmd.Parameters.AddWithValue("@group_id", newGroupId);
+                        updateCmd.Parameters.AddWithValue("@id", id);
+                        updateCmd.Parameters.AddWithValue("@user_id", user_id);
+                        updateCmd.ExecuteNonQuery();
+                    }
                 }
+
+                this.Close();
+            }
+            catch (MySqlException ex)
+            {
+                // OPRAVENO: Bez detailních chyb
+                Form messagebox = new MyMessageBox("Chyba při vytváření skupiny", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                // OPRAVENO: Bez detailních chyb
+                Form messagebox = new MyMessageBox("Došlo k chybě", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
+            }
+            finally
+            {
+                conn.Close();
             }
         }
 

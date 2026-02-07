@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Security;
 
 namespace Password_manager
 {
@@ -16,19 +17,14 @@ namespace Password_manager
         private bool mouseDown;
         private Point lastLocation;
 
-        private byte[] userSalt;
-        private string masterPassword;
 
-        public credentials_add(int id, byte[] salt, string masterPwd)
+        public credentials_add(int id)
         {
             InitializeComponent();
 
             connectionString = ConfigurationManager.ConnectionStrings["MySQLConnection"].ConnectionString;
             conn = new MySqlConnection(connectionString);
             user_id = id;
-
-            userSalt = salt;
-            masterPassword = masterPwd;
 
             pictureBox1.SendToBack();
 
@@ -47,57 +43,61 @@ namespace Password_manager
             string password = textBox2.Text;
             string url = textBox3.Text.Trim();
 
+            string masterPassword = null;
+            byte[] userSalt = null;
+
             // VALIDÁCIA
             if (string.IsNullOrWhiteSpace(username))
             {
-                MessageBox.Show("Vyplňte uživatelské jméno.", "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Vyplňte uživatelské jméno.", "Chyba", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
                 textBox1.Focus();
                 return;
             }
 
             if (string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Vyplňte heslo.", "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Vyplňte heslo.", "Chyba", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
                 textBox2.Focus();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(url))
             {
-                MessageBox.Show("Vyplňte URL.", "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Vyplňte URL.", "Chyba", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
                 textBox3.Focus();
                 return;
             }
 
-            if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
+            // Volitelná: Validace URL formátu
+            if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
-                MessageBox.Show("Chyba: Neplatné přihlašovací údaje", "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                url = "https://" + url; // Automaticky přidat https:// pokud chybí
             }
 
             try
             {
-                // ŠIFROVANIE
-                //Encryptor encryptor = new Encryptor();
-                //byte[] encryptedBytes = encryptor.Encrypt(password);
+                masterPassword = SecurePasswordManager.GetMasterPasswordAsString();
+                userSalt = SecurePasswordManager.UserSalt;
+
+                if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
+                {
+                    Form messagebox = new MyMessageBox("Chyba: Neplatné přihlašovací údaje", "Chyba", MessageBoxIcon.Error);
+                    messagebox.ShowDialog();
+                    return;
+                }
+
                 byte[] key = SecureEncryptor.DeriveKeyFromPassword(masterPassword, userSalt);
-
-                // 2. Vygeneruj náhodný IV pro tento záznam
                 byte[] iv = SecureEncryptor.GenerateRandomIV();
-
-                // 3. Zašifruj heslo
                 byte[] encryptedBytes = SecureEncryptor.Encrypt(password, key, iv);
-
 
                 conn.Open();
 
                 string insertQuery = @"INSERT INTO credentials(username, password, url, user_id, iv) 
-                               VALUES(@username, @password, @url, @user_id, @iv)";
-
+                           VALUES(@username, @password, @url, @user_id, @iv)";
 
                 using (MySqlCommand command = new MySqlCommand(insertQuery, conn))
                 {
@@ -105,30 +105,35 @@ namespace Password_manager
                     command.Parameters.Add("@password", MySqlDbType.VarBinary).Value = encryptedBytes;
                     command.Parameters.Add("@url", MySqlDbType.VarChar).Value = url;
                     command.Parameters.Add("@user_id", MySqlDbType.Int32).Value = user_id;
-                    command.Parameters.Add("@iv", MySqlDbType.VarBinary, 16).Value = iv; // DŮLEŽIT
+                    command.Parameters.Add("@iv", MySqlDbType.VarBinary, 16).Value = iv;
 
                     command.ExecuteNonQuery();
 
-                    MessageBox.Show("Údaje uloženy.", "Úspěch",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Form messagebox = new MyMessageBox("Údaje uloženy.", "Úspěch", MessageBoxIcon.Information);
+                    messagebox.ShowDialog();
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show($"Chyba databáze: {ex.Message}", "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Chyba při ukládání do databáze", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Chyba: {ex.Message}", "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Došlo k neočekávané chybě", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
                 if (conn.State == System.Data.ConnectionState.Open)
                     conn.Close();
+
+                if (masterPassword != null)
+                {
+                    SecurePasswordManager.ClearString(ref masterPassword);
+                }
             }
         }
         private void pictureBox1_Click(object sender, EventArgs e)

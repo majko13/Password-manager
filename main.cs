@@ -1,13 +1,11 @@
-﻿using BCrypt.Net;
-using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Configuration;
 using System.Drawing;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+
+using MySql.Data.MySqlClient;
 
 namespace Password_manager
 {
@@ -15,16 +13,8 @@ namespace Password_manager
     {
         private MySqlConnection conn;
         private string connectionString;
-        public static string CurrentMasterPassword { get; set; }
-        public static byte[] CurrentUserSalt { get; set; }
-        public static int CurrentUserId { get; set; }
 
-        public static (string masterPassword, byte[] userSalt, int userId) GetUserCredentials()
-        {
-            return (CurrentMasterPassword, CurrentUserSalt, CurrentUserId);
-        }
-
-        private byte[] GenerateRandomSalt(int size = 32)  
+        private byte[] GenerateRandomSalt(int size = 32)
         {
             byte[] salt = new byte[size];
             using (var rng = RandomNumberGenerator.Create())
@@ -74,7 +64,6 @@ namespace Password_manager
                 {
                     if (reader.Read())
                     {
-                       
                         string hash = reader["password"].ToString();
                         string id = reader["id"].ToString();
                         byte[] userSalt = (byte[])reader["user_salt"];
@@ -82,54 +71,40 @@ namespace Password_manager
 
                         if (BCrypt.Net.BCrypt.EnhancedVerify(pass, hash))
                         {
-
-                            main.CurrentMasterPassword = pass;  // ← ULOŽ MASTER PASSWORD
-                            main.CurrentUserSalt = userSalt;
-
+                            SecurePasswordManager.SetCredentials(pass, userSalt, Convert.ToInt32(id));
                             Form credentials = new credentials(Convert.ToInt32(id), user);
-                            credentials.Show();
-
                             this.Hide();
-                            credentials.FormClosed += delegate
-                            {
-                                this.Show();
-                                textBox1.Text = "";
-                                textBox2.Text = "";
+                            credentials.ShowDialog();
+                            
 
-                                main.CurrentMasterPassword = null;
-                                main.CurrentUserSalt = null;
-                            };
+
+                            this.Show();
+                            textBox1.Text = "";
+                            textBox2.Text = "";
+
+                            SecurePasswordManager.ClearCredentials();
                         }
                         else
                         {
-                            
-
-                            Form messagebox = new MyMessageBox("You entered worng password", "Warning", MessageBoxIcon.Warning);
+                            Form messagebox = new MyMessageBox("Wrong password or username", "Warning", MessageBoxIcon.Warning);
                             messagebox.ShowDialog();
                         }
                     }
                     else
                     {
-                        Form messagebox = new MyMessageBox("Ther is no account with this username", "Warning", MessageBoxIcon.Warning);
+                        Form messagebox = new MyMessageBox("Wrong password or username", "Warning", MessageBoxIcon.Warning);
                         messagebox.ShowDialog();
                     }
                 }
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("Chyba databáze: " + ex.Message, "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                Form messagebox = new MyMessageBox("Ther is no account with this username", "Warning", MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Databaze error", "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
-
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Chyba: " + ex.Message, "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                Form messagebox = new MyMessageBox("Ther is no account with this username", "Warning", MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Databaze error", "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally
@@ -138,7 +113,6 @@ namespace Password_manager
                     conn.Close();
             }
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             string user = textBox3.Text.Trim();
@@ -166,6 +140,8 @@ namespace Password_manager
                 conn.Open();
 
                 // 1. Zkontroluj, zda uživatel již existuje
+
+
                 string checkQuery = "SELECT COUNT(*) FROM users WHERE username = @username";
                 MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn);
                 checkCmd.Parameters.AddWithValue("@username", user);
@@ -179,28 +155,37 @@ namespace Password_manager
                     return;
                 }
 
-                // 2. Vygeneruj náhodný user_salt pro tohoto uživatele
+                //Vygeneruj náhodný user_salt pro tohoto uživatele
+                //Vytvoř hash master password (pro přihlášení)
+
+
+
+
                 byte[] userSalt = GenerateRandomSalt();
+                string hashedPass = BCrypt.Net.BCrypt.EnhancedHashPassword(pass, 15);
 
-                // 3. Vytvoř hash master password (pro přihlášení)
-                string hashedPass = BCrypt.Net.BCrypt.EnhancedHashPassword(pass, 13);
 
-                // 4. Vlož uživatele do databáze s user_salt
-                string insertQuery = "INSERT INTO users (username, password, role_id, user_salt) VALUES (@username, @password, 2, @user_salt)";
+
+
+
+                //Vlož uživatele do databáze
+
+                string insertQuery = "INSERT INTO users (username, password, role_id, user_salt) " +
+                                                "VALUES (@username, @password, 2, @user_salt)";
 
                 MySqlCommand insertCmd = new MySqlCommand(insertQuery, conn);
                 insertCmd.Parameters.AddWithValue("@username", user);
                 insertCmd.Parameters.AddWithValue("@password", hashedPass);
-                insertCmd.Parameters.AddWithValue("@user_salt", userSalt); // Přidáme salt
+                insertCmd.Parameters.AddWithValue("@user_salt", userSalt);
 
                 int rowsAffected = insertCmd.ExecuteNonQuery();
 
                 if (rowsAffected > 0)
                 {
-                    Form messagebox = new MyMessageBox("Úspěšně si se zaregistroval,\nmůžeš pokračovat na login.", "Úspěch", MessageBoxIcon.Information);
+                    Form messagebox = new MyMessageBox("Úspěšně si se zaregistroval,\n" +
+                                                    "můžeš pokračovat na login.", "Úspěch", MessageBoxIcon.Information);
                     messagebox.ShowDialog();
 
-                    // Přepni zpět na login a vyčisti pole
                     button4_Click(sender, e);
                     textBox3.Clear();
                     textBox4.Clear();
@@ -225,7 +210,7 @@ namespace Password_manager
         }
 
         // Pomocná metoda pro generování náhodného saltu
-    
+
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -251,11 +236,13 @@ namespace Password_manager
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
+            SecurePasswordManager.ClearCredentials();
             Application.Exit();
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
+            SecurePasswordManager.ClearCredentials();
             Application.Exit();
         }
 
@@ -310,7 +297,7 @@ namespace Password_manager
             if (label6.ForeColor == System.Drawing.Color.Green &&
                 label7.ForeColor == System.Drawing.Color.Green &&
                 label8.ForeColor == System.Drawing.Color.Green &&
-                label9.ForeColor == System.Drawing.Color.Green&&
+                label9.ForeColor == System.Drawing.Color.Green &&
                 button5.BackColor == System.Drawing.Color.Green)
             {
                 button2.Enabled = true;
@@ -342,7 +329,7 @@ namespace Password_manager
                 {
                     button2.Enabled = false;
                 }
-            } 
+            }
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)

@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Security;
 
 namespace Password_manager
 {
@@ -21,7 +22,6 @@ namespace Password_manager
         private MySqlConnection conn;
         private string connectionString;
         private int user_id;
-        private int group_id;
         private bool mouseDown;
         private Point lastLocation;
         private bool closeButtonClicked = false;
@@ -32,30 +32,35 @@ namespace Password_manager
 
         private string DecryptPasswordWithMasterKey(byte[] encryptedBytes, byte[] iv)
         {
+            string masterPassword = null;
             try
             {
-                // 1. Zkontroluj, zda máme potřebné údaje
+                masterPassword = SecurePasswordManager.GetMasterPasswordAsString();
                 if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
                 {
                     return "***NENÍ PŘIHLÁŠEN***";
                 }
 
-                // 2. Kontrola IV (přidejte tolerantnější kontrolu)
                 if (iv == null || iv.Length == 0)
                 {
                     return "***NEVALIDNÍ IV - STARÝ ZÁZNAM***";
                 }
 
-                // 3. Odvoď klíč z master password
                 byte[] key = SecureEncryptor.DeriveKeyFromPassword(masterPassword, userSalt);
 
-                // 4. Dešifruj
                 return SecureEncryptor.Decrypt(encryptedBytes, key, iv);
             }
             catch (CryptographicException)
             {
-                // Špatný klíč nebo poškozená data
                 return "***ŠPATNÝ KLÍČ***";
+
+            }
+            finally
+            {
+                if (masterPassword != null)
+                {
+                    SecurePasswordManager.ClearString(ref masterPassword);
+                }
             }
 
         }
@@ -69,8 +74,9 @@ namespace Password_manager
                 List<Item> items = new List<Item>();
 
 
-                string query = String.Format("SELECT * FROM credentials_groups WHERE user_id = {0}", user_id);
+                string query = "SELECT * FROM credentials_groups WHERE user_id = @user_id";
                 MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@user_id", user_id);
 
                 MySqlDataReader reader = cmd.ExecuteReader();
                 items.Add(new Item(-1, "all", -1));
@@ -91,7 +97,8 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("credenials_groups load error: " + ex.Message);
+                Form messagebox = new MyMessageBox("Chyba při načítání skupin", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
@@ -106,26 +113,39 @@ namespace Password_manager
             {
                 Item selectedItem = comboBox1.SelectedItem as Item;
                 conn.Close();
-                string query;
                 conn.Open();
+
+                string query;
+                MySqlCommand cmd;
                 if (selectedItem.Id == -1 && selectedItem.User_Id == -1)
                 {
-                    query = String.Format("SELECT * FROM credentials LEFT JOIN credentials_groups ON credentials.group_id = credentials_groups.id WHERE credentials.user_id = '{0}'", user_id);
-
+                    query = "SELECT * FROM credentials LEFT JOIN credentials_groups " +
+                         "ON credentials.group_id = credentials_groups.id " +
+                         "WHERE credentials.user_id = @user_id";
+                    cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@user_id", user_id);
                 }
                 else if (selectedItem.Id == 0 && selectedItem.User_Id == 0)
                 {
 
-                    query = String.Format("SELECT * FROM credentials LEFT JOIN credentials_groups ON credentials.group_id = credentials_groups.id WHERE credentials.user_id = '{0}' AND group_id is null", user_id);
-
+                    query = "SELECT * FROM credentials LEFT JOIN credentials_groups " +
+                         "ON credentials.group_id = credentials_groups.id " +
+                         "WHERE credentials.user_id = @user_id AND group_id IS NULL";
+                    cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@user_id", user_id);
                 }
                 else
                 {
-
-                    query = String.Format("SELECT * FROM credentials LEFT JOIN credentials_groups ON credentials.group_id = credentials_groups.id WHERE credentials.user_id = '{0}' AND group_id = {1} AND credentials_groups.user_id = {2}", user_id, selectedItem.Id, selectedItem.User_Id);
+                    query = "SELECT * FROM credentials LEFT JOIN credentials_groups " +
+                             "ON credentials.group_id = credentials_groups.id " +
+                             "WHERE credentials.user_id = @user_id AND group_id = @group_id " +
+                             "AND credentials_groups.user_id = @group_user_id";
+                    cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@user_id", user_id);
+                    cmd.Parameters.AddWithValue("@group_id", selectedItem.Id);
+                    cmd.Parameters.AddWithValue("@group_user_id", selectedItem.User_Id);
                 }
 
-                MySqlCommand cmd = new MySqlCommand(query, conn);
 
                 MySqlDataReader reader = cmd.ExecuteReader();
 
@@ -145,9 +165,10 @@ namespace Password_manager
                 }
                 reader.Close();
 
-                query = String.Format("select * FROM users where role_id =1 AND id = {0}", user_id);
-                MySqlCommand cmd1 = new MySqlCommand(query, conn);
-                MySqlDataReader reader1 = cmd1.ExecuteReader();
+                string roleQuery = "SELECT * FROM users WHERE role_id = 1 AND id = @user_id";
+                MySqlCommand roleCmd = new MySqlCommand(roleQuery, conn);
+                roleCmd.Parameters.AddWithValue("@user_id", user_id);
+                MySqlDataReader reader1 = roleCmd.ExecuteReader();
 
 
                 if (reader1.Read())
@@ -163,7 +184,8 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("credenials load error: " + ex.Message);
+                Form messagebox = new MyMessageBox("Chyba při načítání dat", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
@@ -183,9 +205,8 @@ namespace Password_manager
             conn = new MySqlConnection(connectionString);
             user_id = id;
 
-            masterPassword = main.CurrentMasterPassword;
-            userSalt = main.CurrentUserSalt;
-
+            masterPassword = SecurePasswordManager.GetMasterPasswordAsString();
+            userSalt = SecurePasswordManager.UserSalt;
 
             if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
             {
@@ -194,16 +215,14 @@ namespace Password_manager
                 this.Close();
                 return;
             }
+
             comboBox_load();
             load();
-
 
             label3.Text = "Acount: " + username;
             pictureBox1.SendToBack();
 
             pictureBox1.Image = Properties.Resources.Blue;
-
-
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Location = new System.Drawing.Point(992, 0);
             pictureBox1.Size = new System.Drawing.Size(35, 35);
@@ -211,12 +230,17 @@ namespace Password_manager
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            if (MessageBox.Show("Opravdu chcete zavřít aplikaci?", "Zavřít",
+        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                Application.Exit();
+            }
+
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Form credentials_add = new credentials_add(user_id, userSalt, masterPassword);
+            Form credentials_add = new credentials_add(user_id);
             credentials_add.Show();
             credentials_add.FormClosed += delegate
             {
@@ -309,72 +333,105 @@ namespace Password_manager
             try
             {
                 int row = dataGridView1.CurrentCell.RowIndex;
-                int column = dataGridView1.CurrentCell.ColumnIndex;
-                string value = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
-                string str = dataGridView1.Rows[row].Cells[0].Value.ToString();
+                string value = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex]?.Value?.ToString();
+                string str = dataGridView1.Rows[row].Cells[0]?.Value?.ToString();
                 string columnName = this.dataGridView1.Columns[e.ColumnIndex].Name;
 
+                if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(str)) return;
 
                 conn.Open();
 
-                if (int.TryParse(str, out int id))
+                if (!int.TryParse(str, out int id)) return;
+
+                if (columnName == "Column2") // password column
                 {
+                    string currentMasterPassword = SecurePasswordManager.GetMasterPasswordAsString();
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(currentMasterPassword) && userSalt != null)
+                        {
+                            byte[] key = SecureEncryptor.DeriveKeyFromPassword(currentMasterPassword, userSalt);
+                            byte[] iv = SecureEncryptor.GenerateRandomIV();
+                            byte[] encryptedBytes = SecureEncryptor.Encrypt(value, key, iv);
+
+                            string updateQuery = "UPDATE credentials SET password = @password, iv = @iv WHERE id = @id";
+                            using (MySqlCommand cmd = new MySqlCommand(updateQuery, conn))
+                            {
+                                cmd.Parameters.Add("@password", MySqlDbType.VarBinary, -1).Value = encryptedBytes;
+                                cmd.Parameters.Add("@iv", MySqlDbType.VarBinary, 16).Value = iv;
+                                cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        else
+                        {
+                            Form messagebox = new MyMessageBox("Nejste přihlášeni!", "Chyba", MessageBoxIcon.Error);
+                            messagebox.ShowDialog();
+                        }
+                    }
+                    finally
+                    {
+                        SecurePasswordManager.ClearString(ref currentMasterPassword);
+                    }
+                }
+                else
+                {
+                    // Bezpečný způsob pro dynamický název sloupce - C# 7.3 kompatibilní
+                    string dbColumnName;
                     switch (columnName)
                     {
-                        case "Column1": columnName = "username"; break;
-                        case "Column2":
-                            columnName = "password";
-                            {
-
-                                if (!string.IsNullOrEmpty(masterPassword) && userSalt != null)
-                                {
-                                    byte[] key = SecureEncryptor.DeriveKeyFromPassword(masterPassword, userSalt);
-                                    byte[] iv = SecureEncryptor.GenerateRandomIV(); // Nový IV pro každou změnu
-                                    byte[] bytes = SecureEncryptor.Encrypt(value, key, iv);
-
-                                    string insertQuery = "UPDATE credentials SET password = @value, iv = @iv WHERE id = @id";
-                                    using (MySqlCommand command = new MySqlCommand(insertQuery, conn))
-                                    {
-                                        command.Parameters.Add("@value", MySqlDbType.VarBinary, -1).Value = bytes;
-                                        command.Parameters.Add("@iv", MySqlDbType.VarBinary, 16).Value = iv;
-                                        command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
-                                        command.ExecuteNonQuery();
-                                    }
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Nejste přihlášeni!", "Chyba",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                                break;
-                            }
-                        case "Column4": columnName = "url"; break;
-                        default: throw new Exception("Vybrali jste špatný sloupec.");
+                        case "Column1":
+                            dbColumnName = "username";
+                            break;
+                        case "Column4":
+                            dbColumnName = "url";
+                            break;
+                        default:
+                            dbColumnName = "name";
+                            break;
                     }
-                    if (columnName != "password")
+
+                    // Ověření, že název sloupce je povolený
+                    string[] allowedColumns = { "username", "url", "name" };
+                    bool isAllowed = false;
+                    foreach (string col in allowedColumns)
                     {
-                        string query = String.Format("update credentials set {0} ='{1}' where id ={2}", columnName, value, id);
-                        MySqlCommand cmd = new MySqlCommand(query, conn);
-
-                        cmd.ExecuteNonQuery();
-
+                        if (col == dbColumnName)
+                        {
+                            isAllowed = true;
+                            break;
+                        }
                     }
 
+                    if (isAllowed)
+                    {
+                        // Parametrizovaný dotaz pro prevenci SQL injection
+                        string updateQuery = $"UPDATE credentials SET {dbColumnName} = @value WHERE id = @id";
+                        using (MySqlCommand cmd = new MySqlCommand(updateQuery, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@value", value);
+                            cmd.Parameters.AddWithValue("@id", id);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
                 }
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show(ex.Message);
+                // Bez detailních chyb uživateli
+                Form messagebox = new MyMessageBox("Chyba při ukládání dat", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
-
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                // Bez detailních chyb uživateli
+                Form messagebox = new MyMessageBox("Chyba při ukládání dat", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
-
             finally
             {
-                conn.Close();
+                if (conn.State == System.Data.ConnectionState.Open)
+                    conn.Close();
             }
         }
 
@@ -384,113 +441,97 @@ namespace Password_manager
 
             if (DialogResult.Yes == MessageBox.Show("Opravdu se chcete odhlásit?", "Odhlášení", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
             {
+                if (masterPassword != null)
+                {
+                    SecurePasswordManager.ClearString(ref masterPassword);
+                    masterPassword = null;
+                }
+                if (userSalt != null)
+                {
+                    Array.Clear(userSalt, 0, userSalt.Length);
+                    userSalt = null;
+                }
+
                 closeButtonClicked = true;
                 this.Close();
-                Form loginForm = new main();
-                loginForm.Show();
+                
             }
         }
 
-        private void credentials_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            if (!closeButtonClicked)
-            {
-                Application.Exit();
-            }
-        }
 
         private void button2_Click(object sender, EventArgs e)
         {
-
-            if (DialogResult.Yes == MessageBox.Show("Opravdu chcete smazat vybrané záznamy?", "Smazat záznamy", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+            if (DialogResult.Yes != MessageBox.Show("Opravdu chcete smazat vybrané záznamy?",
+                "Smazat záznamy", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
             {
+                return;
+            }
 
-                int[] indexs = new int[dataGridView1.SelectedRows.Count];
-                if (dataGridView1.SelectedRows.Count > 0)
+            foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+            {
+                if (!int.TryParse(row.Cells[0].Value?.ToString(), out int id)) continue;
+
+                try
                 {
-                    for (int i = 0; i < dataGridView1.SelectedRows.Count; i++)
+                    conn.Open();
+
+                    // OPRAVENO: Parametrizovaný dotaz
+                    string groupQuery = "SELECT group_id FROM credentials WHERE id = @id AND group_id IS NOT NULL";
+                    using (MySqlCommand groupCmd = new MySqlCommand(groupQuery, conn))
                     {
-                        indexs[i] = dataGridView1.SelectedRows[i].Index;
-
-                    }
-
-                    Array.Sort(indexs);
-
-
-
-                    if (indexs[0] > indexs[indexs.Count() - 1])
-                    {
-                        Array.Reverse(indexs);
-                    }
-
-                    for (int index = dataGridView1.SelectedRows.Count - 1; index >= 0; index--)
-                    {
-
-
-
-
-                        int count = 0, group_id = 0;
-
-
-                        string str = dataGridView1.Rows[indexs[index]].Cells[0].Value.ToString();
-
-                        if (int.TryParse(str, out int id))
+                        groupCmd.Parameters.AddWithValue("@id", id);
+                        using (MySqlDataReader reader = groupCmd.ExecuteReader())
                         {
-
-                            try
+                            if (reader.Read())
                             {
-                                conn.Open();
-
-                                string query = String.Format("SELECT group_id FROM credentials WHERE id = {0} AND group_id IS NOT NULL", id);
-                                MySqlCommand cmd1 = new MySqlCommand(query, conn);
-                                MySqlDataReader reader = cmd1.ExecuteReader();
-
-                                if (reader.Read())
-                                {
-                                    group_id = Convert.ToInt32(reader["group_id"]);
-                                    reader.Close();
-                                    query = String.Format("SELECT (SELECT COUNT(group_id) FROM credentials WHERE group_id = {0}) AS count", group_id);
-
-                                    MySqlCommand cmd2 = new MySqlCommand(query, conn);
-                                    MySqlDataReader reader1 = cmd2.ExecuteReader();
-
-                                    reader1.Read();
-                                    count = Convert.ToInt32(reader1["count"]);
-                                    reader1.Close();
-                                }
-                                if (count == 1)
-                                {
-                                    query = String.Format("DELETE FROM credentials_groups WHERE id = {0}", group_id);
-                                    MySqlCommand cmd3 = new MySqlCommand(query, conn);
-                                    cmd3.ExecuteNonQuery();
-                                    conn.Close();
-                                    comboBox_load();
-                                    conn.Open();
-                                }
+                                int group_id = Convert.ToInt32(reader["group_id"]);
                                 reader.Close();
 
-                                query = String.Format("DELETE FROM credentials WHERE id={0}", id);
-                                MySqlCommand cmd = new MySqlCommand(query, conn);
+                                // OPRAVENO: Parametrizovaný dotaz
+                                string countQuery = "SELECT COUNT(group_id) as count FROM credentials WHERE group_id = @group_id";
+                                using (MySqlCommand countCmd = new MySqlCommand(countQuery, conn))
+                                {
+                                    countCmd.Parameters.AddWithValue("@group_id", group_id);
+                                    int count = Convert.ToInt32(countCmd.ExecuteScalar());
 
-                                cmd.ExecuteNonQuery();
-
-                                dataGridView1.Rows.RemoveAt(indexs[index]);
-
-                            }
-
-                            catch (MySqlException ex)
-                            {
-                                MessageBox.Show(ex.Message);
-                            }
-
-                            finally
-                            {
-                                conn.Close();
+                                    if (count == 1)
+                                    {
+                                        // OPRAVENO: Parametrizovaný dotaz
+                                        string deleteGroupQuery = "DELETE FROM credentials_groups WHERE id = @group_id";
+                                        using (MySqlCommand deleteGroupCmd = new MySqlCommand(deleteGroupQuery, conn))
+                                        {
+                                            deleteGroupCmd.Parameters.AddWithValue("@group_id", group_id);
+                                            deleteGroupCmd.ExecuteNonQuery();
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
+
+                    // OPRAVENO: Parametrizovaný dotaz
+                    string deleteQuery = "DELETE FROM credentials WHERE id = @id";
+                    using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
+                    {
+                        deleteCmd.Parameters.AddWithValue("@id", id);
+                        deleteCmd.ExecuteNonQuery();
+                    }
+
+                    dataGridView1.Rows.Remove(row);
+                }
+                catch (Exception ex)
+                {
+                    // OPRAVENO: Bez detailních chyb
+                    Form messagebox = new MyMessageBox("Chyba při mazání záznamu", "Chyba", MessageBoxIcon.Error);
+                    messagebox.ShowDialog();
+                }
+                finally
+                {
+                    conn.Close();
                 }
             }
+
+            comboBox_load(); // Aktualizuj combo box po smazání
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -538,46 +579,47 @@ namespace Password_manager
         {
             if (comboBox1.Items.Count != 2)
             {
+                int foundGroupId = -1;
                 try
                 {
                     conn.Open();
 
-                    string query = String.Format("SELECT group_id FROM credentials WHERE user_id = {0}", user_id);
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-                    MySqlDataReader reader1 = cmd.ExecuteReader();
-
-                    reader1.Read();
-                    group_id = Convert.ToInt32(reader1["group_id"]);
-                    reader1.Close();
-
+                    string query = "SELECT group_id FROM credentials WHERE user_id = @user_id";
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@user_id", user_id);
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                foundGroupId = Convert.ToInt32(reader["group_id"]);
+                            }
+                        }
+                    }
                 }
-                catch (MySqlException ex)
+                catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    Form messagebox = new MyMessageBox("Chyba při načítání skupin", "Chyba", MessageBoxIcon.Error);
+                    messagebox.ShowDialog();
+                    return;
                 }
                 finally
                 {
                     conn.Close();
                 }
 
-
-
-
-                Form share = new share(user_id);
-
-                share.Show();
-                share.FormClosed += delegate
+                if (foundGroupId != -1)
                 {
-
-                };
-
+                    Form share = new share(user_id);
+                    share.Show();
+                }
             }
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            Form shared = new shared(user_id, userSalt, masterPassword);
-            shared.Show();
+            //Form shared = new shared(user_id, userSalt, masterPassword);
+            //shared.Show();
         }
     }
 }
