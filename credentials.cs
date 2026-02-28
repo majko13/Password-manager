@@ -604,12 +604,117 @@ namespace Password_manager
                     share.Show();
                 }
             }
+            else
+            {
+                Form messagebox = new MyMessageBox("You have not any groups to share.", "Chyba", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
+            }
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            //Form shared = new shared(user_id, userSalt, masterPassword);
-            //shared.Show();
+            Form shared = new shared(user_id);
+            shared.ShowDialog();
+
+            comboBox_load();
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            // Skontrolujeme, či je vybratý nejaký index v ComboBoxe
+            if (comboBox1.SelectedIndex < 0)
+            {
+                MessageBox.Show("Prosím, vyberte skupinu na vymazanie.");
+                return;
+            }
+
+            // ✅ KONTROLA: Nesmieme vymazať špeciálne položky na indexoch 0 a 1
+            if (comboBox1.SelectedIndex <= 1) // 0 = "Všetky skupiny", 1 = "Bez skupiny"
+            {
+                MessageBox.Show(
+                    "Nemôžete vymazať túto položku.\n\n" +
+                    "Vyberte konkrétnu skupinu na vymazanie.",
+                    "Neplatná voľba",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            Item selectedGroup = comboBox1.SelectedItem as Item;
+
+            if (selectedGroup == null)
+            {
+                MessageBox.Show("Chyba pri výbere skupiny.");
+                return;
+            }
+
+            
+            DialogResult result = MessageBox.Show(
+                $"Naozaj chcete vymazať skupinu '{selectedGroup.Name}'?\n\n" +
+                $"Heslá sa automaticky presunú do 'Bez skupiny' (group_id = NULL).\n\n" +
+                "Túto akciu nie je možné vrátiť späť!",
+                "Vymazanie skupiny",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            try
+            {
+                conn.Open();
+
+                // ✅ STAČÍ LEN VYMAZAŤ SKUPINU
+                // Databáza automaticky nastaví group_id = NULL vo všetkých heslách
+                string deleteGroupQuery = "DELETE FROM credentials_groups WHERE id = @id AND user_id = @user_id";
+                int deletedGroup;
+
+                using (MySqlCommand deleteGroupCmd = new MySqlCommand(deleteGroupQuery, conn))
+                {
+                    deleteGroupCmd.Parameters.AddWithValue("@id", selectedGroup.Id);
+                    deleteGroupCmd.Parameters.AddWithValue("@user_id", user_id);
+                    deletedGroup = deleteGroupCmd.ExecuteNonQuery();
+                }
+
+                if (deletedGroup > 0)
+                {
+
+                    
+                    MessageBox.Show(
+                        $"Skupina '{selectedGroup.Name}' bola úspešne vymazaná.\n",
+                        "Vymazanie úspešné",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    conn.Close();
+                    comboBox_load();
+                    if (comboBox1.Items.Count > 1)
+                    {
+                        comboBox1.SelectedIndex = 1; // "Bez skupiny"
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Skupinu sa nepodarilo vymazať.");
+                }
+            }
+            catch (MySqlException ex)
+            {
+                // Môže nastať, ak foreign key nie je správne nastavený
+                if (ex.Number == 1451) // MySQL error for foreign key constraint
+                {
+                    MessageBox.Show("Databázové obmedzenie: Skupina má priradené heslá. Skontrolujte foreign key.");
+                }
+                else
+                {
+                    MessageBox.Show("Chyba databázy: " + ex.Message);
+                }
+            }
+            finally
+            {
+                conn.Close();
+
+            }
         }
     }
 }

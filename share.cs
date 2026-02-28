@@ -28,7 +28,7 @@ namespace Password_manager
 
                 comboBox2.DataSource = null;
 
-                // Získaj aktuálny index - POZOR: musí byť pred vytvorením nového zoznamu
+                // Získaj aktuálny index
                 int currentComboBoxIndex = comboBox1.SelectedIndex;
 
                 if (currentComboBoxIndex < 0 || group_ids_array == null || currentComboBoxIndex >= group_ids_array.Length)
@@ -58,8 +58,8 @@ namespace Password_manager
                     }
                 }
 
-                // Filtruj používateľov, ktorým už bola skupina zdielaná
-                query = "SELECT user_id FROM shared_groups WHERE group_id = @group_id";
+                // ✅ SPRÁVNE: Získaj používateľov, ktorí UŽ DOSTALI TÚTO KONKRÉTNU skupinu
+                query = "SELECT reciever_id FROM shared_groups WHERE group_id = @group_id";
                 List<int> alreadySharedUsers = new List<int>();
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
@@ -70,12 +70,13 @@ namespace Password_manager
                     {
                         while (reader.Read())
                         {
-                            alreadySharedUsers.Add(Convert.ToInt32(reader["user_id"]));
+                            // ✅ Opravené: čítame reciever_id, nie user_id
+                            alreadySharedUsers.Add(Convert.ToInt32(reader["reciever_id"]));
                         }
                     }
                 }
 
-                // Odstráň používateľov, ktorým už je skupina zdielaná
+                // Odstráň používateľov, ktorí už DOSTALI TÚTO skupinu
                 items.RemoveAll(item => alreadySharedUsers.Contains(item.Id));
 
                 comboBox2.DataSource = items;
@@ -100,7 +101,7 @@ namespace Password_manager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Chyba: " + ex.Message);
+                // MessageBox.Show("Chyba: " + ex.Message);
             }
         }
 
@@ -203,10 +204,10 @@ namespace Password_manager
                 if (conn.State != ConnectionState.Open)
                     conn.Open();
 
-                string query = "INSERT INTO shared_groups (user_id, group_id) VALUES (@user_id, @group_id)";
+                string query = "INSERT INTO shared_groups (reciever_id, group_id) VALUES (@reciever_id, @group_id)";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@user_id", selectedItem.Id);
+                    cmd.Parameters.AddWithValue("@reciever_id", selectedItem.Id);
                     cmd.Parameters.AddWithValue("@group_id", group_ids_array[currentComboBoxIndex]);
 
                     int rowsAffected = cmd.ExecuteNonQuery();
@@ -232,7 +233,7 @@ namespace Password_manager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Chyba: " + ex.Message);
+                //MessageBox.Show("Chyba: " + ex.Message);
             }
         }
 

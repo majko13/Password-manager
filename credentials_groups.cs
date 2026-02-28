@@ -26,56 +26,49 @@ namespace Password_manager
 
 
 
-
         private void load()
         {
             try
             {
                 conn.Open();
 
-                string query = "SELECT COUNT(group_id) AS count FROM credentials WHERE user_id = @user_id";
-                MySqlCommand cmd2 = new MySqlCommand(query, conn);
-                cmd2.Parameters.AddWithValue("@user_id", user_id);
+                List<Item> items = new List<Item>();
 
-                int count = Convert.ToInt32(cmd2.ExecuteScalar());
+                string query = "SELECT * FROM credentials_groups WHERE user_id = @user_id";
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@user_id", user_id);
 
-                if (count > 0)
+                using (MySqlDataReader reader = cmd.ExecuteReader())
                 {
-                    button1.Enabled = true;
-                    comboBox1.Enabled = true;
-
-                    List<Item> items = new List<Item>();
-
-                    query = "SELECT * FROM credentials_groups WHERE user_id = @user_id";
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@user_id", user_id);
-
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            items.Add(new Item(
-                                Convert.ToInt32(reader["id"]),
-                                reader["name"].ToString(),
-                                Convert.ToInt32(reader["user_id"])
-                            ));
-                        }
+                        items.Add(new Item(
+                            Convert.ToInt32(reader["id"]),
+                            reader["name"].ToString(),
+                            Convert.ToInt32(reader["user_id"])
+                        ));
                     }
+                }
 
+                if (items.Count > 0)
+                {
                     comboBox1.DataSource = items;
                     comboBox1.DisplayMember = "Name";
-                    if (items.Count > 0)
-                        comboBox1.SelectedIndex = 0;
+                    comboBox1.SelectedIndex = 0;
+                    button1.Enabled = true;
+                    comboBox1.Enabled = true;
                 }
                 else
                 {
+                    // Nie sú žiadne skupiny
                     button1.Enabled = false;
                     comboBox1.Enabled = false;
+                    comboBox1.Text = "Žiadne skupiny";
                 }
             }
             catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Chyba při načítání skupin", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Chyba při načítání skupin: " + ex.Message, "Chyba", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally
@@ -83,9 +76,6 @@ namespace Password_manager
                 conn.Close();
             }
         }
-
-
-
 
         public credentials_groups(int[] ids, int user_id)
         {
