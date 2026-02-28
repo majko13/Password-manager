@@ -25,8 +25,6 @@ namespace Password_manager
         private bool mouseDown;
         private Point lastLocation;
 
-        private byte[] userSalt;
-        private string masterPassword;
         private void comboBox_load()
         {
             try
@@ -54,8 +52,8 @@ namespace Password_manager
                             users.Add(new Item(
                                 Convert.ToInt32(reader["id"]),
                                 reader["username"].ToString(),
-                                0 // User_Id nepotrebujeme pre comboBox, len pre Item triedu
-                            ));
+                                0 
+                                ));
                         }
                     }
                 }
@@ -86,7 +84,6 @@ namespace Password_manager
         private void load()
         {
             dataGridView1.Rows.Clear();
-            MessageBox.Show("kokot");
             try
             {
                 Item selectedUser = comboBox1.SelectedItem as Item;
@@ -98,43 +95,38 @@ namespace Password_manager
                 conn.Open();
 
                 string query = @"
-                    SELECT sg.group_id, cg.user_id AS sender_id, cg.name
-                    FROM shared_groups sg
-                    INNER JOIN credentials_groups cg ON sg.group_id = cg.id
-                    WHERE sg.reciever_id = @current_user_id
-                    AND cg.user_id = @selected_user_id;";
+            SELECT sg.group_id, cg.user_id AS sender_id, u.username AS sender_name, cg.name
+            FROM shared_groups sg
+            INNER JOIN credentials_groups cg ON sg.group_id = cg.id
+            INNER JOIN users u ON cg.user_id = u.id  
+            WHERE sg.reciever_id = @current_user_id
+            AND cg.user_id = @selected_user_id;";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
-
-                // PARAMETRE MUSIA MAŤ ROVNAKÉ NÁZVY AKO V QUERY!
                 cmd.Parameters.AddWithValue("@current_user_id", user_id);
                 cmd.Parameters.AddWithValue("@selected_user_id", selectedUser.Id);
-
 
                 MySqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
                     dataGridView1.Rows.Add(
-                        reader["group_id"],   // ID – skrytý stĺpec
-                        reader["sender_id"],  // Sent by
-                        reader["name"]        // Group name
+                        reader["group_id"],      
+                        reader["sender_name"],   
+                        reader["name"] 
                     );
                 }
                 reader.Close();
             }
-            catch (MySqlException)
+            catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Error while loading shared groups", "Error", MessageBoxIcon.Error);
-                messagebox.ShowDialog();
+                new MyMessageBox("Error while loading shared groups: " + ex.Message, "Error", MessageBoxIcon.Error).ShowDialog();
             }
             finally
             {
                 conn.Close();
             }
         }
-
-
 
         public shared(int userId)
         {
@@ -145,7 +137,7 @@ namespace Password_manager
             comboBox_load();
             if (comboBox1.Items.Count > 0)
             {
-                comboBox1.SelectedIndex = 0; // Toto automaticky spustí SelectedIndexChanged event
+                comboBox1.SelectedIndex = 0; 
             }
 
 
@@ -161,44 +153,8 @@ namespace Password_manager
             load();
         }
 
-        private void dataGridView1_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
-        {
-            if (e.ColumnIndex == 3 && e.RowIndex >= 0)
-            {
-                e.PaintBackground(e.CellBounds, true);
+     
 
-                if (showPasswords)
-                {
-
-                    string password = dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString();
-                    e.Graphics.DrawString(password, e.CellStyle.Font, Brushes.Black, e.CellBounds.X + 2, e.CellBounds.Y + 2);
-                }
-                else
-                {
-
-                    string password = new string('*', dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString().Length);
-                    e.Graphics.DrawString(password, e.CellStyle.Font, Brushes.Black, e.CellBounds.X + 2, e.CellBounds.Y + 2);
-                }
-
-
-                Image eyeImage = icons.Images[0];
-                int eyeSize = e.CellBounds.Height - 4;
-                int eyeX = e.CellBounds.Right - eyeSize - 2;
-                int eyeY = e.CellBounds.Y + 2;
-                e.Graphics.DrawImage(eyeImage, eyeX, eyeY, eyeSize, eyeSize);
-
-                e.Handled = true;
-            }
-        }
-
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex == 3 && e.RowIndex >= 0)
-            {
-                showPasswords = !showPasswords;
-                dataGridView1.InvalidateCell(e.ColumnIndex, e.RowIndex);
-            }
-        }
 
         private void shared_MouseDown(object sender, MouseEventArgs e)
         {
@@ -242,25 +198,28 @@ namespace Password_manager
             }
         }
 
+        
+
+       
+
+
+
         private void button1_Click(object sender, EventArgs e)
         {
-            // Skontrolujeme, či je vybratý nejaký riadok
             if (dataGridView1.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Prosím, vyberte skupinu na prijatie.");
                 return;
             }
 
-            // Získame ID skupiny z vybraného riadku (prvý stĺpec je skryté ID)
             int groupId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
-            string groupName = dataGridView1.SelectedRows[0].Cells[2].Value.ToString(); // Group name
+            string groupName = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
 
             try
             {
                 if (conn.State != ConnectionState.Open)
                     conn.Open();
 
-                // 1️⃣ Najprv skontrolujeme, či už používateľ nemá skupinu s rovnakým názvom
                 string checkQuery = "SELECT COUNT(*) FROM credentials_groups WHERE user_id = @user_id AND name = @name";
                 using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
                 {
@@ -287,7 +246,6 @@ namespace Password_manager
                     }
                 }
 
-                // 2️⃣ Vytvoríme novú skupinu pre aktuálneho používateľa
                 string insertQuery = "INSERT INTO credentials_groups (name, user_id) VALUES (@name, @user_id)";
 
                 using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, conn))
@@ -297,7 +255,6 @@ namespace Password_manager
                     insertCmd.ExecuteNonQuery();
                 }
 
-                // 3️⃣ Vymažeme pôvodný záznam zo shared_groups
                 string deleteQuery = "DELETE FROM shared_groups WHERE group_id = @group_id AND reciever_id = @receiver_id";
                 using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
                 {
@@ -326,25 +283,17 @@ namespace Password_manager
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button3_Click_1(object sender, EventArgs e)
         {
-                this.Close();
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            // Skontrolujeme, či je vybratý nejaký riadok v DataGridView
             if (dataGridView1.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Prosím, vyberte skupinu na odstránenie zo zdieľaných.");
                 return;
             }
 
-            // Získame ID skupiny z vybraného riadku (prvý stĺpec je skryté ID)
             int groupId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
             string groupName = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
 
-            // Opýtame sa používateľa, či si je istý
             DialogResult result = MessageBox.Show(
                 $"Naozaj chcete odstrániť skupinu '{groupName}' z ponuky na prijatie?",
                 "Potvrdenie odstránenia",
@@ -359,7 +308,6 @@ namespace Password_manager
                 if (conn.State != ConnectionState.Open)
                     conn.Open();
 
-                // Vymažeme záznam zo shared_groups
                 string deleteQuery = "DELETE FROM shared_groups WHERE group_id = @group_id AND reciever_id = @receiver_id";
 
                 using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
@@ -377,7 +325,7 @@ namespace Password_manager
 
                         if (dataGridView1.Rows.Count == 0)
                         {
-                            comboBox_load(); 
+                            comboBox_load();
                         }
                     }
                     else
@@ -394,6 +342,11 @@ namespace Password_manager
             {
                 conn.Close();
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

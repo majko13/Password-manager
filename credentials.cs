@@ -470,37 +470,6 @@ namespace Password_manager
                 {
                     conn.Open();
 
-                    //string groupQuery = "SELECT group_id FROM credentials WHERE id = @id AND group_id IS NOT NULL";
-                    //using (MySqlCommand groupCmd = new MySqlCommand(groupQuery, conn))
-                    //{
-                    //    groupCmd.Parameters.AddWithValue("@id", id);
-                    //    using (MySqlDataReader reader = groupCmd.ExecuteReader())
-                    //    {
-                    //        if (reader.Read())
-                    //        {
-                    //            int group_id = Convert.ToInt32(reader["group_id"]);
-                    //            reader.Close();
-
-                    //            //string countQuery = "SELECT COUNT(group_id) as count FROM credentials WHERE group_id = @group_id";
-                    //            //using (MySqlCommand countCmd = new MySqlCommand(countQuery, conn))
-                    //            //{
-                    //            //    countCmd.Parameters.AddWithValue("@group_id", group_id);
-                    //            //    int count = Convert.ToInt32(countCmd.ExecuteScalar());
-
-                    //            //    //if (count == 1)
-                    //            //    //{
-                    //            //    //    string deleteGroupQuery = "DELETE FROM credentials_groups WHERE id = @group_id";
-                    //            //    //    using (MySqlCommand deleteGroupCmd = new MySqlCommand(deleteGroupQuery, conn))
-                    //            //    //    {
-                    //            //    //        deleteGroupCmd.Parameters.AddWithValue("@group_id", group_id);
-                    //            //    //        deleteGroupCmd.ExecuteNonQuery();
-                    //            //    //    }
-                    //            //    //}
-                    //            //}
-                    //        }
-                    //    }
-                    //}
-
                     string deleteQuery = "DELETE FROM credentials WHERE id = @id";
                     using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
                     {
@@ -521,7 +490,6 @@ namespace Password_manager
                 }
             }
 
-            //comboBox_load();
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -621,15 +589,13 @@ namespace Password_manager
 
         private void button8_Click(object sender, EventArgs e)
         {
-            // Skontrolujeme, či je vybratý nejaký index v ComboBoxe
             if (comboBox1.SelectedIndex < 0)
             {
                 MessageBox.Show("Prosím, vyberte skupinu na vymazanie.");
                 return;
             }
 
-            // ✅ KONTROLA: Nesmieme vymazať špeciálne položky na indexoch 0 a 1
-            if (comboBox1.SelectedIndex <= 1) // 0 = "Všetky skupiny", 1 = "Bez skupiny"
+            if (comboBox1.SelectedIndex <= 1)
             {
                 MessageBox.Show(
                     "Nemôžete vymazať túto položku.\n\n" +
@@ -648,7 +614,7 @@ namespace Password_manager
                 return;
             }
 
-            
+
             DialogResult result = MessageBox.Show(
                 $"Naozaj chcete vymazať skupinu '{selectedGroup.Name}'?\n\n" +
                 $"Heslá sa automaticky presunú do 'Bez skupiny' (group_id = NULL).\n\n" +
@@ -664,8 +630,6 @@ namespace Password_manager
             {
                 conn.Open();
 
-                // ✅ STAČÍ LEN VYMAZAŤ SKUPINU
-                // Databáza automaticky nastaví group_id = NULL vo všetkých heslách
                 string deleteGroupQuery = "DELETE FROM credentials_groups WHERE id = @id AND user_id = @user_id";
                 int deletedGroup;
 
@@ -679,7 +643,7 @@ namespace Password_manager
                 if (deletedGroup > 0)
                 {
 
-                    
+
                     MessageBox.Show(
                         $"Skupina '{selectedGroup.Name}' bola úspešne vymazaná.\n",
                         "Vymazanie úspešné",
@@ -690,7 +654,7 @@ namespace Password_manager
                     comboBox_load();
                     if (comboBox1.Items.Count > 1)
                     {
-                        comboBox1.SelectedIndex = 1; // "Bez skupiny"
+                        comboBox1.SelectedIndex = 1;
                     }
                 }
                 else
@@ -698,23 +662,18 @@ namespace Password_manager
                     MessageBox.Show("Skupinu sa nepodarilo vymazať.");
                 }
             }
-            catch (MySqlException ex)
-            {
-                // Môže nastať, ak foreign key nie je správne nastavený
-                if (ex.Number == 1451) // MySQL error for foreign key constraint
-                {
-                    MessageBox.Show("Databázové obmedzenie: Skupina má priradené heslá. Skontrolujte foreign key.");
-                }
-                else
-                {
-                    MessageBox.Show("Chyba databázy: " + ex.Message);
-                }
-            }
+            catch (Exception) { }
             finally
             {
                 conn.Close();
 
             }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            users usersForm = new users();
+            usersForm.ShowDialog();
         }
     }
 }

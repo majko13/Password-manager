@@ -329,5 +329,34 @@ namespace Password_manager
         {
 
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+
+
+
+            if (textBox1.Text!="")
+            {
+                new MyMessageBox(
+                    "Pre zobrazenie kontaktu na admina najprv zadajte svoje používateľské meno.",
+                    "Chýba používateľské meno",
+                    MessageBoxIcon.Warning).ShowDialog();
+                return;
+            }
+
+            string username = textBox1.Text.Trim();
+
+            new MyMessageBox(
+                "PRE OBNOVENIE HESLA:\n" +
+                "1. Kontaktujte admina:\n" +
+                "   Email: admin@passwordmanager.com\n" +
+                "   Tel: +421 123 456 789\n\n" +
+                "2. V správe uveďte:\n" +
+                $"  • Vaše používateľské meno: {username}\n" +
+                "   • Dôvod žiadosti\n\n" +
+                "3. Admin vám po overení pošle nové heslo,\n" +
+                "   které zmení manuálne.",
+                "Zabudnuté heslo").ShowDialog();
+        }
     }
 }

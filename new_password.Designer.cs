@@ -155,6 +155,9 @@
             this.comboBox1.BackColor = System.Drawing.Color.White;
             this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold);
             this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "Admin",
+            "User"});
             this.comboBox1.Location = new System.Drawing.Point(273, 450);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox1.Name = "comboBox1";
@@ -228,6 +231,7 @@
             this.button1.TabIndex = 19;
             this.button1.Text = "CHANGE";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // textBox2
             // 
@@ -289,6 +293,9 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "new_password";
             this.Text = "new_password";
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.new_password_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.new_password_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.new_password_MouseUp);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

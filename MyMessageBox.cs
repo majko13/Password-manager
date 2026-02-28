@@ -71,30 +71,164 @@ namespace Password_manager
         {
             InitializeComponent();
 
-            pictureBox1.SendToBack();
+            label2.Text = header;
+            label1.Text = description;
+            button2.Visible = false;
 
+            label1.AutoSize = true;
+            label1.MaximumSize = new Size(250, 0);
+            label1.Location = new Point(20, 40);
 
-            
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.Location = new System.Drawing.Point(273, -2);
-            pictureBox1.Size = new System.Drawing.Size(35, 35);
-            
+            label2.Location = new Point(20, 10);
+            label2.AutoSize = true;
+            label2.Font = new Font(label2.Font, FontStyle.Bold);
+
             SetIcon(icon);
             pictureBox2.SizeMode = PictureBoxSizeMode.CenterImage;
-            pictureBox2.Location = new System.Drawing.Point(221, 30);
-            pictureBox2.Width = 45;
-            pictureBox2.Height = 45;
+            pictureBox2.Location = new Point(280, 30);
+            pictureBox2.Size = new Size(45, 45);
+            pictureBox2.SendToBack();
 
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.Location = new Point(365, -2);
+            pictureBox1.Size = new Size(35, 35);
+            pictureBox1.SendToBack();
 
             button1.FlatAppearance.BorderSize = 2;
             button1.FlatAppearance.BorderColor = Color.Red;
+            button1.Text = "OK";
+            button1.Size = new Size(75, 30);
+            button1.Anchor = AnchorStyles.None;
+            AcceptButton = button1;
+            button1.DialogResult = DialogResult.OK;
 
-            
+            this.Load += (s, e) =>
+            {
+                int minWidth = 400;
+                int minHeight = 150;
 
+                int textWidth = Math.Max(label1.Width, label2.Width) + 100;
+                int textHeight = label1.Height + label2.Height + 80;
+
+                this.Size = new Size(
+                    Math.Max(textWidth, minWidth),
+                    Math.Max(textHeight, minHeight)
+                );
+
+                button1.Location = new Point(
+                    pictureBox2.Location.X + (pictureBox2.Width - button1.Width) / 2,
+                    pictureBox2.Location.Y + pictureBox2.Height + 15
+                );
+            };
+        }
+        public MyMessageBox(string description, string header)
+        {
+            InitializeComponent();
 
             label2.Text = header;
             label1.Text = description;
+            button2.Visible = false;
+
+            label1.AutoSize = true;
+            label1.MaximumSize = new Size(250, 0);
+            label1.Location = new Point(20, 40);
+
+            label2.Location = new Point(20, 10);
+            label2.AutoSize = true;
+            label2.Font = new Font(label2.Font, FontStyle.Bold);
+
+            pictureBox1.Image = Properties.Resources.Blue;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.Location = new Point(315, -2);
+            pictureBox1.Size = new Size(35, 35);
+            pictureBox1.SendToBack();
+
+            button1.FlatAppearance.BorderSize = 2;
+            button1.FlatAppearance.BorderColor = Color.Red;
+            button1.Text = "OK";
+            button1.Size = new Size(90, 40);
+            button1.Location = new Point(220, 180);
+            button1.Anchor = AnchorStyles.None;
+            AcceptButton = button1;
+            button1.DialogResult = DialogResult.OK;
+
+            this.Load += (s, e) =>
+            {
+                int minWidth = 350;
+                int minHeight = 120;
+
+                int textWidth = Math.Max(label1.Width, label2.Width) + 100;
+                int textHeight = label1.Height + label2.Height + 80;
+
+                this.Size = new Size(
+                    Math.Max(textWidth, minWidth),
+                    Math.Max(textHeight, minHeight)
+                );
+
+            };
         }
+        public MyMessageBox(string description, string header, MessageBoxIcon icon, MessageBoxButtons buttons)
+        {
+            InitializeComponent();
+
+            label2.Text = header;
+            label1.Text = description;
+
+            label1.AutoSize = true;
+            label1.MaximumSize = new Size(250, 0);
+            label1.Location = new Point(20, 40);
+
+            label2.Location = new Point(20, 10);
+            label2.AutoSize = true;
+            label2.Font = new Font(label2.Font, FontStyle.Bold);
+
+            SetIcon(icon);
+            pictureBox2.SizeMode = PictureBoxSizeMode.CenterImage;
+            pictureBox2.Location = new Point(280, 30);
+            pictureBox2.Size = new Size(45, 45);
+            pictureBox2.SendToBack();
+
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.Location = new Point(365, -2);
+            pictureBox1.Size = new Size(35, 35);
+            pictureBox1.SendToBack();
+
+            button1.Text = "Yes";
+            button1.DialogResult = DialogResult.Yes;
+            button1.Location = new Point(165, 95); // ľavé tlačidlo
+
+            button2.Text = "No";
+            button2.DialogResult = DialogResult.No;
+            button2.Location = new Point(250, 95); // ľavé tlačidlo
+            
+
+            button1.FlatAppearance.BorderSize = 2;
+            button1.FlatAppearance.BorderColor = Color.Red;
+            button1.Size = new Size(75, 30);
+            button1.Anchor = AnchorStyles.None;
+
+            button2.FlatAppearance.BorderSize = 2;
+            button2.FlatAppearance.BorderColor = Color.Red;
+            button2.Size = new Size(75, 30);
+            button2.Anchor = AnchorStyles.None;
+
+            this.Load += (s, e) =>
+            {
+                int minWidth = 400;
+                int minHeight = 150;
+
+                int textWidth = Math.Max(label1.Width, label2.Width) + 100;
+                int textHeight = label1.Height + label2.Height + 80;
+
+
+                this.Size = new Size(
+                    Math.Max(textWidth, minWidth),
+                    Math.Max(textHeight, minHeight)
+                );
+
+            };
+        }
+
 
         private void button1_Click(object sender, EventArgs e)
         {

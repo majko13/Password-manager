@@ -28,7 +28,6 @@ namespace Password_manager
 
                 comboBox2.DataSource = null;
 
-                // Získaj aktuálny index
                 int currentComboBoxIndex = comboBox1.SelectedIndex;
 
                 if (currentComboBoxIndex < 0 || group_ids_array == null || currentComboBoxIndex >= group_ids_array.Length)
@@ -41,7 +40,6 @@ namespace Password_manager
                 int selectedGroupId = group_ids_array[currentComboBoxIndex];
                 List<Item_2> items = new List<Item_2>();
 
-                // Získaj všetkých používateľov okrem aktuálneho
                 string query = "SELECT id, username FROM users WHERE id != @user_id";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
@@ -58,7 +56,6 @@ namespace Password_manager
                     }
                 }
 
-                // ✅ SPRÁVNE: Získaj používateľov, ktorí UŽ DOSTALI TÚTO KONKRÉTNU skupinu
                 query = "SELECT reciever_id FROM shared_groups WHERE group_id = @group_id";
                 List<int> alreadySharedUsers = new List<int>();
 
@@ -70,13 +67,11 @@ namespace Password_manager
                     {
                         while (reader.Read())
                         {
-                            // ✅ Opravené: čítame reciever_id, nie user_id
                             alreadySharedUsers.Add(Convert.ToInt32(reader["reciever_id"]));
                         }
                     }
                 }
 
-                // Odstráň používateľov, ktorí už DOSTALI TÚTO skupinu
                 items.RemoveAll(item => alreadySharedUsers.Contains(item.Id));
 
                 comboBox2.DataSource = items;
@@ -98,10 +93,6 @@ namespace Password_manager
             catch (MySqlException ex)
             {
                 MessageBox.Show("Chyba databázy: " + ex.Message);
-            }
-            catch (Exception ex)
-            {
-                // MessageBox.Show("Chyba: " + ex.Message);
             }
         }
 
@@ -136,7 +127,6 @@ namespace Password_manager
                 comboBox1.DisplayMember = "Name";
                 comboBox1.ValueMember = "Id";
 
-                // Naplní pole s ID skupín
                 group_ids_array = new int[items.Count];
                 for (int i = 0; i < items.Count; i++)
                 {
@@ -161,14 +151,12 @@ namespace Password_manager
             conn = new MySqlConnection(connectionString);
             this.user_id = user_id;
 
-            // Nastavenie pictureBox
             pictureBox1.Image = Properties.Resources.Blue;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Location = new Point(325, -2);
             pictureBox1.Size = new Size(35, 35);
             pictureBox1.SendToBack();
 
-            // Načítanie dát
             comboBox_groups_Load();
             if (comboBox1.Items.Count > 0)
             {
@@ -221,8 +209,7 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                // Kontrola duplicity
-                if (ex.Number == 1062) // MySQL error code for duplicate entry
+                if (ex.Number == 1062) 
                 {
                     MessageBox.Show("Táto skupina už je zdielaná tomuto používateľovi");
                 }
@@ -233,7 +220,7 @@ namespace Password_manager
             }
             catch (Exception ex)
             {
-                //MessageBox.Show("Chyba: " + ex.Message);
+                MessageBox.Show("Chyba: " + ex.Message);
             }
         }
 
