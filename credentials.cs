@@ -154,7 +154,7 @@ namespace Password_manager
                 {
                     byte[] encryptedBytes = (byte[])reader["password"];
 
-                    byte[] iv = (byte[])reader["iv"]; // DŮLEŽITÉ: načtěte IV!
+                    byte[] iv = (byte[])reader["iv"];
 
                     string password = DecryptPasswordWithMasterKey(encryptedBytes, iv);
 
@@ -343,7 +343,7 @@ namespace Password_manager
 
                 if (!int.TryParse(str, out int id)) return;
 
-                if (columnName == "Column2") // password column
+                if (columnName == "Column2")
                 {
                     string currentMasterPassword = SecurePasswordManager.GetMasterPasswordAsString();
                     try
@@ -376,7 +376,6 @@ namespace Password_manager
                 }
                 else
                 {
-                    // Bezpečný způsob pro dynamický název sloupce - C# 7.3 kompatibilní
                     string dbColumnName;
                     switch (columnName)
                     {
@@ -391,7 +390,6 @@ namespace Password_manager
                             break;
                     }
 
-                    // Ověření, že název sloupce je povolený
                     string[] allowedColumns = { "username", "url", "name" };
                     bool isAllowed = false;
                     foreach (string col in allowedColumns)
@@ -405,7 +403,6 @@ namespace Password_manager
 
                     if (isAllowed)
                     {
-                        // Parametrizovaný dotaz pro prevenci SQL injection
                         string updateQuery = $"UPDATE credentials SET {dbColumnName} = @value WHERE id = @id";
                         using (MySqlCommand cmd = new MySqlCommand(updateQuery, conn))
                         {
@@ -418,13 +415,11 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                // Bez detailních chyb uživateli
                 Form messagebox = new MyMessageBox("Chyba při ukládání dat", "Chyba", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             catch (Exception ex)
             {
-                // Bez detailních chyb uživateli
                 Form messagebox = new MyMessageBox("Chyba při ukládání dat", "Chyba", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
@@ -454,7 +449,7 @@ namespace Password_manager
 
                 closeButtonClicked = true;
                 this.Close();
-                
+
             }
         }
 
@@ -475,41 +470,37 @@ namespace Password_manager
                 {
                     conn.Open();
 
-                    // OPRAVENO: Parametrizovaný dotaz
-                    string groupQuery = "SELECT group_id FROM credentials WHERE id = @id AND group_id IS NOT NULL";
-                    using (MySqlCommand groupCmd = new MySqlCommand(groupQuery, conn))
-                    {
-                        groupCmd.Parameters.AddWithValue("@id", id);
-                        using (MySqlDataReader reader = groupCmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                int group_id = Convert.ToInt32(reader["group_id"]);
-                                reader.Close();
+                    //string groupQuery = "SELECT group_id FROM credentials WHERE id = @id AND group_id IS NOT NULL";
+                    //using (MySqlCommand groupCmd = new MySqlCommand(groupQuery, conn))
+                    //{
+                    //    groupCmd.Parameters.AddWithValue("@id", id);
+                    //    using (MySqlDataReader reader = groupCmd.ExecuteReader())
+                    //    {
+                    //        if (reader.Read())
+                    //        {
+                    //            int group_id = Convert.ToInt32(reader["group_id"]);
+                    //            reader.Close();
 
-                                // OPRAVENO: Parametrizovaný dotaz
-                                string countQuery = "SELECT COUNT(group_id) as count FROM credentials WHERE group_id = @group_id";
-                                using (MySqlCommand countCmd = new MySqlCommand(countQuery, conn))
-                                {
-                                    countCmd.Parameters.AddWithValue("@group_id", group_id);
-                                    int count = Convert.ToInt32(countCmd.ExecuteScalar());
+                    //            //string countQuery = "SELECT COUNT(group_id) as count FROM credentials WHERE group_id = @group_id";
+                    //            //using (MySqlCommand countCmd = new MySqlCommand(countQuery, conn))
+                    //            //{
+                    //            //    countCmd.Parameters.AddWithValue("@group_id", group_id);
+                    //            //    int count = Convert.ToInt32(countCmd.ExecuteScalar());
 
-                                    if (count == 1)
-                                    {
-                                        // OPRAVENO: Parametrizovaný dotaz
-                                        string deleteGroupQuery = "DELETE FROM credentials_groups WHERE id = @group_id";
-                                        using (MySqlCommand deleteGroupCmd = new MySqlCommand(deleteGroupQuery, conn))
-                                        {
-                                            deleteGroupCmd.Parameters.AddWithValue("@group_id", group_id);
-                                            deleteGroupCmd.ExecuteNonQuery();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    //            //    //if (count == 1)
+                    //            //    //{
+                    //            //    //    string deleteGroupQuery = "DELETE FROM credentials_groups WHERE id = @group_id";
+                    //            //    //    using (MySqlCommand deleteGroupCmd = new MySqlCommand(deleteGroupQuery, conn))
+                    //            //    //    {
+                    //            //    //        deleteGroupCmd.Parameters.AddWithValue("@group_id", group_id);
+                    //            //    //        deleteGroupCmd.ExecuteNonQuery();
+                    //            //    //    }
+                    //            //    //}
+                    //            //}
+                    //        }
+                    //    }
+                    //}
 
-                    // OPRAVENO: Parametrizovaný dotaz
                     string deleteQuery = "DELETE FROM credentials WHERE id = @id";
                     using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
                     {
@@ -521,7 +512,6 @@ namespace Password_manager
                 }
                 catch (Exception ex)
                 {
-                    // OPRAVENO: Bez detailních chyb
                     Form messagebox = new MyMessageBox("Chyba při mazání záznamu", "Chyba", MessageBoxIcon.Error);
                     messagebox.ShowDialog();
                 }
@@ -531,7 +521,7 @@ namespace Password_manager
                 }
             }
 
-            comboBox_load(); // Aktualizuj combo box po smazání
+            //comboBox_load();
         }
 
         private void button3_Click(object sender, EventArgs e)

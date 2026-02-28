@@ -99,8 +99,7 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Databaze error", "Error", MessageBoxIcon.Error);
-                messagebox.ShowDialog();
+                MessageBox.Show(ex.Number + "\n" + ex.Message);
             }
             catch (Exception ex)
             {
@@ -121,7 +120,6 @@ namespace Password_manager
 
             try
             {
-                // Validace
                 if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
                 {
                     Form messagebox = new MyMessageBox("Vyplňte všechna pole!", "Upozornění", MessageBoxIcon.Warning);
@@ -139,7 +137,6 @@ namespace Password_manager
 
                 conn.Open();
 
-                // 1. Zkontroluj, zda uživatel již existuje
 
 
                 string checkQuery = "SELECT COUNT(*) FROM users WHERE username = @username";
@@ -155,8 +152,6 @@ namespace Password_manager
                     return;
                 }
 
-                //Vygeneruj náhodný user_salt pro tohoto uživatele
-                //Vytvoř hash master password (pro přihlášení)
 
 
 
@@ -168,7 +163,6 @@ namespace Password_manager
 
 
 
-                //Vlož uživatele do databáze
 
                 string insertQuery = "INSERT INTO users (username, password, role_id, user_salt) " +
                                                 "VALUES (@username, @password, 2, @user_salt)";
@@ -209,7 +203,6 @@ namespace Password_manager
             }
         }
 
-        // Pomocná metoda pro generování náhodného saltu
 
 
         private void button3_Click(object sender, EventArgs e)

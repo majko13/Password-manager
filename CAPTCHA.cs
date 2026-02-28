@@ -26,21 +26,17 @@ namespace Password_manager
                 captchaCode += chars[rand.Next(chars.Length)];
             }
 
-            // Uvolnění předchozího obrázku
             if (pictureBox2.Image != null)
             {
                 pictureBox2.Image.Dispose();
                 pictureBox2.Image = null;
             }
 
-            // PŘIDAT USING pro Bitmap!
             using (Bitmap bmp = new Bitmap(265, 104))
             using (Graphics g = Graphics.FromImage(bmp))
             {
-                // pozadí
                 g.Clear(Color.White);
 
-                // šum – tečky
                 for (int i = 0; i < 150; i++)
                 {
                     int x = rand.Next(bmp.Width);
@@ -48,7 +44,6 @@ namespace Password_manager
                     bmp.SetPixel(x, y, Color.FromArgb(rand.Next(50, 200), rand.Next(50, 200), rand.Next(50, 200)));
                 }
 
-                // šum – čáry
                 for (int i = 0; i < 10; i++)
                 {
                     int x1 = rand.Next(bmp.Width);
@@ -61,7 +56,6 @@ namespace Password_manager
                     }
                 }
 
-                // kreslení znaků s rotací, posunem a barvou
                 for (int i = 0; i < captchaCode.Length; i++)
                 {
                     float angle = rand.Next(-30, 30);
@@ -79,9 +73,8 @@ namespace Password_manager
                     g.ResetTransform();
                 }
 
-                // Vytvořit nový Bitmap pro pictureBox
                 pictureBox2.Image = new Bitmap(bmp);
-            } // Zde se bmp automaticky uvolní
+            } 
         }
         public CAPTCHA()
         {
@@ -97,22 +90,6 @@ namespace Password_manager
             GenerateCaptcha();
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-
-            // Uvolnění obrázku při zavření formuláře
-            if (pictureBox2.Image != null)
-            {
-                pictureBox2.Image.Dispose();
-                pictureBox2.Image = null;
-            }
-
-            base.Dispose(disposing);
-        }
 
         private void button2_Click(object sender, EventArgs e)
         {

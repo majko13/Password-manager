@@ -43,10 +43,6 @@ namespace Password_manager
             string password = textBox2.Text;
             string url = textBox3.Text.Trim();
 
-            string masterPassword = null;
-            byte[] userSalt = null;
-
-            // VALIDÁCIA
             if (string.IsNullOrWhiteSpace(username))
             {
                 Form messagebox = new MyMessageBox("Vyplňte uživatelské jméno.", "Chyba", MessageBoxIcon.Warning);
@@ -71,12 +67,8 @@ namespace Password_manager
                 return;
             }
 
-            // Volitelná: Validace URL formátu
-            if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
-                !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-            {
-                url = "https://" + url; // Automaticky přidat https:// pokud chybí
-            }
+            string masterPassword = null;
+            byte[] userSalt = null;
 
             try
             {

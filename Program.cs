@@ -16,6 +16,8 @@ namespace Password_manager
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Application.AddMessageFilter(new AppTimer());
+
             Application.Run(new main());
         }
     }

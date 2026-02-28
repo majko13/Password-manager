@@ -33,7 +33,6 @@ namespace Password_manager
             {
                 conn.Open();
 
-                // OPRAVENO: Parametrizovaný dotaz
                 string query = "SELECT COUNT(group_id) AS count FROM credentials WHERE user_id = @user_id";
                 MySqlCommand cmd2 = new MySqlCommand(query, conn);
                 cmd2.Parameters.AddWithValue("@user_id", user_id);
@@ -47,7 +46,6 @@ namespace Password_manager
 
                     List<Item> items = new List<Item>();
 
-                    // OPRAVENO: Parametrizovaný dotaz
                     query = "SELECT * FROM credentials_groups WHERE user_id = @user_id";
                     MySqlCommand cmd = new MySqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@user_id", user_id);
@@ -77,7 +75,6 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                // OPRAVENO: Bez detailních chyb
                 Form messagebox = new MyMessageBox("Chyba při načítání skupin", "Chyba", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
@@ -124,7 +121,6 @@ namespace Password_manager
             {
                 conn.Open();
 
-                // OPRAVENO: Parametrizovaný dotaz v cyklu
                 string query = "UPDATE credentials SET group_id = @group_id WHERE id = @id AND user_id = @user_id";
 
                 foreach (int id in ids)
@@ -140,7 +136,6 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                // OPRAVENO: Bez detailních chyb
                 Form messagebox = new MyMessageBox("Chyba při přiřazování skupiny", "Chyba", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
@@ -164,7 +159,6 @@ namespace Password_manager
             {
                 conn.Open();
 
-                // 1. Kontrola existence skupiny - OPRAVENO
                 string checkQuery = "SELECT COUNT(*) FROM credentials_groups WHERE name = @name AND user_id = @user_id";
                 using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
                 {
@@ -180,7 +174,6 @@ namespace Password_manager
                     }
                 }
 
-                // 2. Vložení nové skupiny - OPRAVENO
                 string insertQuery = "INSERT INTO credentials_groups(name, user_id) VALUES(@name, @user_id); SELECT LAST_INSERT_ID();";
                 int newGroupId;
 
@@ -191,7 +184,6 @@ namespace Password_manager
                     newGroupId = Convert.ToInt32(insertCmd.ExecuteScalar());
                 }
 
-                // 3. Přiřazení záznamů do nové skupiny - OPRAVENO
                 string updateQuery = "UPDATE credentials SET group_id = @group_id WHERE id = @id AND user_id = @user_id";
 
                 foreach (int id in ids)
@@ -209,13 +201,11 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                // OPRAVENO: Bez detailních chyb
                 Form messagebox = new MyMessageBox("Chyba při vytváření skupiny", "Chyba", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             catch (Exception ex)
             {
-                // OPRAVENO: Bez detailních chyb
                 Form messagebox = new MyMessageBox("Došlo k chybě", "Chyba", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
