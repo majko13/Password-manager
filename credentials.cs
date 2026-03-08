@@ -66,134 +66,139 @@ namespace Password_manager
         }
         private void comboBox_load()
         {
-
             try
             {
-                conn.Open();
-
-                List<Item> items = new List<Item>();
-
-
-                string query = "SELECT * FROM credentials_groups WHERE user_id = @user_id";
-                MySqlCommand cmd = new MySqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@user_id", user_id);
-
-                MySqlDataReader reader = cmd.ExecuteReader();
-                items.Add(new Item(-1, "all", -1));
-                items.Add(new Item(0, "without group", 0));
-                for (int i = 0; reader.Read(); i++)
+                using (var connection = new MySqlConnection(connectionString))
                 {
-                    items.Add(new Item(Convert.ToInt32(reader["id"]), reader["name"].ToString(), Convert.ToInt32(reader["user_id"])));
+                    connection.Open();
+
+                    List<Item> items = new List<Item>();
+
+                    string query = "SELECT * FROM credentials_groups WHERE user_id = @user_id";
+                    using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@user_id", user_id);
+
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            items.Add(new Item(-1, "all", -1));
+                            items.Add(new Item(0, "without group", 0));
+
+                            while (reader.Read())
+                            {
+                                items.Add(new Item(
+                                    Convert.ToInt32(reader["id"]),
+                                    reader["name"].ToString(),
+                                    Convert.ToInt32(reader["user_id"])));
+                            }
+                        }
+                    }
+
+                    comboBox1.DataSource = items;
+                    comboBox1.DisplayMember = "Name";
+                    comboBox1.SelectedIndex = 0;
                 }
-
-                comboBox1.DataSource = items;
-                comboBox1.DisplayMember = "Name";
-                comboBox1.SelectedIndex = 0;
-
-                reader.Close();
-
-
-
             }
             catch (MySqlException ex)
             {
                 Form messagebox = new MyMessageBox("Error loading groups: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
-            finally
-            {
-                conn.Close();
-            }
-
         }
-        private void load()
+        private async void load()
         {
             dataGridView1.Rows.Clear();
+
             try
             {
                 Item selectedItem = comboBox1.SelectedItem as Item;
                 conn.Close();
-                conn.Open();
-
-                string query;
-                MySqlCommand cmd;
-                if (selectedItem.Id == -1 && selectedItem.User_Id == -1)
+                var result = await Task.Run(() =>
                 {
-                    query = "SELECT * FROM credentials LEFT JOIN credentials_groups " +
-                         "ON credentials.group_id = credentials_groups.id " +
-                         "WHERE credentials.user_id = @user_id";
-                    cmd = new MySqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@user_id", user_id);
-                }
-                else if (selectedItem.Id == 0 && selectedItem.User_Id == 0)
-                {
+                    var rows = new List<DataGridViewRow>();
+                    bool isAdmin = false;
 
-                    query = "SELECT * FROM credentials LEFT JOIN credentials_groups " +
-                         "ON credentials.group_id = credentials_groups.id " +
-                         "WHERE credentials.user_id = @user_id AND group_id IS NULL";
-                    cmd = new MySqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@user_id", user_id);
-                }
-                else
-                {
-                    query = "SELECT * FROM credentials LEFT JOIN credentials_groups " +
-                             "ON credentials.group_id = credentials_groups.id " +
-                             "WHERE credentials.user_id = @user_id AND group_id = @group_id " +
-                             "AND credentials_groups.user_id = @group_user_id";
-                    cmd = new MySqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@user_id", user_id);
-                    cmd.Parameters.AddWithValue("@group_id", selectedItem.Id);
-                    cmd.Parameters.AddWithValue("@group_user_id", selectedItem.User_Id);
-                }
+                    using (var connection = new MySqlConnection(connectionString))
+                    {
+                        connection.Open();
 
+                        string query;
+                        MySqlCommand cmd;
 
-                MySqlDataReader reader = cmd.ExecuteReader();
+                        if (selectedItem.Id == -1 && selectedItem.User_Id == -1)
+                        {
+                            query = @"SELECT c.id, c.username, c.password, c.iv, c.url, cg.name 
+                             FROM credentials c
+                             LEFT JOIN credentials_groups cg ON c.group_id = cg.id
+                             WHERE c.user_id = @user_id";
+                            cmd = new MySqlCommand(query, connection);
+                            cmd.Parameters.AddWithValue("@user_id", user_id);
+                        }
+                        else if (selectedItem.Id == 0 && selectedItem.User_Id == 0)
+                        {
+                            query = @"SELECT c.id, c.username, c.password, c.iv, c.url, cg.name 
+                             FROM credentials c
+                             LEFT JOIN credentials_groups cg ON c.group_id = cg.id
+                             WHERE c.user_id = @user_id AND c.group_id IS NULL";
+                            cmd = new MySqlCommand(query, connection);
+                            cmd.Parameters.AddWithValue("@user_id", user_id);
+                        }
+                        else
+                        {
+                            query = @"SELECT c.id, c.username, c.password, c.iv, c.url, cg.name 
+                             FROM credentials c
+                             LEFT JOIN credentials_groups cg ON c.group_id = cg.id
+                             WHERE c.user_id = @user_id 
+                               AND c.group_id = @group_id 
+                               AND cg.user_id = @group_user_id";
+                            cmd = new MySqlCommand(query, connection);
+                            cmd.Parameters.AddWithValue("@user_id", user_id);
+                            cmd.Parameters.AddWithValue("@group_id", selectedItem.Id);
+                            cmd.Parameters.AddWithValue("@group_user_id", selectedItem.User_Id);
+                        }
 
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                byte[] encryptedBytes = (byte[])reader["password"];
+                                byte[] iv = (byte[])reader["iv"];
 
-                while (reader.Read())
-                {
-                    byte[] encryptedBytes = (byte[])reader["password"];
+                                string password = DecryptPasswordWithMasterKey(encryptedBytes, iv);
 
-                    byte[] iv = (byte[])reader["iv"];
+                                var row = new DataGridViewRow();
+                                row.CreateCells(dataGridView1,
+                                    reader["id"],
+                                    reader["username"],
+                                    password,
+                                    reader["url"],
+                                    reader["name"] ?? "");
 
-                    string password = DecryptPasswordWithMasterKey(encryptedBytes, iv);
+                                rows.Add(row);
+                            }
+                        }
 
+                        string roleQuery = "SELECT role_id FROM users WHERE id = @user_id LIMIT 1";
+                        using (var roleCmd = new MySqlCommand(roleQuery, connection))
+                        {
+                            roleCmd.Parameters.AddWithValue("@user_id", user_id);
+                            var roleId = roleCmd.ExecuteScalar();
+                            isAdmin = (roleId != null && Convert.ToInt32(roleId) == 1);
+                        }
+                    } 
 
+                    return new { Rows = rows, IsAdmin = isAdmin };
+                });
 
-                    dataGridView1.Rows.Add(reader["id"], reader["username"], password, reader["url"], reader["name"]);
-
-                }
-                reader.Close();
-
-                string roleQuery = "SELECT * FROM users WHERE role_id = 1 AND id = @user_id";
-                MySqlCommand roleCmd = new MySqlCommand(roleQuery, conn);
-                roleCmd.Parameters.AddWithValue("@user_id", user_id);
-                MySqlDataReader reader1 = roleCmd.ExecuteReader();
-
-
-                if (reader1.Read())
-                {
-                    button6.Visible = true;
-                }
-                else
-                {
-                    button6.Visible = false;
-                }
-                reader1.Close();
-
+                dataGridView1.Rows.AddRange(result.Rows.ToArray());
+                button6.Visible = result.IsAdmin;
             }
             catch (MySqlException ex)
             {
                 Form messagebox = new MyMessageBox("Error loading data: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
-            finally
-            {
-                conn.Close();
-            }
-
         }
-
 
 
 
@@ -216,7 +221,6 @@ namespace Password_manager
                 return;
             }
             comboBox_load();
-            load();
 
             label3.Text = "Acount: " + username;
             pictureBox1.SendToBack();
@@ -511,7 +515,6 @@ namespace Password_manager
                 {
 
                     comboBox_load();
-                    load();
 
                 };
             }
