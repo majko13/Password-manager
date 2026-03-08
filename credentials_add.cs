@@ -43,9 +43,9 @@ namespace Password_manager
             string password = textBox2.Text;
             string url = textBox3.Text.Trim();
 
-            if (string.IsNullOrWhiteSpace(username))
+            if (string.IsNullOrEmpty(username))
             {
-                Form messagebox = new MyMessageBox("Vyplňte uživatelské jméno.", "Chyba", MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Please enter a username.", "Error", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
                 textBox1.Focus();
                 return;
@@ -53,15 +53,15 @@ namespace Password_manager
 
             if (string.IsNullOrEmpty(password))
             {
-                Form messagebox = new MyMessageBox("Vyplňte heslo.", "Chyba", MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Please enter a password.", "Error", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
                 textBox2.Focus();
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrEmpty(url))
             {
-                Form messagebox = new MyMessageBox("Vyplňte URL.", "Chyba", MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Please enter a URL.", "Error", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
                 textBox3.Focus();
                 return;
@@ -77,7 +77,7 @@ namespace Password_manager
 
                 if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
                 {
-                    Form messagebox = new MyMessageBox("Chyba: Neplatné přihlašovací údaje", "Chyba", MessageBoxIcon.Error);
+                    Form messagebox = new MyMessageBox("Error: Invalid login credentials", "Error", MessageBoxIcon.Error);
                     messagebox.ShowDialog();
                     return;
                 }
@@ -101,7 +101,7 @@ namespace Password_manager
 
                     command.ExecuteNonQuery();
 
-                    Form messagebox = new MyMessageBox("Údaje uloženy.", "Úspěch", MessageBoxIcon.Information);
+                    Form messagebox = new MyMessageBox("Data saved successfully.", "Success", MessageBoxIcon.Information);
                     messagebox.ShowDialog();
                     this.DialogResult = DialogResult.OK;
                     this.Close();
@@ -109,12 +109,12 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Chyba při ukládání do databáze", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Error saving to database: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             catch (Exception ex)
             {
-                Form messagebox = new MyMessageBox("Došlo k neočekávané chybě", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("An unexpected error occurred: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally
@@ -128,6 +128,7 @@ namespace Password_manager
                 }
             }
         }
+
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;

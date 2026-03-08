@@ -1,15 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
-using Org.BouncyCastle.Crypto;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
-using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Password_manager
@@ -60,15 +53,14 @@ namespace Password_manager
                 }
                 else
                 {
-                    // Nie sú žiadne skupiny
                     button1.Enabled = false;
                     comboBox1.Enabled = false;
-                    comboBox1.Text = "Žiadne skupiny";
+                    comboBox1.Text = "No groups";
                 }
             }
             catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Chyba při načítání skupin: " + ex.Message, "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Error loading groups: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally
@@ -126,7 +118,7 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Chyba při přiřazování skupiny", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Error assigning group: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally
@@ -140,7 +132,7 @@ namespace Password_manager
             string newGroup = textBox1.Text.Trim();
             if (string.IsNullOrEmpty(newGroup))
             {
-                Form messagebox = new MyMessageBox("Musíte zadat název nové skupiny", "Upozornění", MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("You must enter a new group name", "Warning", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
                 return;
             }
@@ -158,7 +150,7 @@ namespace Password_manager
                     int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
                     if (exists > 0)
                     {
-                        Form messagebox = new MyMessageBox("Tato skupina už existuje.", "Varování", MessageBoxIcon.Warning);
+                        Form messagebox = new MyMessageBox("This group already exists.", "Warning", MessageBoxIcon.Warning);
                         messagebox.ShowDialog();
                         return;
                     }
@@ -191,12 +183,12 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Chyba při vytváření skupiny", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Error creating group: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             catch (Exception ex)
             {
-                Form messagebox = new MyMessageBox("Došlo k chybě", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("An error occurred: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally

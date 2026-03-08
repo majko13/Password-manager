@@ -52,7 +52,7 @@ namespace Password_manager
                             users.Add(new Item(
                                 Convert.ToInt32(reader["id"]),
                                 reader["username"].ToString(),
-                                0 
+                                0
                                 ));
                         }
                     }
@@ -74,7 +74,8 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("Database error: " + ex.Message);
+                Form messagebox = new MyMessageBox("Database error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
@@ -111,16 +112,17 @@ namespace Password_manager
                 while (reader.Read())
                 {
                     dataGridView1.Rows.Add(
-                        reader["group_id"],      
-                        reader["sender_name"],   
-                        reader["name"] 
+                        reader["group_id"],
+                        reader["sender_name"],
+                        reader["name"]
                     );
                 }
                 reader.Close();
             }
             catch (MySqlException ex)
             {
-                new MyMessageBox("Error while loading shared groups: " + ex.Message, "Error", MessageBoxIcon.Error).ShowDialog();
+                Form messagebox = new MyMessageBox("Error while loading shared groups: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
@@ -137,7 +139,7 @@ namespace Password_manager
             comboBox_load();
             if (comboBox1.Items.Count > 0)
             {
-                comboBox1.SelectedIndex = 0; 
+                comboBox1.SelectedIndex = 0;
             }
 
 
@@ -153,7 +155,7 @@ namespace Password_manager
             load();
         }
 
-     
+
 
 
         private void shared_MouseDown(object sender, MouseEventArgs e)
@@ -198,9 +200,9 @@ namespace Password_manager
             }
         }
 
-        
 
-       
+
+
 
 
 
@@ -208,7 +210,8 @@ namespace Password_manager
         {
             if (dataGridView1.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Prosím, vyberte skupinu na prijatie.");
+                Form messagebox = new MyMessageBox("Please select a group to accept.", "Warning", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
                 return;
             }
 
@@ -229,19 +232,24 @@ namespace Password_manager
                     int count = Convert.ToInt32(checkCmd.ExecuteScalar());
                     if (count > 0)
                     {
-                        MessageBox.Show("Už máte skupinu s týmto názvom.");
+                        DialogResult result = new MyMessageBox(
+                            "You already have a group with this name.\n\nDo you want to delete the shared group?",
+                            "Group Already Exists",
+                            MessageBoxIcon.Warning,
+                            MessageBoxButtons.YesNo).ShowDialog();
 
-
-                        string delQuery = "DELETE FROM shared_groups WHERE group_id = @group_id AND reciever_id = @receiver_id";
-                        using (MySqlCommand deleteCmd = new MySqlCommand(delQuery, conn))
+                        if (result == DialogResult.Yes)
                         {
-                            deleteCmd.Parameters.AddWithValue("@group_id", groupId);
-                            deleteCmd.Parameters.AddWithValue("@receiver_id", user_id);
-                            deleteCmd.ExecuteNonQuery();
+                            string delQuery = "DELETE FROM shared_groups WHERE group_id = @group_id AND reciever_id = @receiver_id";
+                            using (MySqlCommand deleteCmd = new MySqlCommand(delQuery, conn))
+                            {
+                                deleteCmd.Parameters.AddWithValue("@group_id", groupId);
+                                deleteCmd.Parameters.AddWithValue("@receiver_id", user_id);
+                                deleteCmd.ExecuteNonQuery();
+                            }
+
+                            dataGridView1.Rows.Remove(dataGridView1.SelectedRows[0]);
                         }
-
-                        dataGridView1.Rows.Remove(dataGridView1.SelectedRows[0]);
-
                         return;
                     }
                 }
@@ -263,7 +271,8 @@ namespace Password_manager
                     deleteCmd.ExecuteNonQuery();
                 }
 
-                MessageBox.Show("Skupina bola úspešne prijatá!");
+                Form messagebox = new MyMessageBox("Group was successfully accepted!", "Success", MessageBoxIcon.Information);
+                messagebox.ShowDialog();
 
 
                 dataGridView1.Rows.Remove(dataGridView1.SelectedRows[0]);
@@ -275,7 +284,8 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("Chyba databázy: " + ex.Message);
+                Form messagebox = new MyMessageBox("Database error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
@@ -287,18 +297,19 @@ namespace Password_manager
         {
             if (dataGridView1.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Prosím, vyberte skupinu na odstránenie zo zdieľaných.");
+                Form messagebox = new MyMessageBox("Please select a group to remove from shared.", "Warning", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
                 return;
             }
 
             int groupId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
             string groupName = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
 
-            DialogResult result = MessageBox.Show(
-                $"Naozaj chcete odstrániť skupinu '{groupName}' z ponuky na prijatie?",
-                "Potvrdenie odstránenia",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
+            DialogResult result = new MyMessageBox(
+                 $"Do you really want to remove the group '{groupName}' from the sharing offer?",
+                 "Confirm Removal",
+                 MessageBoxIcon.Question,
+                 MessageBoxButtons.YesNo).ShowDialog();
 
             if (result != DialogResult.Yes)
                 return;
@@ -319,7 +330,8 @@ namespace Password_manager
 
                     if (rowsAffected > 0)
                     {
-                        MessageBox.Show("Skupina bola odstránená z ponuky na prijatie.");
+                        Form messagebox = new MyMessageBox("Group has been removed from the sharing offer.", "Success", MessageBoxIcon.Information);
+                        messagebox.ShowDialog();
 
                         dataGridView1.Rows.Remove(dataGridView1.SelectedRows[0]);
 
@@ -330,13 +342,15 @@ namespace Password_manager
                     }
                     else
                     {
-                        MessageBox.Show("Skupinu sa nepodarilo odstrániť.");
+                        Form messagebox = new MyMessageBox("Failed to remove the group.", "Error", MessageBoxIcon.Error);
+                        messagebox.ShowDialog();
                     }
                 }
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("Chyba databázy: " + ex.Message);
+                Form messagebox = new MyMessageBox("Database error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {

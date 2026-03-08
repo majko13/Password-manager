@@ -13,7 +13,7 @@ namespace Password_manager
     public partial class CAPTCHA : Form
     {
         private string captchaCode;
-        private Random rand = new Random();
+        private Random  rand = new Random();
         private bool mouseDown;
         private Point lastLocation;
 

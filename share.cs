@@ -80,7 +80,7 @@ namespace Password_manager
                 {
                     button1.Enabled = false;
                     comboBox2.Enabled = false;
-                    comboBox2.Text = "Žiadni používatelia na zdielanie";
+                    comboBox2.Text = "No users to share with";
                 }
                 else
                 {
@@ -92,7 +92,8 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("Chyba databázy: " + ex.Message);
+                Form messagebox = new MyMessageBox("Database error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
         }
 
@@ -135,11 +136,13 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("Chyba databázy: " + ex.Message);
+                Form messagebox = new MyMessageBox("Database error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Chyba: " + ex.Message);
+                Form messagebox = new MyMessageBox("Error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
         }
 
@@ -174,7 +177,8 @@ namespace Password_manager
         {
             if (comboBox2.SelectedItem == null)
             {
-                MessageBox.Show("Vyberte používateľa");
+                Form messagebox = new MyMessageBox("Select a user", "Warning", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
                 return;
             }
 
@@ -183,7 +187,8 @@ namespace Password_manager
 
             if (currentComboBoxIndex < 0 || group_ids_array == null || currentComboBoxIndex >= group_ids_array.Length)
             {
-                MessageBox.Show("Nie je vybraná žiadna skupina");
+                Form messagebox = new MyMessageBox("No group selected", "Warning", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
                 return;
             }
 
@@ -202,25 +207,29 @@ namespace Password_manager
 
                     if (rowsAffected > 0)
                     {
-                        MessageBox.Show("Skupina bola úspešne zdielaná");
+                        Form messagebox = new MyMessageBox("Group was successfully shared", "Success", MessageBoxIcon.Information);
+                        messagebox.ShowDialog();
                         this.Close();
                     }
                 }
             }
             catch (MySqlException ex)
             {
-                if (ex.Number == 1062) 
+                if (ex.Number == 1062)
                 {
-                    MessageBox.Show("Táto skupina už je zdielaná tomuto používateľovi");
+                    Form messagebox = new MyMessageBox("This group is already shared with this user", "Warning", MessageBoxIcon.Warning);
+                    messagebox.ShowDialog();
                 }
                 else
                 {
-                    MessageBox.Show("Chyba databázy: " + ex.Message);
+                    Form messagebox = new MyMessageBox("Database error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                    messagebox.ShowDialog();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Chyba: " + ex.Message);
+                Form messagebox = new MyMessageBox("Error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
         }
 

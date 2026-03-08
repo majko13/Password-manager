@@ -38,12 +38,12 @@ namespace Password_manager
                 masterPassword = SecurePasswordManager.GetMasterPasswordAsString();
                 if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
                 {
-                    return "***NENÍ PŘIHLÁŠEN***";
+                    return "***NOT LOGGED IN***";
                 }
 
                 if (iv == null || iv.Length == 0)
                 {
-                    return "***NEVALIDNÍ IV - STARÝ ZÁZNAM***";
+                    return "***INVALID IV - OLD RECORD***";
                 }
 
                 byte[] key = SecureEncryptor.DeriveKeyFromPassword(masterPassword, userSalt);
@@ -52,7 +52,7 @@ namespace Password_manager
             }
             catch (CryptographicException)
             {
-                return "***ŠPATNÝ KLÍČ***";
+                return "***WRONG KEY***";
 
             }
             finally
@@ -97,7 +97,7 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Chyba při načítání skupin", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Error loading groups: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally
@@ -184,7 +184,7 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Chyba při načítání dat", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Error loading data: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally
@@ -210,12 +210,11 @@ namespace Password_manager
 
             if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
             {
-                MessageBox.Show("Chyba: Neplatné přihlašovací údaje", "Chyba",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Error: Invalid login credentials", "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
                 this.Close();
                 return;
             }
-
             comboBox_load();
             load();
 
@@ -230,8 +229,7 @@ namespace Password_manager
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Opravdu chcete zavřít aplikaci?", "Zavřít",
-        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (new MyMessageBox("Do you really want to close the application?", "Close", MessageBoxIcon.Question).ShowDialog() == DialogResult.Yes)
             {
                 Application.Exit();
             }
@@ -365,7 +363,7 @@ namespace Password_manager
                         }
                         else
                         {
-                            Form messagebox = new MyMessageBox("Nejste přihlášeni!", "Chyba", MessageBoxIcon.Error);
+                            Form messagebox = new MyMessageBox("You are not logged in!", "Error", MessageBoxIcon.Error);
                             messagebox.ShowDialog();
                         }
                     }
@@ -415,12 +413,12 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Chyba při ukládání dat", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Database error saving data: " + ex.Message, "Database error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             catch (Exception ex)
             {
-                Form messagebox = new MyMessageBox("Chyba při ukládání dat", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Error saving data: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally
@@ -433,8 +431,7 @@ namespace Password_manager
         private void button7_Click(object sender, EventArgs e)
         {
 
-
-            if (DialogResult.Yes == MessageBox.Show("Opravdu se chcete odhlásit?", "Odhlášení", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+            if (DialogResult.Yes == new MyMessageBox("Do you really want to log out?", "Logout", MessageBoxIcon.Question, MessageBoxButtons.YesNo).ShowDialog())
             {
                 if (masterPassword != null)
                 {
@@ -449,19 +446,17 @@ namespace Password_manager
 
                 closeButtonClicked = true;
                 this.Close();
-
             }
         }
 
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (DialogResult.Yes != MessageBox.Show("Opravdu chcete smazat vybrané záznamy?",
-                "Smazat záznamy", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+            if (DialogResult.Yes != new MyMessageBox("Do you really want to delete the selected records?",
+                "Delete Records", MessageBoxIcon.Warning, MessageBoxButtons.YesNo).ShowDialog())
             {
                 return;
             }
-
             foreach (DataGridViewRow row in dataGridView1.SelectedRows)
             {
                 if (!int.TryParse(row.Cells[0].Value?.ToString(), out int id)) continue;
@@ -481,7 +476,7 @@ namespace Password_manager
                 }
                 catch (Exception ex)
                 {
-                    Form messagebox = new MyMessageBox("Chyba při mazání záznamu", "Chyba", MessageBoxIcon.Error);
+                    Form messagebox = new MyMessageBox("Error deleting record: " + ex.Message, "Error", MessageBoxIcon.Error);
                     messagebox.ShowDialog();
                 }
                 finally
@@ -522,9 +517,9 @@ namespace Password_manager
             }
             else
             {
-                MessageBox.Show("Nemáš označený žádný řádek.");
+                Form messagebox = new MyMessageBox("You don't have any row selected.", "Information", MessageBoxIcon.Information);
+                messagebox.ShowDialog();
             }
-
 
         }
 
@@ -557,7 +552,7 @@ namespace Password_manager
                 }
                 catch (Exception ex)
                 {
-                    Form messagebox = new MyMessageBox("Chyba při načítání skupin", "Chyba", MessageBoxIcon.Error);
+                    Form messagebox = new MyMessageBox("Error loading groups: " + ex.Message, "Error", MessageBoxIcon.Error);
                     messagebox.ShowDialog();
                     return;
                 }
@@ -574,7 +569,7 @@ namespace Password_manager
             }
             else
             {
-                Form messagebox = new MyMessageBox("You have not any groups to share.", "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("You don't have any groups to share.", "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
         }
@@ -591,18 +586,17 @@ namespace Password_manager
         {
             if (comboBox1.SelectedIndex < 0)
             {
-                MessageBox.Show("Prosím, vyberte skupinu na vymazanie.");
+                new MyMessageBox("Please select a group to delete.", "Information", MessageBoxIcon.Information).ShowDialog();
                 return;
             }
 
             if (comboBox1.SelectedIndex <= 1)
             {
-                MessageBox.Show(
-                    "Nemôžete vymazať túto položku.\n\n" +
-                    "Vyberte konkrétnu skupinu na vymazanie.",
-                    "Neplatná voľba",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                new MyMessageBox(
+                    "You cannot delete this item.\n\n" +
+                    "Please select a specific group to delete.",
+                    "Invalid Selection",
+                    MessageBoxIcon.Warning).ShowDialog();
                 return;
             }
 
@@ -610,18 +604,17 @@ namespace Password_manager
 
             if (selectedGroup == null)
             {
-                MessageBox.Show("Chyba pri výbere skupiny.");
+                new MyMessageBox("Error selecting group.", "Error", MessageBoxIcon.Error).ShowDialog();
                 return;
             }
 
 
-            DialogResult result = MessageBox.Show(
-                $"Naozaj chcete vymazať skupinu '{selectedGroup.Name}'?\n\n" +
-                $"Heslá sa automaticky presunú do 'Bez skupiny' (group_id = NULL).\n\n" +
-                "Túto akciu nie je možné vrátiť späť!",
-                "Vymazanie skupiny",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
+            DialogResult result = new MyMessageBox(
+                $"Do you really want to delete the group '{selectedGroup.Name}'?\n\n" +
+                $"Passwords will be automatically moved to 'Without group' (group_id = NULL).\n\n" +
+                "This action cannot be undone!",
+                "Delete Group",
+                MessageBoxIcon.Question).ShowDialog();// Show confirmation dialog
 
             if (result != DialogResult.Yes)
                 return;
@@ -644,11 +637,8 @@ namespace Password_manager
                 {
 
 
-                    MessageBox.Show(
-                        $"Skupina '{selectedGroup.Name}' bola úspešne vymazaná.\n",
-                        "Vymazanie úspešné",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    Form messagebox = new MyMessageBox($"Group '{selectedGroup.Name}' has been successfully deleted.\n", "Deletion Successful", MessageBoxIcon.Information);
+                    messagebox.ShowDialog();
 
                     conn.Close();
                     comboBox_load();
@@ -659,7 +649,8 @@ namespace Password_manager
                 }
                 else
                 {
-                    MessageBox.Show("Skupinu sa nepodarilo vymazať.");
+                    Form messagebox = new MyMessageBox("Failed to delete the group.", "Error", MessageBoxIcon.Error);
+                    messagebox.ShowDialog();
                 }
             }
             catch (Exception) { }

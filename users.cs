@@ -41,26 +41,20 @@ namespace Password_manager
                     string role = Convert.ToInt32(reader["role_id"]) == 1 ? "Admin" : "User";
 
                     dataGridView1.Rows.Add(
-                        reader["id"],      // ID - skrytý stĺpec
-                        reader["username"], // Používateľské meno
-                        role                // Rola ako text
+                        reader["id"],      
+                        reader["username"], 
+                        role
                     );
                 }
 
                 reader.Close();
 
-                if (dataGridView1.Columns.Count >= 3)
-                {
-                    dataGridView1.Columns[0].HeaderText = "ID";
-                    dataGridView1.Columns[1].HeaderText = "Používateľské meno";
-                    dataGridView1.Columns[2].HeaderText = "Rola";
-
-                    dataGridView1.Columns[0].Visible = false;
-                }
+               
             }
             catch (MySqlException ex)
             {
-                new MyMessageBox("Chyba pri načítaní používateľov: " + ex.Message, "Chyba", MessageBoxIcon.Error).ShowDialog();
+                Form messagebox = new MyMessageBox("Error loading users: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
@@ -115,14 +109,15 @@ namespace Password_manager
         {
             if (dataGridView1.SelectedRows.Count == 0)
             {
-                new MyMessageBox("Nie je vybratý žiadny záznam na vymazanie.",
-                    "Žiadny výber", MessageBoxIcon.Warning).ShowDialog();
+                Form messagebox = new MyMessageBox("No record selected for deletion.",
+                    "No Selection", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
                 return;
             }
 
             if (DialogResult.Yes != new MyMessageBox(
-                "Naozaj chcete vymazať vybrané záznamy?",
-                "Potvrdenie vymazania",
+                "Do you really want to delete the selected records?",
+                "Confirm Deletion",
                 MessageBoxIcon.Question, MessageBoxButtons.YesNo).ShowDialog())
             {
                 return;
@@ -155,8 +150,9 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                new MyMessageBox("Chyba pri mazaní z databázy: " + ex.Message,
-                    "Chyba", MessageBoxIcon.Error).ShowDialog();
+                Form messagebox = new MyMessageBox("Error deleting from database: " + ex.Message,
+                    "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
@@ -168,10 +164,11 @@ namespace Password_manager
         {
             if (dataGridView1.SelectedRows.Count != 1)
             {
-                new MyMessageBox(
-                    "Prosím, vyberte práve jedného používateľa na úpravu.",
-                    "Neplatný výber",
-                    MessageBoxIcon.Warning).ShowDialog();
+                Form messagebox = new MyMessageBox(
+                  "Please select exactly one user to edit.",
+                  "Invalid Selection",
+                  MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
                 return;
             }
 
@@ -182,11 +179,9 @@ namespace Password_manager
             string role = selectedRow.Cells[2].Value.ToString();       
             int roleId = role == "Admin" ? 1 : 2;                      
 
-            // Otvoríme new_password.cs a pošleme mu údaje
             new_password changeForm = new new_password(userId, username, roleId);
             changeForm.ShowDialog();
 
-            // Po zatvorení formulára obnovíme zoznam používateľov
             load();
         }
     }

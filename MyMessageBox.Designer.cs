@@ -91,7 +91,7 @@
             // button1
             // 
             this.button1.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.Yes;
             this.button1.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
             this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Location = new System.Drawing.Point(136, 109);

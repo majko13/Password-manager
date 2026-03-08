@@ -121,6 +121,7 @@
             this.textBox2.Location = new System.Drawing.Point(247, 272);
             this.textBox2.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
             this.textBox2.Name = "textBox2";
+            this.textBox2.PasswordChar = '*';
             this.textBox2.Size = new System.Drawing.Size(164, 23);
             this.textBox2.TabIndex = 2;
             // 

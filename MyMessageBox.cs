@@ -100,7 +100,7 @@ namespace Password_manager
             button1.Size = new Size(75, 30);
             button1.Anchor = AnchorStyles.None;
             AcceptButton = button1;
-            button1.DialogResult = DialogResult.OK;
+            button1.DialogResult = DialogResult.Yes;
 
             this.Load += (s, e) =>
             {
@@ -150,7 +150,7 @@ namespace Password_manager
             button1.Location = new Point(220, 180);
             button1.Anchor = AnchorStyles.None;
             AcceptButton = button1;
-            button1.DialogResult = DialogResult.OK;
+            button1.DialogResult = DialogResult.Yes;
 
             this.Load += (s, e) =>
             {
@@ -195,11 +195,11 @@ namespace Password_manager
 
             button1.Text = "Yes";
             button1.DialogResult = DialogResult.Yes;
-            button1.Location = new Point(165, 95); // ľavé tlačidlo
+            button1.Location = new Point(165, 95); 
 
             button2.Text = "No";
             button2.DialogResult = DialogResult.No;
-            button2.Location = new Point(250, 95); // ľavé tlačidlo
+            button2.Location = new Point(250, 95); 
             
 
             button1.FlatAppearance.BorderSize = 2;

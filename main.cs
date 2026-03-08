@@ -14,6 +14,10 @@ namespace Password_manager
         private MySqlConnection conn;
         private string connectionString;
 
+        private bool mouseDown;
+        private Point lastLocation;
+
+
         private byte[] GenerateRandomSalt(int size = 32)
         {
             byte[] salt = new byte[size];
@@ -45,6 +49,30 @@ namespace Password_manager
             pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox2.Location = new System.Drawing.Point(445, 10);
             pictureBox2.Size = new System.Drawing.Size(35, 35);
+
+            foreach (Control ctrl in this.Controls)
+            {
+                ctrl.MouseDown += main_MouseDown;
+                ctrl.MouseMove += main_MouseMove;
+                ctrl.MouseUp += main_MouseUp;
+
+                // Ak má control deti, pridaj aj im
+                AddEventsToAllControls(ctrl);
+            }
+        }
+        private void AddEventsToAllControls(Control parent)
+        {
+            foreach (Control ctrl in parent.Controls)
+            {
+                ctrl.MouseDown += main_MouseDown;
+                ctrl.MouseMove += main_MouseMove;
+                ctrl.MouseUp += main_MouseUp;
+
+                if (ctrl.HasChildren)
+                {
+                    AddEventsToAllControls(ctrl);
+                }
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -75,7 +103,7 @@ namespace Password_manager
                             Form credentials = new credentials(Convert.ToInt32(id), user);
                             this.Hide();
                             credentials.ShowDialog();
-                            
+
 
 
                             this.Show();
@@ -99,11 +127,12 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show(ex.Number + "\n" + ex.Message);
+                Form messagebox = new MyMessageBox("Database error:\n" + ex.Message, "Database Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             catch (Exception ex)
             {
-                Form messagebox = new MyMessageBox("Databaze error", "Error", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Error:\n" + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally
@@ -122,14 +151,14 @@ namespace Password_manager
             {
                 if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
                 {
-                    Form messagebox = new MyMessageBox("Vyplňte všechna pole!", "Upozornění", MessageBoxIcon.Warning);
+                    Form messagebox = new MyMessageBox("Please fill in all fields!", "Warning", MessageBoxIcon.Warning);
                     messagebox.ShowDialog();
                     return;
                 }
 
                 if (pass != passRe)
                 {
-                    Form messagebox = new MyMessageBox("Hesla se neshodují!", "Chyba", MessageBoxIcon.Error);
+                    Form messagebox = new MyMessageBox("Passwords do not match!", "Error", MessageBoxIcon.Error);
                     messagebox.ShowDialog();
                     return;
                 }
@@ -147,7 +176,7 @@ namespace Password_manager
 
                 if (count > 0)
                 {
-                    Form messagebox = new MyMessageBox("Tento uživatel už je zaregistrovaný.", "Chyba", MessageBoxIcon.Warning);
+                    Form messagebox = new MyMessageBox("This user is already registered.", "Error", MessageBoxIcon.Warning);
                     messagebox.ShowDialog();
                     return;
                 }
@@ -176,8 +205,8 @@ namespace Password_manager
 
                 if (rowsAffected > 0)
                 {
-                    Form messagebox = new MyMessageBox("Úspěšně si se zaregistroval,\n" +
-                                                    "můžeš pokračovat na login.", "Úspěch", MessageBoxIcon.Information);
+                    Form messagebox = new MyMessageBox("You have successfully registered,\n" +
+                                                    "you can now proceed to login.", "Success", MessageBoxIcon.Information);
                     messagebox.ShowDialog();
 
                     button4_Click(sender, e);
@@ -188,12 +217,12 @@ namespace Password_manager
             }
             catch (MySqlException ex)
             {
-                Form messagebox = new MyMessageBox("Chyba databáze: " + ex.Message, "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Database error:\n" + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             catch (Exception ex)
             {
-                Form messagebox = new MyMessageBox("Chyba: " + ex.Message, "Chyba", MessageBoxIcon.Error);
+                Form messagebox = new MyMessageBox("Error:\n" + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally
@@ -209,8 +238,9 @@ namespace Password_manager
         {
             groupBox1.Visible = false;
             groupBox2.Visible = true;
-            this.Height = 700;
+            this.Height = 800;
             this.Width = 470;
+            this.CenterToScreen();
             this.AcceptButton = button2;
             groupBox2.Location = new Point(-10, -12);
 
@@ -223,6 +253,7 @@ namespace Password_manager
             groupBox2.Visible = false;
             groupBox1.Visible = true;
             this.AcceptButton = button1;
+            this.CenterToScreen();
             this.Height = 600;
             this.Width = 470;
         }
@@ -297,7 +328,7 @@ namespace Password_manager
             }
             else
             {
-                button2.Enabled = true;
+                button2.Enabled = false;
             }
         }
 
@@ -335,11 +366,11 @@ namespace Password_manager
 
 
 
-            if (textBox1.Text!="")
+            if (textBox1.Text != "")
             {
                 new MyMessageBox(
-                    "Pre zobrazenie kontaktu na admina najprv zadajte svoje používateľské meno.",
-                    "Chýba používateľské meno",
+                    "Please enter your username first to view admin contact information.",
+                    "Username Missing",
                     MessageBoxIcon.Warning).ShowDialog();
                 return;
             }
@@ -347,16 +378,39 @@ namespace Password_manager
             string username = textBox1.Text.Trim();
 
             new MyMessageBox(
-                "PRE OBNOVENIE HESLA:\n" +
-                "1. Kontaktujte admina:\n" +
+                "TO RECOVER YOUR PASSWORD:\n\n" +
+                "1. Contact the admin:\n" +
                 "   Email: admin@passwordmanager.com\n" +
-                "   Tel: +421 123 456 789\n\n" +
-                "2. V správe uveďte:\n" +
-                $"  • Vaše používateľské meno: {username}\n" +
-                "   • Dôvod žiadosti\n\n" +
-                "3. Admin vám po overení pošle nové heslo,\n" +
-                "   které zmení manuálne.",
-                "Zabudnuté heslo").ShowDialog();
+                "   Tel: +421 123 456 789\n" +
+                "2. In your message include:\n" +
+                $"  • Your username: {username}\n" +
+                "   • Reason for request\n" +
+                "3. After verification, the admin will send you a new password,\n" +
+                "   which you will need to change manually.",
+                "Forgotten Password").ShowDialog();
+        }
+
+        private void main_MouseDown(object sender, MouseEventArgs e)
+        {
+
+            mouseDown = true;
+            lastLocation = e.Location;
+        }
+
+        private void main_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (mouseDown)
+            {
+                this.Location = new Point(
+                    (this.Location.X - lastLocation.X) + e.X,
+                    (this.Location.Y - lastLocation.Y) + e.Y);
+                this.Update();
+            }
+        }
+
+        private void main_MouseUp(object sender, MouseEventArgs e)
+        {
+            mouseDown = false;
         }
     }
 }

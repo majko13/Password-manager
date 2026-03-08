@@ -72,21 +72,24 @@ namespace Password_manager
 
             if (string.IsNullOrWhiteSpace(newUsername))
             {
-                new MyMessageBox("Používateľské meno nemôže byť prázdne.", "Chyba", MessageBoxIcon.Warning).ShowDialog();
+                Form messagebox = new MyMessageBox("Username cannot be empty.", "Error", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
                 return;
             }
-            
+
             if (!string.IsNullOrEmpty(newPassword) || !string.IsNullOrEmpty(repeatPassword))
             {
                 if (newPassword != repeatPassword)
                 {
-                    new MyMessageBox("Heslá sa nezhodujú.", "Chyba", MessageBoxIcon.Warning).ShowDialog();
+                    Form messagebox = new MyMessageBox("Passwords do not match.", "Error", MessageBoxIcon.Warning);
+                    messagebox.ShowDialog();
                     return;
                 }
 
                 if (newPassword.Length < 6)
                 {
-                    new MyMessageBox("Heslo musí mať aspoň 6 znakov.", "Chyba", MessageBoxIcon.Warning).ShowDialog();
+                    Form messagebox = new MyMessageBox("Password must be at least 6 characters long.", "Error", MessageBoxIcon.Warning);
+                    messagebox.ShowDialog();
                     return;
                 }
             }
@@ -108,17 +111,18 @@ namespace Password_manager
                         int count = Convert.ToInt32(checkCmd.ExecuteScalar());
                         if (count > 0)
                         {
-                            new MyMessageBox("Používateľské meno už existuje.", "Chyba", MessageBoxIcon.Warning).ShowDialog();
+                            Form messagebox = new MyMessageBox("Username already exists.", "Error", MessageBoxIcon.Warning);
+                            messagebox.ShowDialog();
                             return;
                         }
                     }
-                    changes.Add("meno");
+                    changes.Add("username");
                     hasChanges = true;
                 }
 
                 if (newRoleId != currentRoleId) 
                 {
-                    changes.Add("rolu");
+                    changes.Add("role");
                     hasChanges = true;
                 }
 
@@ -127,23 +131,22 @@ namespace Password_manager
                 if (passwordChanged)
                 {
                     DialogResult result = new MyMessageBox(
-                        "ZMENA HESLA:\n\n" +
-                        "Po zmene hesla **NEBUDETE MÔCŤ POUŽÍVAŤ**\n" +
-                        "svoje staré uložené heslá v aplikácii!\n\n" +
-                        "Budete si musieť:\n" +
-                        "• Znova pridať všetky heslá\n" +
-                        "• Alebo požiadať o ich zdieľanie\n\n" +
-                        "Naozaj chcete pokračovať?",
-                        "VAROVANIE",
+                        "PASSWORD CHANGE:\n\n" +
+                        "After changing your password, you **WILL NOT BE ABLE TO USE**\n" +
+                        "your old saved passwords in the application!\n\n" +
+                        "You will have to:\n" +
+                        "• Add all passwords again\n" +
+                        "Do you really want to continue?",
+                        "WARNING",
                         MessageBoxIcon.Warning,
                         MessageBoxButtons.YesNo).ShowDialog();
 
                     if (result != DialogResult.Yes)
                     {
-                        return; 
+                        return;
                     }
 
-                    changes.Add("heslo");
+                    changes.Add("password");
                     hasChanges = true;
                 }
 
@@ -181,20 +184,22 @@ namespace Password_manager
                     if (rowsAffected > 0)
                     {
                         string changesText = changes.Count > 0 ? string.Join(", ", changes) : "";
-                        string message = "Zmeny boli úspešne uložené.";
+                        string message = "Changes were successfully saved.";
                         if (!string.IsNullOrEmpty(changesText))
-                            message += $"\nZmenené: {changesText}";
+                            message += $"\nChanged: {changesText}";
                         if (passwordChanged)
-                            message += $"\n{(changesText.Length > 0 ? "a zmenené" : "Zmenené")} heslo";
+                            message += $"\n{(changesText.Length > 0 ? "and password changed" : "Password changed")}";
 
-                        new MyMessageBox(message, "Úspech", MessageBoxIcon.Information).ShowDialog();
+                        Form messagebox = new MyMessageBox(message, "Success", MessageBoxIcon.Information);
+                        messagebox.ShowDialog();
                         this.Close();
                     }
                 }
             }
             catch (MySqlException ex)
             {
-                new MyMessageBox("Chyba databázy: " + ex.Message, "Chyba", MessageBoxIcon.Error).ShowDialog();
+                Form messagebox = new MyMessageBox("Database error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             finally
             {
