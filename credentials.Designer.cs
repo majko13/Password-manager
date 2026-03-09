@@ -45,19 +45,17 @@
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.button7 = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel5 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.icons = new System.Windows.Forms.ImageList(this.components);
             this.button8 = new System.Windows.Forms.Button();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -242,37 +240,6 @@
             this.Column5.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Column5.Width = 125;
             // 
-            // panel4
-            // 
-            this.panel4.BackColor = System.Drawing.SystemColors.Highlight;
-            this.panel4.Controls.Add(this.panel3);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel4.Location = new System.Drawing.Point(7, 0);
-            this.panel4.Margin = new System.Windows.Forms.Padding(4);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1021, 7);
-            this.panel4.TabIndex = 28;
-            // 
-            // panel3
-            // 
-            this.panel3.BackColor = System.Drawing.SystemColors.Highlight;
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(0, 0);
-            this.panel3.Margin = new System.Windows.Forms.Padding(4);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1021, 7);
-            this.panel3.TabIndex = 20;
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.SystemColors.Highlight;
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Margin = new System.Windows.Forms.Padding(4);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(7, 663);
-            this.panel2.TabIndex = 27;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -295,25 +262,6 @@
             this.button7.Text = "Log out";
             this.button7.UseVisualStyleBackColor = false;
             this.button7.Click += new System.EventHandler(this.button7_Click);
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.SystemColors.Highlight;
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(7, 658);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1016, 5);
-            this.panel1.TabIndex = 30;
-            // 
-            // panel5
-            // 
-            this.panel5.BackColor = System.Drawing.SystemColors.Highlight;
-            this.panel5.Cursor = System.Windows.Forms.Cursors.Default;
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel5.Location = new System.Drawing.Point(1023, 7);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(5, 656);
-            this.panel5.TabIndex = 29;
             // 
             // pictureBox1
             // 
@@ -354,20 +302,56 @@
             this.button8.UseVisualStyleBackColor = false;
             this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.SystemColors.Highlight;
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel4.Location = new System.Drawing.Point(1023, 5);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(5, 653);
+            this.panel4.TabIndex = 37;
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.SystemColors.Highlight;
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel3.Location = new System.Drawing.Point(5, 658);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1023, 5);
+            this.panel3.TabIndex = 36;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.SystemColors.Highlight;
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(5, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1023, 5);
+            this.panel2.TabIndex = 35;
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.SystemColors.Highlight;
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(5, 663);
+            this.panel1.TabIndex = 34;
+            // 
             // credentials
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1028, 663);
+            this.Controls.Add(this.panel4);
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.panel1);
-            this.Controls.Add(this.panel5);
-            this.Controls.Add(this.panel4);
             this.Controls.Add(this.button7);
-            this.Controls.Add(this.panel2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.label2);
@@ -389,7 +373,6 @@
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.credentials_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.credentials_MouseUp);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.panel4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -413,16 +396,15 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ImageList icons;
         private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel1;
     }
 }

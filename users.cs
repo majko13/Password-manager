@@ -80,6 +80,9 @@ namespace Password_manager
         }
         private void AddMouseEventsToAllControls(Control parent)
         {
+            if (parent is Button || parent is PictureBox || parent is DataGridView)
+                return;
+
             parent.MouseDown += users_MouseDown;
             parent.MouseMove += users_MouseMove;
             parent.MouseUp += users_MouseUp;

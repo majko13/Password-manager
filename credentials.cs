@@ -185,7 +185,7 @@ namespace Password_manager
                             var roleId = roleCmd.ExecuteScalar();
                             isAdmin = (roleId != null && Convert.ToInt32(roleId) == 1);
                         }
-                    } 
+                    }
 
                     return new { Rows = rows, IsAdmin = isAdmin };
                 });
@@ -234,6 +234,9 @@ namespace Password_manager
         }
         private void AddMouseEventsToAllControls(Control parent)
         {
+            if (parent is Button || parent is PictureBox || parent is DataGridView)
+                return;
+
             parent.MouseDown += credentials_MouseDown;
             parent.MouseMove += credentials_MouseMove;
             parent.MouseUp += credentials_MouseUp;
@@ -245,7 +248,7 @@ namespace Password_manager
         }
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            if (new MyMessageBox("Do you really want to close the application?", "Close", MessageBoxIcon.Question).ShowDialog() == DialogResult.Yes)
+            if (new MyMessageBox("Do you really want to close the application?", "Close", MessageBoxIcon.Question, MessageBoxButtons.YesNo).ShowDialog() == DialogResult.Yes)
             {
                 Application.Exit();
             }
@@ -470,8 +473,12 @@ namespace Password_manager
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (DialogResult.Yes != new MyMessageBox("Do you really want to delete the selected records?",
-                "Delete Records", MessageBoxIcon.Warning, MessageBoxButtons.YesNo).ShowDialog())
+            if (DialogResult.Yes != new MyMessageBox(
+        "Do you really want to delete the selected records?\n\n" +
+        "This action cannot be undone!",
+        "Delete Records",
+        MessageBoxIcon.Warning,  // Výkričník pre zdôraznení následkov
+        MessageBoxButtons.YesNo).ShowDialog())
             {
                 return;
             }
@@ -631,7 +638,7 @@ namespace Password_manager
                 $"Passwords will be automatically moved to 'Without group' (group_id = NULL).\n\n" +
                 "This action cannot be undone!",
                 "Delete Group",
-                MessageBoxIcon.Question).ShowDialog();// Show confirmation dialog
+                MessageBoxIcon.Question, MessageBoxButtons.YesNo).ShowDialog();// Show confirmation dialog
 
             if (result != DialogResult.Yes)
                 return;

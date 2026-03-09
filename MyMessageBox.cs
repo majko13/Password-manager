@@ -95,12 +95,13 @@ namespace Password_manager
             pictureBox1.SendToBack();
 
             button1.FlatAppearance.BorderSize = 2;
-            button1.FlatAppearance.BorderColor = Color.Red;
             button1.Text = "OK";
             button1.Size = new Size(75, 30);
             button1.Anchor = AnchorStyles.None;
             AcceptButton = button1;
             button1.DialogResult = DialogResult.Yes;
+            button1.FlatAppearance.BorderColor = button1.BackColor;
+
 
             this.Load += (s, e) =>
             {
@@ -124,6 +125,9 @@ namespace Password_manager
         }
         private void AddMouseEventsToAllControls(Control parent)
         {
+            if (parent is Button || parent is PictureBox || parent is DataGridView)
+                return;
+
             parent.MouseDown += MyMessageBox_MouseDown;
             parent.MouseMove += MyMessageBox_MouseMove;
             parent.MouseUp += MyMessageBox_MouseUp;

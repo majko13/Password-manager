@@ -53,7 +53,7 @@
             this.label4.BackColor = System.Drawing.Color.White;
             this.label4.Font = new System.Drawing.Font("Bauhaus 93", 36F, System.Drawing.FontStyle.Bold);
             this.label4.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label4.Location = new System.Drawing.Point(181, 73);
+            this.label4.Location = new System.Drawing.Point(167, 72);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(156, 68);
             this.label4.TabIndex = 22;
@@ -241,6 +241,7 @@
             this.Controls.Add(this.textBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "credentials_add";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "credentials_add";
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.credentials_add_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.credentials_add_MouseMove);

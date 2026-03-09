@@ -173,6 +173,7 @@
             this.Controls.Add(this.comboBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "share";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "share";
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.share_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.share_MouseMove);

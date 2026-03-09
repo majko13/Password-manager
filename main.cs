@@ -50,30 +50,25 @@ namespace Password_manager
             pictureBox2.Location = new System.Drawing.Point(445, 10);
             pictureBox2.Size = new System.Drawing.Size(35, 35);
 
-            foreach (Control ctrl in this.Controls)
-            {
-                ctrl.MouseDown += main_MouseDown;
-                ctrl.MouseMove += main_MouseMove;
-                ctrl.MouseUp += main_MouseUp;
-
-                // Ak má control deti, pridaj aj im
-                AddEventsToAllControls(ctrl);
-            }
+            AddMouseEventsToAllControls(this);
         }
-        private void AddEventsToAllControls(Control parent)
+        private void AddMouseEventsToAllControls(Control parent)
         {
+            if (parent is Button ||
+                parent is PictureBox ||
+                parent is DataGridView)
+                return;
+
+            parent.MouseDown += main_MouseDown;
+            parent.MouseMove += main_MouseMove;
+            parent.MouseUp += main_MouseUp;
+
             foreach (Control ctrl in parent.Controls)
             {
-                ctrl.MouseDown += main_MouseDown;
-                ctrl.MouseMove += main_MouseMove;
-                ctrl.MouseUp += main_MouseUp;
-
-                if (ctrl.HasChildren)
-                {
-                    AddEventsToAllControls(ctrl);
-                }
+                AddMouseEventsToAllControls(ctrl);
             }
         }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -356,26 +351,13 @@ namespace Password_manager
             }
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
+     
 
         private void button6_Click(object sender, EventArgs e)
         {
 
 
 
-            if (textBox1.Text != "")
-            {
-                new MyMessageBox(
-                    "Please enter your username first to view admin contact information.",
-                    "Username Missing",
-                    MessageBoxIcon.Warning).ShowDialog();
-                return;
-            }
-
-            string username = textBox1.Text.Trim();
 
             new MyMessageBox(
                 "TO RECOVER YOUR PASSWORD:\n\n" +
@@ -383,10 +365,10 @@ namespace Password_manager
                 "   Email: admin@passwordmanager.com\n" +
                 "   Tel: +421 123 456 789\n" +
                 "2. In your message include:\n" +
-                $"  • Your username: {username}\n" +
+                $"  • Your username\n" +
                 "   • Reason for request\n" +
                 "3. After verification, the admin will send you a new password,\n" +
-                "   which you will need to change manually.",
+                "   which admin has to change manually.",
                 "Forgotten Password").ShowDialog();
         }
 
@@ -394,17 +376,19 @@ namespace Password_manager
         {
 
             mouseDown = true;
-            lastLocation = e.Location;
+            lastLocation = Cursor.Position;
         }
 
         private void main_MouseMove(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
+                Point current = Cursor.Position;
                 this.Location = new Point(
-                    (this.Location.X - lastLocation.X) + e.X,
-                    (this.Location.Y - lastLocation.Y) + e.Y);
-                this.Update();
+                    this.Location.X + (current.X - lastLocation.X),
+                    this.Location.Y + (current.Y - lastLocation.Y));
+
+                lastLocation = current;
             }
         }
 

@@ -177,6 +177,7 @@
             this.Controls.Add(this.button1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "credentials_groups";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "credentials_groups";
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.credentials_groups_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.credentials_groups_MouseMove);

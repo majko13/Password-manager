@@ -92,6 +92,9 @@ namespace Password_manager
         }
         private void AddMouseEventsToAllControls(Control parent)
         {
+            if (parent is Button || parent is PictureBox || parent is DataGridView)
+                return;
+
             // Pridať udalosti pre rodičovský ovládací prvok
             parent.MouseDown += CAPTCHA_MouseDown;
             parent.MouseMove += CAPTCHA_MouseMove;

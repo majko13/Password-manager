@@ -134,10 +134,10 @@
             // 
             // button2
             // 
-            this.button2.BackColor = System.Drawing.SystemColors.Highlight;
+            this.button2.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.button2.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.button2.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
-            this.button2.ForeColor = System.Drawing.Color.White;
+            this.button2.ForeColor = System.Drawing.Color.Black;
             this.button2.Location = new System.Drawing.Point(263, 109);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(110, 45);
