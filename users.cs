@@ -76,6 +76,18 @@ namespace Password_manager
             pictureBox1.Location = new System.Drawing.Point(370, 2);
 
             load();
+            AddMouseEventsToAllControls(this);
+        }
+        private void AddMouseEventsToAllControls(Control parent)
+        {
+            parent.MouseDown += users_MouseDown;
+            parent.MouseMove += users_MouseMove;
+            parent.MouseUp += users_MouseUp;
+
+            foreach (Control ctrl in parent.Controls)
+            {
+                AddMouseEventsToAllControls(ctrl);
+            }
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -86,17 +98,19 @@ namespace Password_manager
         private void users_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;
-            lastLocation = e.Location;
+            lastLocation = Cursor.Position;
         }
 
         private void users_MouseMove(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
+                Point current = Cursor.Position;
                 this.Location = new Point(
-                    (this.Location.X - lastLocation.X) + e.X, (this.Location.Y - lastLocation.Y) + e.Y);
+                    this.Location.X + (current.X - lastLocation.X),
+                    this.Location.Y + (current.Y - lastLocation.Y));
 
-                this.Update();
+                lastLocation = current;
             }
         }
 

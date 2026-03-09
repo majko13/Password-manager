@@ -143,6 +143,18 @@ namespace Password_manager
             }
 
 
+            AddMouseEventsToAllControls(this);
+        }
+        private void AddMouseEventsToAllControls(Control parent)
+        {
+            parent.MouseDown += shared_MouseDown;
+            parent.MouseMove += shared_MouseMove;
+            parent.MouseUp += shared_MouseUp;
+
+            foreach (Control ctrl in parent.Controls)
+            {
+                AddMouseEventsToAllControls(ctrl);
+            }
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -161,17 +173,19 @@ namespace Password_manager
         private void shared_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;
-            lastLocation = e.Location;
+            lastLocation = Cursor.Position;
         }
 
         private void shared_MouseMove(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
+                Point current = Cursor.Position;
                 this.Location = new Point(
-                    (this.Location.X - lastLocation.X) + e.X, (this.Location.Y - lastLocation.Y) + e.Y);
+                    this.Location.X + (current.X - lastLocation.X),
+                    this.Location.Y + (current.Y - lastLocation.Y));
 
-                this.Update();
+                lastLocation = current;
             }
         }
 

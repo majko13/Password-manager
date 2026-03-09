@@ -88,9 +88,21 @@ namespace Password_manager
             pictureBox1.Size = new System.Drawing.Size(35, 35);
 
             GenerateCaptcha();
+            AddMouseEventsToAllControls(this);
         }
+        private void AddMouseEventsToAllControls(Control parent)
+        {
+            // Pridať udalosti pre rodičovský ovládací prvok
+            parent.MouseDown += CAPTCHA_MouseDown;
+            parent.MouseMove += CAPTCHA_MouseMove;
+            parent.MouseUp += CAPTCHA_MouseUp;
 
-
+            // Rekurzívne pre všetky deti
+            foreach (Control ctrl in parent.Controls)
+            {
+                AddMouseEventsToAllControls(ctrl);
+            }
+        }
         private void button2_Click(object sender, EventArgs e)
         {
             GenerateCaptcha();
@@ -121,17 +133,19 @@ namespace Password_manager
         private void CAPTCHA_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;
-            lastLocation = e.Location;
+            lastLocation = Cursor.Position;
         }
 
         private void CAPTCHA_MouseMove(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
+                Point current = Cursor.Position;
                 this.Location = new Point(
-                    (this.Location.X - lastLocation.X) + e.X, (this.Location.Y - lastLocation.Y) + e.Y);
+                    this.Location.X + (current.X - lastLocation.X),
+                    this.Location.Y + (current.Y - lastLocation.Y));
 
-                this.Update();
+                lastLocation = current;
             }
         }
 

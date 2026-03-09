@@ -120,6 +120,18 @@ namespace Password_manager
                     pictureBox2.Location.Y + pictureBox2.Height + 15
                 );
             };
+            AddMouseEventsToAllControls(this);
+        }
+        private void AddMouseEventsToAllControls(Control parent)
+        {
+            parent.MouseDown += MyMessageBox_MouseDown;
+            parent.MouseMove += MyMessageBox_MouseMove;
+            parent.MouseUp += MyMessageBox_MouseUp;
+
+            foreach (Control ctrl in parent.Controls)
+            {
+                AddMouseEventsToAllControls(ctrl);
+            }
         }
         public MyMessageBox(string description, string header)
         {
@@ -164,7 +176,7 @@ namespace Password_manager
                     Math.Max(textWidth, minWidth),
                     Math.Max(textHeight, minHeight)
                 );
-
+                AddMouseEventsToAllControls(this);
             };
         }
         public MyMessageBox(string description, string header, MessageBoxIcon icon, MessageBoxButtons buttons)
@@ -225,7 +237,7 @@ namespace Password_manager
                     Math.Max(textWidth, minWidth),
                     Math.Max(textHeight, minHeight)
                 );
-
+                AddMouseEventsToAllControls(this);
             };
         }
 
@@ -243,17 +255,19 @@ namespace Password_manager
         private void MyMessageBox_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;
-            lastLocation = e.Location;
+            lastLocation = Cursor.Position;
         }
 
         private void MyMessageBox_MouseMove(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
+                Point current = Cursor.Position;
                 this.Location = new Point(
-                    (this.Location.X - lastLocation.X) + e.X, (this.Location.Y - lastLocation.Y) + e.Y);
+                    this.Location.X + (current.X - lastLocation.X),
+                    this.Location.Y + (current.Y - lastLocation.Y));
 
-                this.Update();
+                lastLocation = current;
             }
         }
 

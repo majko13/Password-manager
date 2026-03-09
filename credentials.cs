@@ -229,8 +229,20 @@ namespace Password_manager
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Location = new System.Drawing.Point(992, 0);
             pictureBox1.Size = new System.Drawing.Size(35, 35);
-        }
 
+            AddMouseEventsToAllControls(this);
+        }
+        private void AddMouseEventsToAllControls(Control parent)
+        {
+            parent.MouseDown += credentials_MouseDown;
+            parent.MouseMove += credentials_MouseMove;
+            parent.MouseUp += credentials_MouseUp;
+
+            foreach (Control ctrl in parent.Controls)
+            {
+                AddMouseEventsToAllControls(ctrl);
+            }
+        }
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             if (new MyMessageBox("Do you really want to close the application?", "Close", MessageBoxIcon.Question).ShowDialog() == DialogResult.Yes)
@@ -243,7 +255,7 @@ namespace Password_manager
         private void button1_Click(object sender, EventArgs e)
         {
             Form credentials_add = new credentials_add(user_id);
-            credentials_add.Show();
+            credentials_add.ShowDialog();
             credentials_add.FormClosed += delegate
             {
                 load();
@@ -311,17 +323,19 @@ namespace Password_manager
         private void credentials_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;
-            lastLocation = e.Location;
+            lastLocation = Cursor.Position;
         }
 
         private void credentials_MouseMove(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
+                Point current = Cursor.Position;
                 this.Location = new Point(
-                    (this.Location.X - lastLocation.X) + e.X, (this.Location.Y - lastLocation.Y) + e.Y);
+                    this.Location.X + (current.X - lastLocation.X),
+                    this.Location.Y + (current.Y - lastLocation.Y));
 
-                this.Update();
+                lastLocation = current;
             }
         }
 
@@ -510,7 +524,7 @@ namespace Password_manager
 
                 }
                 Form credentials_groups = new credentials_groups(ids, user_id);
-                credentials_groups.Show();
+                credentials_groups.ShowDialog();
                 credentials_groups.FormClosed += delegate
                 {
 
@@ -567,7 +581,7 @@ namespace Password_manager
                 if (foundGroupId != -1)
                 {
                     Form share = new share(user_id);
-                    share.Show();
+                    share.ShowDialog();
                 }
             }
             else

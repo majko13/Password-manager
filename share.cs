@@ -166,6 +166,19 @@ namespace Password_manager
                 comboBox1.SelectedIndex = 0;
             }
             comboBox_users_Load();
+
+            AddMouseEventsToAllControls(this);
+        }
+        private void AddMouseEventsToAllControls(Control parent)
+        {
+            parent.MouseDown += share_MouseDown;
+            parent.MouseMove += share_MouseMove;
+            parent.MouseUp += share_MouseUp;
+
+            foreach (Control ctrl in parent.Controls)
+            {
+                AddMouseEventsToAllControls(ctrl);
+            }
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -248,17 +261,19 @@ namespace Password_manager
         private void share_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;
-            lastLocation = e.Location;
+            lastLocation = Cursor.Position;
         }
 
         private void share_MouseMove(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
+                Point current = Cursor.Position;
                 this.Location = new Point(
-                    (this.Location.X - lastLocation.X) + e.X,
-                    (this.Location.Y - lastLocation.Y) + e.Y);
-                this.Update();
+                    this.Location.X + (current.X - lastLocation.X),
+                    this.Location.Y + (current.Y - lastLocation.Y));
+
+                lastLocation = current;
             }
         }
 

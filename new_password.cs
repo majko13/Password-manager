@@ -6,11 +6,13 @@ using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using System.Security.Cryptography;
 
 
 namespace Password_manager
@@ -56,6 +58,18 @@ namespace Password_manager
             pictureBox1.Size = new System.Drawing.Size(35, 35);
             pictureBox1.Location = new System.Drawing.Point(370, 2);
 
+            AddMouseEventsToAllControls(this);
+        }
+        private void AddMouseEventsToAllControls(Control parent)
+        {
+            parent.MouseDown += new_password_MouseDown;
+            parent.MouseMove += new_password_MouseMove;
+            parent.MouseUp += new_password_MouseUp;
+
+            foreach (Control ctrl in parent.Controls)
+            {
+                AddMouseEventsToAllControls(ctrl);
+            }
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -215,22 +229,46 @@ namespace Password_manager
         {
             if (mouseDown)
             {
+                Point current = Cursor.Position;
                 this.Location = new Point(
-                    (this.Location.X - lastLocation.X) + e.X, (this.Location.Y - lastLocation.Y) + e.Y);
+                    this.Location.X + (current.X - lastLocation.X),
+                    this.Location.Y + (current.Y - lastLocation.Y));
 
-                this.Update();
+                lastLocation = current;
             }
         }
 
         private void new_password_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;
-            lastLocation = e.Location;
+            lastLocation = Cursor.Position;
         }
 
         private string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.EnhancedHashPassword(password, 15);
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            string password = textBox1.Text;
+
+            string specialCharsPattern = @"[^a-zA-Z0-9\s]";
+            string numbersPattern = @"\d+";
+            string uppercasePattern = @"[A-Z]+";
+
+            Regex specialChars = new Regex(specialCharsPattern);
+            Regex numbers = new Regex(numbersPattern);
+            Regex uppercase = new Regex(uppercasePattern);
+
+            if ((uppercase.IsMatch(password)&& specialChars.IsMatch(password)&& numbers.IsMatch(password)&& numbers.IsMatch(password)&& password.Length >= 12)||textBox1.Text=="")
+            {
+                button1.Enabled = true;
+            }
+            else
+            {
+                button1.Enabled = false;
+            }
         }
     }
 }

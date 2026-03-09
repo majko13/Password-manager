@@ -89,9 +89,19 @@ namespace Password_manager
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Location = new System.Drawing.Point(340, -2);
             pictureBox1.Size = new System.Drawing.Size(35, 35);
+            AddMouseEventsToAllControls(this);
         }
+        private void AddMouseEventsToAllControls(Control parent)
+        {
+            parent.MouseDown += credentials_groups_MouseDown;
+            parent.MouseMove += credentials_groups_MouseMove;
+            parent.MouseUp += credentials_groups_MouseUp;
 
-
+            foreach (Control ctrl in parent.Controls)
+            {
+                AddMouseEventsToAllControls(ctrl);
+            }
+        }
 
 
         private void button1_Click(object sender, EventArgs e)
@@ -200,17 +210,19 @@ namespace Password_manager
         private void credentials_groups_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;
-            lastLocation = e.Location;
+            lastLocation = Cursor.Position;
         }
 
         private void credentials_groups_MouseMove(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
+                Point current = Cursor.Position;
                 this.Location = new Point(
-                    (this.Location.X - lastLocation.X) + e.X, (this.Location.Y - lastLocation.Y) + e.Y);
+                    this.Location.X + (current.X - lastLocation.X),
+                    this.Location.Y + (current.Y - lastLocation.Y));
 
-                this.Update();
+                lastLocation = current;
             }
         }
 
