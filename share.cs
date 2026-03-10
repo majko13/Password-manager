@@ -163,7 +163,7 @@ namespace Password_manager
             comboBox_groups_Load();
             if (comboBox1.Items.Count > 0)
             {
-                comboBox1.SelectedIndex = 0;
+                comboBox1.Text = "prazdny";
             }
             comboBox_users_Load();
 
@@ -226,7 +226,16 @@ namespace Password_manager
                     {
                         Form messagebox = new MyMessageBox("Group was successfully shared", "Success", MessageBoxIcon.Information);
                         messagebox.ShowDialog();
-                        this.Close();
+
+                        comboBox_groups_Load();
+                        if (comboBox1.Items.Count > 0)
+                        {
+                            comboBox1.Text = "prazdny";
+                        }
+                        comboBox_users_Load();
+
+                        AddMouseEventsToAllControls(this);
+
                     }
                 }
             }

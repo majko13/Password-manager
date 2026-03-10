@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Common;
 using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,11 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Security;
 
 namespace Password_manager
 {
@@ -116,7 +117,6 @@ namespace Password_manager
                 var result = await Task.Run(() =>
                 {
                     var rows = new List<DataGridViewRow>();
-                    bool isAdmin = false;
 
                     using (var connection = new MySqlConnection(connectionString))
                     {
@@ -177,21 +177,13 @@ namespace Password_manager
                                 rows.Add(row);
                             }
                         }
-
-                        string roleQuery = "SELECT role_id FROM users WHERE id = @user_id LIMIT 1";
-                        using (var roleCmd = new MySqlCommand(roleQuery, connection))
-                        {
-                            roleCmd.Parameters.AddWithValue("@user_id", user_id);
-                            var roleId = roleCmd.ExecuteScalar();
-                            isAdmin = (roleId != null && Convert.ToInt32(roleId) == 1);
-                        }
                     }
 
-                    return new { Rows = rows, IsAdmin = isAdmin };
+                    return new { Rows = rows };
                 });
 
                 dataGridView1.Rows.AddRange(result.Rows.ToArray());
-                button6.Visible = result.IsAdmin;
+
             }
             catch (MySqlException ex)
             {
@@ -223,12 +215,31 @@ namespace Password_manager
             comboBox_load();
 
             label3.Text = "Acount: " + username;
-            pictureBox1.SendToBack();
+            
+
+
+            bool isAdmin = false;
+
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string roleQuery = "SELECT role_id FROM users WHERE id = @user_id";
+                using (var roleCmd = new MySqlCommand(roleQuery, connection))
+                {
+                    roleCmd.Parameters.AddWithValue("@user_id", user_id);
+                    var roleId = roleCmd.ExecuteScalar();
+                    isAdmin = (roleId != null && Convert.ToInt32(roleId) == 1);
+                }
+            }
+
+            button6.Visible = isAdmin;
 
             pictureBox1.Image = Properties.Resources.Blue;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Location = new System.Drawing.Point(992, 0);
             pictureBox1.Size = new System.Drawing.Size(35, 35);
+            pictureBox1.SendToBack();
 
             AddMouseEventsToAllControls(this);
         }
@@ -258,11 +269,12 @@ namespace Password_manager
         private void button1_Click(object sender, EventArgs e)
         {
             Form credentials_add = new credentials_add(user_id);
-            credentials_add.ShowDialog();
-            credentials_add.FormClosed += delegate
+
+            if (credentials_add.ShowDialog() == DialogResult.OK)
             {
                 load();
-            };
+            }
+
         }
 
         public class Item
@@ -473,11 +485,19 @@ namespace Password_manager
 
         private void button2_Click(object sender, EventArgs e)
         {
+
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                Form messagebox = new MyMessageBox("You don't have any row selected.", "Information", MessageBoxIcon.Information);
+                messagebox.ShowDialog();
+                return;
+            }
+
             if (DialogResult.Yes != new MyMessageBox(
         "Do you really want to delete the selected records?\n\n" +
         "This action cannot be undone!",
         "Delete Records",
-        MessageBoxIcon.Warning,  // Výkričník pre zdôraznení následkov
+        MessageBoxIcon.Warning,
         MessageBoxButtons.YesNo).ShowDialog())
             {
                 return;
@@ -531,13 +551,14 @@ namespace Password_manager
 
                 }
                 Form credentials_groups = new credentials_groups(ids, user_id);
-                credentials_groups.ShowDialog();
-                credentials_groups.FormClosed += delegate
+                if (credentials_groups.ShowDialog() == DialogResult.OK)
                 {
-
                     comboBox_load();
+                }
 
-                };
+
+
+
             }
             else
             {
@@ -561,7 +582,7 @@ namespace Password_manager
                 {
                     conn.Open();
 
-                    string query = "SELECT group_id FROM credentials WHERE user_id = @user_id";
+                    string query = "SELECT id FROM credentials_groups WHERE user_id = @user_id";
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@user_id", user_id);
@@ -569,7 +590,7 @@ namespace Password_manager
                         {
                             if (reader.Read())
                             {
-                                foundGroupId = Convert.ToInt32(reader["group_id"]);
+                                foundGroupId = Convert.ToInt32(reader["id"]);
                             }
                         }
                     }
@@ -601,9 +622,11 @@ namespace Password_manager
         private void button5_Click(object sender, EventArgs e)
         {
             Form shared = new shared(user_id);
-            shared.ShowDialog();
-
-            comboBox_load();
+            if (shared.ShowDialog() == DialogResult.OK)
+            {
+                comboBox_load();
+            }
+            
         }
 
         private void button8_Click(object sender, EventArgs e)

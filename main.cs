@@ -153,7 +153,7 @@ namespace Password_manager
 
                 if (pass != passRe)
                 {
-                    Form messagebox = new MyMessageBox("Passwords do not match!", "Error", MessageBoxIcon.Error);
+                    Form messagebox = new MyMessageBox("Passwords do not match!", "Warning", MessageBoxIcon.Warning);
                     messagebox.ShowDialog();
                     return;
                 }
@@ -171,7 +171,7 @@ namespace Password_manager
 
                 if (count > 0)
                 {
-                    Form messagebox = new MyMessageBox("This user is already registered.", "Error", MessageBoxIcon.Warning);
+                    Form messagebox = new MyMessageBox("This user is already registered.", "Warning", MessageBoxIcon.Warning);
                     messagebox.ShowDialog();
                     return;
                 }
@@ -255,14 +255,22 @@ namespace Password_manager
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            SecurePasswordManager.ClearCredentials();
-            Application.Exit();
+
+            if (new MyMessageBox("Do you really want to close the application?", "Close", MessageBoxIcon.Question, MessageBoxButtons.YesNo).ShowDialog() == DialogResult.Yes)
+            {
+                SecurePasswordManager.ClearCredentials();
+                Application.Exit();
+            }
+            
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            SecurePasswordManager.ClearCredentials();
-            Application.Exit();
+            if (new MyMessageBox("Do you really want to close the application?", "Close", MessageBoxIcon.Question, MessageBoxButtons.YesNo).ShowDialog() == DialogResult.Yes)
+            {
+                SecurePasswordManager.ClearCredentials();
+                Application.Exit();
+            }
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)

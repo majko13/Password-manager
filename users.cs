@@ -73,7 +73,7 @@ namespace Password_manager
             pictureBox1.Image = Properties.Resources.Blue;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Size = new System.Drawing.Size(35, 35);
-            pictureBox1.Location = new System.Drawing.Point(370, 2);
+            pictureBox1.Location = new System.Drawing.Point(373, -2);
 
             load();
             AddMouseEventsToAllControls(this);

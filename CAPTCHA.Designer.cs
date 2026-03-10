@@ -111,7 +111,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(265, 39);
             this.button1.TabIndex = 33;
-            this.button1.Text = "LOG IN";
+            this.button1.Text = "Verify";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -124,7 +124,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(265, 39);
             this.button2.TabIndex = 34;
-            this.button2.Text = "REROLL";
+            this.button2.Text = "Reroll";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 

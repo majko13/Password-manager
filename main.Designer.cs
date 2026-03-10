@@ -79,7 +79,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(375, 45);
             this.button1.TabIndex = 3;
-            this.button1.Text = "LOG IN";
+            this.button1.Text = "Log in";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -147,7 +147,7 @@
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(375, 44);
             this.button3.TabIndex = 4;
-            this.button3.Text = "REGISTER";
+            this.button3.Text = "Register";
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -179,9 +179,9 @@
             this.label1.Location = new System.Drawing.Point(52, 184);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(116, 28);
+            this.label1.Size = new System.Drawing.Size(118, 28);
             this.label1.TabIndex = 12;
-            this.label1.Text = "username";
+            this.label1.Text = "Username";
             // 
             // label2
             // 
@@ -192,7 +192,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(114, 28);
             this.label2.TabIndex = 13;
-            this.label2.Text = "password";
+            this.label2.Text = "Password";
             // 
             // groupBox4
             // 
@@ -223,8 +223,8 @@
             this.button2.Location = new System.Drawing.Point(58, 632);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(375, 45);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "REGISTER";
+            this.button2.TabIndex = 5;
+            this.button2.Text = "Register";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -296,7 +296,7 @@
             this.button5.Location = new System.Drawing.Point(58, 581);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(375, 45);
-            this.button5.TabIndex = 26;
+            this.button5.TabIndex = 4;
             this.button5.Text = "CAPTCHA";
             this.button5.UseVisualStyleBackColor = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
@@ -364,8 +364,8 @@
             this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(375, 45);
-            this.button4.TabIndex = 5;
-            this.button4.Text = "LOG IN";
+            this.button4.TabIndex = 6;
+            this.button4.Text = "Log in";
             this.button4.UseVisualStyleBackColor = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
@@ -406,9 +406,9 @@
             this.label3.Location = new System.Drawing.Point(53, 168);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(116, 28);
+            this.label3.Size = new System.Drawing.Size(118, 28);
             this.label3.TabIndex = 14;
-            this.label3.Text = "username";
+            this.label3.Text = "Username";
             // 
             // label11
             // 
@@ -428,9 +428,9 @@
             this.label5.Location = new System.Drawing.Point(53, 344);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(187, 28);
+            this.label5.Size = new System.Drawing.Size(192, 28);
             this.label5.TabIndex = 16;
-            this.label5.Text = "repeat password";
+            this.label5.Text = "Repeat password";
             // 
             // label4
             // 
@@ -441,7 +441,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(114, 28);
             this.label4.TabIndex = 15;
-            this.label4.Text = "password";
+            this.label4.Text = "Password";
             // 
             // panel4
             // 

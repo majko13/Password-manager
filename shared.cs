@@ -25,6 +25,8 @@ namespace Password_manager
         private bool mouseDown;
         private Point lastLocation;
 
+        bool updated = false;
+
         private void comboBox_load()
         {
             try
@@ -143,6 +145,12 @@ namespace Password_manager
             }
 
 
+            pictureBox1.Image = Properties.Resources.Blue;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.Location = new System.Drawing.Point(668, 0);
+            pictureBox1.Size = new System.Drawing.Size(35, 35);
+            pictureBox1.SendToBack();
+
             AddMouseEventsToAllControls(this);
         }
         private void AddMouseEventsToAllControls(Control parent)
@@ -162,6 +170,14 @@ namespace Password_manager
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
+            if (updated)
+            {
+                this.DialogResult = DialogResult.OK;
+            }
+            else
+            {
+                this.DialogResult = DialogResult.None;
+            }
             this.Close();
         }
 
@@ -290,7 +306,7 @@ namespace Password_manager
 
                 Form messagebox = new MyMessageBox("Group was successfully accepted!", "Success", MessageBoxIcon.Information);
                 messagebox.ShowDialog();
-
+                updated = true;
 
                 dataGridView1.Rows.Remove(dataGridView1.SelectedRows[0]);
 
@@ -377,6 +393,14 @@ namespace Password_manager
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (updated)
+            {
+                this.DialogResult = DialogResult.OK;
+            }
+            else
+            {
+                this.DialogResult = DialogResult.None;
+            }
             this.Close();
         }
     }

@@ -102,6 +102,7 @@
             // button1
             // 
             this.button1.BackColor = System.Drawing.SystemColors.Highlight;
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.button1.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold);
             this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Location = new System.Drawing.Point(55, 429);
@@ -243,6 +244,7 @@
             this.Name = "credentials_add";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "credentials_add";
+            this.Load += new System.EventHandler(this.credentials_add_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.credentials_add_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.credentials_add_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.credentials_add_MouseUp);

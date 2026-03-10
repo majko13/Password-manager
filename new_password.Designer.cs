@@ -114,8 +114,8 @@
             // comboBox1
             // 
             this.comboBox1.BackColor = System.Drawing.Color.White;
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold);
-            this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "Admin",
             "User"});
@@ -190,7 +190,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(580, 60);
             this.button1.TabIndex = 19;
-            this.button1.Text = "CHANGE";
+            this.button1.Text = "Change";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
