@@ -40,6 +40,7 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -142,14 +143,14 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel4.Location = new System.Drawing.Point(404, 5);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(5, 538);
+            this.panel4.Size = new System.Drawing.Size(5, 607);
             this.panel4.TabIndex = 20;
             // 
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.SystemColors.Highlight;
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(5, 543);
+            this.panel3.Location = new System.Drawing.Point(5, 612);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(404, 5);
             this.panel3.TabIndex = 19;
@@ -169,15 +170,30 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(5, 548);
+            this.panel1.Size = new System.Drawing.Size(5, 617);
             this.panel1.TabIndex = 17;
+            // 
+            // button3
+            // 
+            this.button3.BackColor = System.Drawing.SystemColors.Highlight;
+            this.button3.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold);
+            this.button3.ForeColor = System.Drawing.Color.White;
+            this.button3.Location = new System.Drawing.Point(57, 534);
+            this.button3.Margin = new System.Windows.Forms.Padding(8);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(291, 45);
+            this.button3.TabIndex = 21;
+            this.button3.Text = "Close";
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // users
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(409, 548);
+            this.ClientSize = new System.Drawing.Size(409, 617);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
@@ -216,5 +232,6 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button button3;
     }
 }

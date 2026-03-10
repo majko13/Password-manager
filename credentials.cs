@@ -661,7 +661,7 @@ namespace Password_manager
                 $"Passwords will be automatically moved to 'Without group' (group_id = NULL).\n\n" +
                 "This action cannot be undone!",
                 "Delete Group",
-                MessageBoxIcon.Question, MessageBoxButtons.YesNo).ShowDialog();// Show confirmation dialog
+                MessageBoxIcon.Question, MessageBoxButtons.YesNo).ShowDialog();
 
             if (result != DialogResult.Yes)
                 return;
@@ -680,19 +680,18 @@ namespace Password_manager
                     deletedGroup = deleteGroupCmd.ExecuteNonQuery();
                 }
 
+
                 if (deletedGroup > 0)
                 {
 
-
+                    
                     Form messagebox = new MyMessageBox($"Group '{selectedGroup.Name}' has been successfully deleted.\n", "Deletion Successful", MessageBoxIcon.Information);
                     messagebox.ShowDialog();
 
                     conn.Close();
+
                     comboBox_load();
-                    if (comboBox1.Items.Count > 1)
-                    {
-                        comboBox1.SelectedIndex = 1;
-                    }
+                    
                 }
                 else
                 {
@@ -700,7 +699,12 @@ namespace Password_manager
                     messagebox.ShowDialog();
                 }
             }
-            catch (Exception) { }
+            catch (Exception ex) {
+                Form messagebox = new MyMessageBox("Error:\n" + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
+
+
+            }
             finally
             {
                 conn.Close();
@@ -710,7 +714,7 @@ namespace Password_manager
 
         private void button6_Click(object sender, EventArgs e)
         {
-            users usersForm = new users();
+            users usersForm = new users(user_id);
             usersForm.ShowDialog();
         }
     }

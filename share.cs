@@ -211,6 +211,10 @@ namespace Password_manager
 
             try
             {
+
+                if (DialogResult.No == new MyMessageBox("Do you really want to share this group?", "Confirm sharing", MessageBoxIcon.Question, MessageBoxButtons.YesNo).ShowDialog()) { 
+                    return;
+                }
                 if (conn.State != ConnectionState.Open)
                     conn.Open();
 
@@ -323,6 +327,11 @@ namespace Password_manager
                 Id = id;
                 Name = name;
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

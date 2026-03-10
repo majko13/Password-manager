@@ -74,7 +74,7 @@ namespace Password_manager
             button.ForeColor = Color.White;
             button.Text = text;
             button.Font = new Font("Bahnschrift", 14, FontStyle.Bold);
-            button.Size = new Size(80,40);
+            button.Size = new Size(80, 40);
             button.Location = new Point(x, y);
             button.Cursor = Cursors.Hand;
         }
@@ -131,7 +131,7 @@ namespace Password_manager
                 );
 
                 // Vytvorenie tlačidla podľa ikony až po načítaní formu
-                int buttonX =261;
+                int buttonX = 261;
                 int buttonY = 85;
 
                 if (icon == MessageBoxIcon.Information || icon == MessageBoxIcon.Question)
@@ -149,9 +149,9 @@ namespace Password_manager
                     // Červené tlačidlo (NoFocusButton)
                     cerveneTlacitko = new NoFocusButton();
                     // Pre NoFocusButton musíme nastaviť properties ručne
-                    NastavPropertiesTlacidla(cerveneTlacitko, "OK", Color.Red, buttonX+2, buttonY+2);
-                    cerveneTlacitko .DialogResult = DialogResult.OK;
-
+                    NastavPropertiesTlacidla(cerveneTlacitko, "OK", Color.Red, buttonX + 15, buttonY + 5);
+                    cerveneTlacitko.DialogResult = DialogResult.OK;
+                    pictureBox2.Location = new Point(295, 30);
                     this.Controls.Add(cerveneTlacitko);
                     AcceptButton = cerveneTlacitko;
                 }
@@ -243,18 +243,18 @@ namespace Password_manager
 
             SetIcon(icon);
             pictureBox2.SizeMode = PictureBoxSizeMode.CenterImage;
-            pictureBox2.Location = new Point(272, 30);
+            pictureBox2.Location = new Point(322, 30);
             pictureBox2.Size = new Size(45, 45);
             pictureBox2.SendToBack();
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.Location = new Point(365, -2);
+            pictureBox1.Location = new Point(415, -2);
             pictureBox1.Size = new Size(35, 35);
             pictureBox1.SendToBack();
 
             this.Load += (s, e) =>
             {
-                int minWidth = 400;
+                int minWidth = 450;
                 int minHeight = 150;
 
                 int textWidth = Math.Max(label1.Width, label2.Width) + 80;
@@ -264,6 +264,8 @@ namespace Password_manager
                     Math.Max(textWidth, minWidth),
                     Math.Max(textHeight, minHeight)
                 );
+
+                pictureBox2.Location = new Point(pictureBox2.Location.X, ((this.ClientSize.Height - pictureBox2.Height) / 2)-15);
 
                 // Konstanty pre umiestnenie - 20px od pravého okraja a 20px od spodku
                 int marginRight = 20;

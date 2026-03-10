@@ -43,12 +43,13 @@ namespace Password_manager
             pictureBox1.Image = Properties.Resources.Blue;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Size = new System.Drawing.Size(35, 35);
-            pictureBox1.Location = new System.Drawing.Point(445, 10);
+            pictureBox1.Location = new System.Drawing.Point(441, 11);
 
             pictureBox2.Image = Properties.Resources.Blue;
             pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox2.Location = new System.Drawing.Point(445, 10);
+            pictureBox2.Location = new System.Drawing.Point(444, 11);
             pictureBox2.Size = new System.Drawing.Size(35, 35);
+            
 
             AddMouseEventsToAllControls(this);
         }
@@ -103,6 +104,7 @@ namespace Password_manager
 
                             this.Show();
                             textBox1.Text = "";
+                            textBox1.Focus();
                             textBox2.Text = "";
 
                             SecurePasswordManager.ClearCredentials();
@@ -233,7 +235,7 @@ namespace Password_manager
         {
             groupBox1.Visible = false;
             groupBox2.Visible = true;
-            this.Height = 800;
+            this.Height = 780;
             this.Width = 470;
             this.CenterToScreen();
             this.AcceptButton = button2;

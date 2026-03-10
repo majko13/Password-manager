@@ -20,6 +20,8 @@ namespace Password_manager
         private bool mouseDown;
         private Point lastLocation;
 
+        private int user_id;
+
         private void load()
         {
             try
@@ -61,19 +63,22 @@ namespace Password_manager
                 conn.Close();
             }
         }
-        public users()
+        public users(int user_id)
         {
             InitializeComponent();
 
 
             connectionString = ConfigurationManager.ConnectionStrings["MySQLConnection"].ConnectionString;
             conn = new MySqlConnection(connectionString);
-
+            
             pictureBox1.SendToBack();
             pictureBox1.Image = Properties.Resources.Blue;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Size = new System.Drawing.Size(35, 35);
             pictureBox1.Location = new System.Drawing.Point(373, -2);
+
+            this.user_id = user_id;
+
 
             load();
             AddMouseEventsToAllControls(this);
@@ -154,6 +159,12 @@ namespace Password_manager
                         continue;
                     }
 
+                    if (id==user_id)
+                    {
+                        Form messagebox = new MyMessageBox("You couldn't delete yourself.", "Warning", MessageBoxIcon.Warning);
+                        messagebox.ShowDialog();
+                        return;
+                    }
 
                     string deleteQuery = "DELETE FROM users WHERE id = @id";
                     using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
@@ -200,6 +211,11 @@ namespace Password_manager
             changeForm.ShowDialog();
 
             load();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

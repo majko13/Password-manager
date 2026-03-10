@@ -117,9 +117,9 @@
             this.groupBox1.Controls.Add(this.groupBox3);
             this.groupBox1.Controls.Add(this.textBox1);
             this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Location = new System.Drawing.Point(-10, -12);
+            this.groupBox1.Location = new System.Drawing.Point(-7, -12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(507, 662);
+            this.groupBox1.Size = new System.Drawing.Size(516, 662);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             // 

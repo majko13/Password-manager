@@ -140,13 +140,67 @@ namespace Password_manager
                 this.Close();
             }
         }
-        private void button2_Click(object sender, EventArgs e)
+
+        private void credentials_groups_MouseDown(object sender, MouseEventArgs e)
+        {
+            mouseDown = true;
+            lastLocation = Cursor.Position;
+        }
+
+        private void credentials_groups_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (mouseDown)
+            {
+                Point current = Cursor.Position;
+                this.Location = new Point(
+                    this.Location.X + (current.X - lastLocation.X),
+                    this.Location.Y + (current.Y - lastLocation.Y));
+
+                lastLocation = current;
+            }
+        }
+
+        private void credentials_groups_MouseUp(object sender, MouseEventArgs e)
+        {
+            mouseDown = false;
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.None;
+            this.Close();
+       
+        }
+
+
+        public class Item
+        {
+            public string Name { get; set; }
+            public int Id { get; set; }
+
+            public int User_Id { get; set; }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+
+            public Item(int id, string name, int user_id)
+            {
+                Name = name;
+                Id = id;
+                User_Id = user_id;
+            }
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
         {
             string newGroup = textBox1.Text.Trim();
             if (string.IsNullOrEmpty(newGroup))
             {
                 Form messagebox = new MyMessageBox("You must enter a new group name", "Warning", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
+                this.DialogResult = DialogResult.None;
                 return;
             }
 
@@ -165,6 +219,7 @@ namespace Password_manager
                     {
                         Form messagebox = new MyMessageBox("This group already exists.", "Warning", MessageBoxIcon.Warning);
                         messagebox.ShowDialog();
+                        this.DialogResult = DialogResult.OK;
                         return;
                     }
                 }
@@ -210,54 +265,11 @@ namespace Password_manager
             }
         }
 
-        private void credentials_groups_MouseDown(object sender, MouseEventArgs e)
+        private void button3_Click(object sender, EventArgs e)
         {
-            mouseDown = true;
-            lastLocation = Cursor.Position;
-        }
-
-        private void credentials_groups_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (mouseDown)
-            {
-                Point current = Cursor.Position;
-                this.Location = new Point(
-                    this.Location.X + (current.X - lastLocation.X),
-                    this.Location.Y + (current.Y - lastLocation.Y));
-
-                lastLocation = current;
-            }
-        }
-
-        private void credentials_groups_MouseUp(object sender, MouseEventArgs e)
-        {
-            mouseDown = false;
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
+            this.DialogResult = DialogResult.None;
             this.Close();
-        }
-
-
-        public class Item
-        {
-            public string Name { get; set; }
-            public int Id { get; set; }
-
-            public int User_Id { get; set; }
-
-            public override string ToString()
-            {
-                return Name;
-            }
-
-            public Item(int id, string name, int user_id)
-            {
-                Name = name;
-                Id = id;
-                User_Id = user_id;
-            }
+            
         }
     }
 }
