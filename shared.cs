@@ -37,11 +37,11 @@ namespace Password_manager
                 List<Item> users = new List<Item>();
 
                 string query = @"
-            SELECT DISTINCT u.id, u.username
-            FROM shared_groups sg
-            INNER JOIN credentials_groups cg ON sg.group_id = cg.id
-            INNER JOIN users u ON cg.user_id = u.id
-            WHERE sg.reciever_id = @receiver_id";
+                    SELECT DISTINCT u.id, u.username
+                    FROM shared_groups sg
+                    INNER JOIN credentials_groups cg ON sg.group_id = cg.id
+                    INNER JOIN users u ON cg.user_id = u.id
+                    WHERE sg.reciever_id = @receiver_id";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
@@ -67,10 +67,14 @@ namespace Password_manager
                 if (users.Count == 0)
                 {
                     comboBox1.Enabled = false;
+                    comboBox1.DropDownStyle = ComboBoxStyle.Simple;
+                    button1.Enabled = false;
+                    button3.Enabled = false;
                     comboBox1.Text = "No users shared anything";
                 }
                 else
                 {
+                    comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
                     comboBox1.Enabled = true;
                 }
             }
@@ -103,7 +107,7 @@ namespace Password_manager
             INNER JOIN credentials_groups cg ON sg.group_id = cg.id
             INNER JOIN users u ON cg.user_id = u.id  
             WHERE sg.reciever_id = @current_user_id
-            AND cg.user_id = @selected_user_id;";
+            AND cg.user_id = @selected_user_id ORDER BY name ASC";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@current_user_id", user_id);
@@ -243,74 +247,126 @@ namespace Password_manager
         {
             if (dataGridView1.SelectedRows.Count == 0)
             {
-                Form messagebox = new MyMessageBox("Please select a group to accept.", "Warning", MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Please select at least one group to accept.",
+                                    "Warning", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
                 return;
             }
 
-            int groupId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
-            string groupName = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
+            List<int> successfulGroups = new List<int>();
+            List<string> removedGroups = new List<string>();
+            List<DataGridViewRow> rowsToRemove = new List<DataGridViewRow>();
 
             try
             {
                 if (conn.State != ConnectionState.Open)
                     conn.Open();
 
-                string checkQuery = "SELECT COUNT(*) FROM credentials_groups WHERE user_id = @user_id AND name = @name";
-                using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
+                foreach (DataGridViewRow selectedRow in dataGridView1.SelectedRows)
                 {
-                    checkCmd.Parameters.AddWithValue("@user_id", user_id);
-                    checkCmd.Parameters.AddWithValue("@name", groupName);
 
-                    int count = Convert.ToInt32(checkCmd.ExecuteScalar());
-                    if (count > 0)
+                    int groupId = Convert.ToInt32(selectedRow.Cells[0].Value);
+                    string groupName = selectedRow.Cells[2].Value.ToString();
+
+                    try
                     {
-                        DialogResult result = new MyMessageBox(
-                            "You already have a group with this name.\n\nDo you want to delete the shared group?",
-                            "Group Already Exists",
-                            MessageBoxIcon.Warning,
-                            MessageBoxButtons.YesNo).ShowDialog();
-
-                        if (result == DialogResult.Yes)
+                        string checkQuery = "SELECT COUNT(*) FROM credentials_groups WHERE user_id = @user_id AND name = @name";
+                        using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
                         {
-                            string delQuery = "DELETE FROM shared_groups WHERE group_id = @group_id AND reciever_id = @receiver_id";
-                            using (MySqlCommand deleteCmd = new MySqlCommand(delQuery, conn))
-                            {
-                                deleteCmd.Parameters.AddWithValue("@group_id", groupId);
-                                deleteCmd.Parameters.AddWithValue("@receiver_id", user_id);
-                                deleteCmd.ExecuteNonQuery();
-                            }
+                            checkCmd.Parameters.AddWithValue("@user_id", user_id);
+                            checkCmd.Parameters.AddWithValue("@name", groupName);
 
-                            dataGridView1.Rows.Remove(dataGridView1.SelectedRows[0]);
+                            int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                            if (count > 0)
+                            {
+                                DialogResult result = new MyMessageBox(
+                                    $"Group '{groupName}' already exists.\n\nDo you want to delete the shared group?",
+                                    "Group Already Exists",
+                                    MessageBoxIcon.Warning,
+                                    MessageBoxButtons.YesNo).ShowDialog();
+
+                                if (result == DialogResult.Yes)
+                                {
+                                    string delQuery = "DELETE FROM shared_groups WHERE group_id = @group_id AND reciever_id = @receiver_id";
+                                    using (MySqlCommand deleteCmd = new MySqlCommand(delQuery, conn))
+                                    {
+                                        deleteCmd.Parameters.AddWithValue("@group_id", groupId);
+                                        deleteCmd.Parameters.AddWithValue("@receiver_id", user_id);
+                                        deleteCmd.ExecuteNonQuery();
+                                    }
+
+                                    rowsToRemove.Add(selectedRow);
+                                    removedGroups.Add(groupName);                
+                                }
+                                continue;
+                            }
                         }
-                        return;
+
+                        string insertQuery = "INSERT INTO credentials_groups (name, user_id) VALUES (@name, @user_id)";
+                        using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, conn))
+                        {
+                            insertCmd.Parameters.AddWithValue("@name", groupName);
+                            insertCmd.Parameters.AddWithValue("@user_id", user_id);
+                            insertCmd.ExecuteNonQuery();
+                        }
+                        updated = true;
+
+                        string deleteQuery = "DELETE FROM shared_groups WHERE group_id = @group_id AND reciever_id = @receiver_id";
+                        using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
+                        {
+                            deleteCmd.Parameters.AddWithValue("@group_id", groupId);
+                            deleteCmd.Parameters.AddWithValue("@receiver_id", user_id);
+                            deleteCmd.ExecuteNonQuery();
+                        }
+
+                        rowsToRemove.Add(selectedRow);
+                        successfulGroups.Add(groupId);
+                    }
+                    catch (Exception ex)
+                    {
+                        Form messagebox = new MyMessageBox("Error:\n" + ex.Message, "Error", MessageBoxIcon.Error);
+                        messagebox.ShowDialog();
                     }
                 }
 
-                string insertQuery = "INSERT INTO credentials_groups (name, user_id) VALUES (@name, @user_id)";
-
-                using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, conn))
+                foreach (DataGridViewRow row in rowsToRemove)
                 {
-                    insertCmd.Parameters.AddWithValue("@name", groupName);
-                    insertCmd.Parameters.AddWithValue("@user_id", user_id);
-                    insertCmd.ExecuteNonQuery();
+                    dataGridView1.Rows.Remove(row);
                 }
 
-                string deleteQuery = "DELETE FROM shared_groups WHERE group_id = @group_id AND reciever_id = @receiver_id";
-                using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
+                if (successfulGroups.Count > 0)
                 {
-                    deleteCmd.Parameters.AddWithValue("@group_id", groupId);
-                    deleteCmd.Parameters.AddWithValue("@receiver_id", user_id);
-                    deleteCmd.ExecuteNonQuery();
+                    if (removedGroups.Count == 0)
+                    {
+                        Form successBox = new MyMessageBox(
+                            $"Successfully accepted {successfulGroups.Count} group(s)!",
+                            "Success",
+                            MessageBoxIcon.Information);
+                        successBox.ShowDialog();
+                    }
+                    else
+                    {
+                        Form partialSuccessBox = new MyMessageBox(
+                            $"Accepted: {successfulGroups.Count} group(s)\n" +
+                            $"Deleted: {removedGroups.Count} group(s)\n\n" +
+                            $"Deleted groups: {string.Join(", ", removedGroups)}",
+                            "Partial Success",
+                            MessageBoxIcon.Warning);
+                        partialSuccessBox.ShowDialog();
+                    }
+                }
+                else if (rowsToRemove.Count > 0)
+                {
+                    Form errorBox = new MyMessageBox(
+                        $"Delete groups: {string.Join(", ", removedGroups)}.\n",
+                        "Information",
+                        MessageBoxIcon.Information);
+                    errorBox.ShowDialog();
                 }
 
-                Form messagebox = new MyMessageBox("Group was successfully accepted!", "Success", MessageBoxIcon.Information);
-                messagebox.ShowDialog();
-                updated = true;
+            
 
-                dataGridView1.Rows.Remove(dataGridView1.SelectedRows[0]);
-
-                if (comboBox1.Items.Count > 0)
+                if (comboBox1.Items.Count > 0 && successfulGroups.Count > 0)
                 {
                     comboBox_load();
                 }
@@ -330,16 +386,28 @@ namespace Password_manager
         {
             if (dataGridView1.SelectedRows.Count == 0)
             {
-                Form messagebox = new MyMessageBox("Please select a group to remove from shared.", "Warning", MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Please select at least one group to remove from shared.",
+                                    "Warning", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
                 return;
             }
 
-            int groupId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
-            string groupName = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
+            List<(int Id, string Name)> selectedGroups = new List<(int, string)>();
+            foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+            {
+                if (row.IsNewRow) continue;
+
+                int groupId = Convert.ToInt32(row.Cells[0].Value);
+                string groupName = row.Cells[2].Value.ToString();
+                selectedGroups.Add((groupId, groupName));
+            }
+
+            if (selectedGroups.Count == 0)
+                return;
 
             DialogResult result = new MyMessageBox(
-                 $"Do you really want to remove the group '{groupName}' from the sharing offer?",
+                 $"Do you really want to remove {selectedGroups.Count} group(s) from the sharing offer?\n\n" +
+                 $"Groups: {string.Join(", ", selectedGroups.Select(g=>$"'{g.Name}'"))}.",
                  "Confirm Removal",
                  MessageBoxIcon.Question,
                  MessageBoxButtons.YesNo).ShowDialog();
@@ -347,42 +415,78 @@ namespace Password_manager
             if (result != DialogResult.Yes)
                 return;
 
+            List<string> successfullyRemoved = new List<string>();
+            List<DataGridViewRow> rowsToRemove = new List<DataGridViewRow>();
+
             try
             {
                 if (conn.State != ConnectionState.Open)
                     conn.Open();
 
-                string deleteQuery = "DELETE FROM shared_groups WHERE group_id = @group_id AND reciever_id = @receiver_id";
-
-                using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
+                try
                 {
-                    deleteCmd.Parameters.AddWithValue("@group_id", groupId);
-                    deleteCmd.Parameters.AddWithValue("@receiver_id", user_id);
-
-                    int rowsAffected = deleteCmd.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
+                    foreach (var group in selectedGroups)
                     {
-                        Form messagebox = new MyMessageBox("Group has been removed from the sharing offer.", "Success", MessageBoxIcon.Information);
-                        messagebox.ShowDialog();
-
-                        dataGridView1.Rows.Remove(dataGridView1.SelectedRows[0]);
-
-                        if (dataGridView1.Rows.Count == 0)
+                        string deleteQuery = "DELETE FROM shared_groups WHERE group_id = @group_id " +
+                                                            "AND reciever_id = @receiver_id";
+                        using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
                         {
-                            comboBox_load();
+                            deleteCmd.Parameters.AddWithValue("@group_id", group.Id);
+                            deleteCmd.Parameters.AddWithValue("@receiver_id", user_id);
+
+                            int rowsAffected = deleteCmd.ExecuteNonQuery();
+
+                            if (rowsAffected > 0)
+                            {
+                                successfullyRemoved.Add(group.Name);
+                                DataGridViewRow rowToRemove = dataGridView1.SelectedRows
+                                    .Cast<DataGridViewRow>()
+                                    .FirstOrDefault(r => Convert.ToInt32(r.Cells[0].Value) == group.Id);
+
+                                if (rowToRemove != null)
+                                    rowsToRemove.Add(rowToRemove);
+                            }
                         }
                     }
-                    else
+                    
+                    foreach (DataGridViewRow row in rowsToRemove)
                     {
-                        Form messagebox = new MyMessageBox("Failed to remove the group.", "Error", MessageBoxIcon.Error);
+                        dataGridView1.Rows.Remove(row);
+                    }
+
+                    if (successfullyRemoved.Count > 0)
+                    {
+                        Form messagebox = new MyMessageBox(
+                            $"Successfully removed: {successfullyRemoved.Count} group(s)",
+                            "Information",
+                            MessageBoxIcon.Information);
                         messagebox.ShowDialog();
                     }
+
+                    if (dataGridView1.Rows.Count == 0 || dataGridView1.Rows.Cast<DataGridViewRow>().All(r => r.IsNewRow))
+                    {
+                        comboBox_load();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Form messagebox = new MyMessageBox(
+                        $"Error during removal: {ex.Message}",
+                        "Error",
+                        MessageBoxIcon.Error);
+                    messagebox.ShowDialog();
+
+                    Console.WriteLine($"Error removing groups: {ex.Message}");
                 }
             }
             catch (MySqlException ex)
             {
                 Form messagebox = new MyMessageBox("Database error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Form messagebox = new MyMessageBox("Error: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
             }
             finally

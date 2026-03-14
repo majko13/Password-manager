@@ -74,7 +74,8 @@ namespace Password_manager
                 }
 
                 pictureBox2.Image = new Bitmap(bmp);
-            } 
+            }
+            textBox1.Focus();
         }
         public CAPTCHA()
         {
@@ -87,6 +88,8 @@ namespace Password_manager
             pictureBox1.Location = new System.Drawing.Point(220, -2);
             pictureBox1.Size = new System.Drawing.Size(35, 35);
 
+            
+
             GenerateCaptcha();
             AddMouseEventsToAllControls(this);
         }
@@ -95,12 +98,10 @@ namespace Password_manager
             if (parent is Button || parent is PictureBox || parent is DataGridView)
                 return;
 
-            // Pridať udalosti pre rodičovský ovládací prvok
             parent.MouseDown += CAPTCHA_MouseDown;
             parent.MouseMove += CAPTCHA_MouseMove;
             parent.MouseUp += CAPTCHA_MouseUp;
 
-            // Rekurzívne pre všetky deti
             foreach (Control ctrl in parent.Controls)
             {
                 AddMouseEventsToAllControls(ctrl);
@@ -160,6 +161,16 @@ namespace Password_manager
         private void button3_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Back || e.Control && e.KeyCode == Keys.Delete)
+            {
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+
+            }
         }
     }
 }

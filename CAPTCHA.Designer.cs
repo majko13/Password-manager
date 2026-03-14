@@ -7,18 +7,7 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing && (components != null))
-        //    {
-        //        components.Dispose();
-        //    }
-        //    base.Dispose(disposing);
-        //}
+        
 
         #region Windows Form Designer generated code
 
@@ -111,7 +100,7 @@
             this.button1.Location = new System.Drawing.Point(39, 301);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(265, 39);
-            this.button1.TabIndex = 33;
+            this.button1.TabIndex = 3;
             this.button1.Text = "Verify";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -124,7 +113,7 @@
             this.button2.Location = new System.Drawing.Point(39, 172);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(265, 39);
-            this.button2.TabIndex = 34;
+            this.button2.TabIndex = 1;
             this.button2.Text = "Reroll";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
@@ -137,7 +126,8 @@
             this.textBox1.Location = new System.Drawing.Point(39, 263);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(265, 23);
-            this.textBox1.TabIndex = 35;
+            this.textBox1.TabIndex = 2;
+            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
             // groupBox3
             // 
@@ -166,7 +156,7 @@
             this.button3.Location = new System.Drawing.Point(39, 346);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(265, 39);
-            this.button3.TabIndex = 38;
+            this.button3.TabIndex = 4;
             this.button3.Text = "Close";
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);

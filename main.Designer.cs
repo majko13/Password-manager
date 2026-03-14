@@ -28,30 +28,30 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.loginButton = new System.Windows.Forms.Button();
+            this.usernameLoginTextbox = new System.Windows.Forms.TextBox();
+            this.passwordLoginTextbox = new System.Windows.Forms.TextBox();
+            this.loginGroupbox = new System.Windows.Forms.GroupBox();
+            this.forgottenPasswordButton = new System.Windows.Forms.Button();
+            this.switchToRegisterButton = new System.Windows.Forms.Button();
+            this.LoginPicturebox = new System.Windows.Forms.PictureBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button5 = new System.Windows.Forms.Button();
+            this.registerButton = new System.Windows.Forms.Button();
+            this.passwordRegisterTextbox = new System.Windows.Forms.TextBox();
+            this.usernameRegisterTextbox = new System.Windows.Forms.TextBox();
+            this.rPasswordRegisterTextbox = new System.Windows.Forms.TextBox();
+            this.registerGroupbox = new System.Windows.Forms.GroupBox();
+            this.CaptchaButton = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.button4 = new System.Windows.Forms.Button();
+            this.RegisterPicturebox = new System.Windows.Forms.PictureBox();
+            this.switchToLoginButton = new System.Windows.Forms.Button();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -63,103 +63,105 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            this.loginGroupbox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LoginPicturebox)).BeginInit();
+            this.registerGroupbox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RegisterPicturebox)).BeginInit();
             this.SuspendLayout();
             // 
-            // button1
+            // loginButton
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
-            this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(55, 412);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(375, 45);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "Log in";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.loginButton.BackColor = System.Drawing.SystemColors.Highlight;
+            this.loginButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.loginButton.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
+            this.loginButton.ForeColor = System.Drawing.Color.White;
+            this.loginButton.Location = new System.Drawing.Point(55, 412);
+            this.loginButton.Name = "loginButton";
+            this.loginButton.Size = new System.Drawing.Size(375, 45);
+            this.loginButton.TabIndex = 3;
+            this.loginButton.Text = "Log in";
+            this.loginButton.UseVisualStyleBackColor = false;
+            this.loginButton.Click += new System.EventHandler(this.button1_Click);
             // 
-            // textBox1
+            // usernameLoginTextbox
             // 
-            this.textBox1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.textBox1.Location = new System.Drawing.Point(200, 189);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(150, 23);
-            this.textBox1.TabIndex = 1;
+            this.usernameLoginTextbox.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.usernameLoginTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.usernameLoginTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.usernameLoginTextbox.Location = new System.Drawing.Point(200, 189);
+            this.usernameLoginTextbox.Name = "usernameLoginTextbox";
+            this.usernameLoginTextbox.Size = new System.Drawing.Size(232, 23);
+            this.usernameLoginTextbox.TabIndex = 1;
+            this.usernameLoginTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.usernameLoginTextbox_KeyDown);
             // 
-            // textBox2
+            // passwordLoginTextbox
             // 
-            this.textBox2.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.textBox2.Location = new System.Drawing.Point(200, 288);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.PasswordChar = '*';
-            this.textBox2.Size = new System.Drawing.Size(150, 23);
-            this.textBox2.TabIndex = 2;
+            this.passwordLoginTextbox.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.passwordLoginTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.passwordLoginTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.passwordLoginTextbox.Location = new System.Drawing.Point(200, 288);
+            this.passwordLoginTextbox.Name = "passwordLoginTextbox";
+            this.passwordLoginTextbox.PasswordChar = '*';
+            this.passwordLoginTextbox.Size = new System.Drawing.Size(230, 23);
+            this.passwordLoginTextbox.TabIndex = 2;
+            this.passwordLoginTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.usernameLoginTextbox_KeyDown);
             // 
-            // groupBox1
+            // loginGroupbox
             // 
-            this.groupBox1.Controls.Add(this.button6);
-            this.groupBox1.Controls.Add(this.button3);
-            this.groupBox1.Controls.Add(this.pictureBox1);
-            this.groupBox1.Controls.Add(this.label10);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.groupBox4);
-            this.groupBox1.Controls.Add(this.textBox2);
-            this.groupBox1.Controls.Add(this.groupBox3);
-            this.groupBox1.Controls.Add(this.textBox1);
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Location = new System.Drawing.Point(-7, -12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(516, 662);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
+            this.loginGroupbox.Controls.Add(this.forgottenPasswordButton);
+            this.loginGroupbox.Controls.Add(this.switchToRegisterButton);
+            this.loginGroupbox.Controls.Add(this.LoginPicturebox);
+            this.loginGroupbox.Controls.Add(this.label10);
+            this.loginGroupbox.Controls.Add(this.label1);
+            this.loginGroupbox.Controls.Add(this.label2);
+            this.loginGroupbox.Controls.Add(this.groupBox4);
+            this.loginGroupbox.Controls.Add(this.passwordLoginTextbox);
+            this.loginGroupbox.Controls.Add(this.groupBox3);
+            this.loginGroupbox.Controls.Add(this.usernameLoginTextbox);
+            this.loginGroupbox.Controls.Add(this.loginButton);
+            this.loginGroupbox.Location = new System.Drawing.Point(-7, -12);
+            this.loginGroupbox.Name = "loginGroupbox";
+            this.loginGroupbox.Size = new System.Drawing.Size(516, 662);
+            this.loginGroupbox.TabIndex = 0;
+            this.loginGroupbox.TabStop = false;
             // 
-            // button6
+            // forgottenPasswordButton
             // 
-            this.button6.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button6.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button6.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
-            this.button6.ForeColor = System.Drawing.Color.White;
-            this.button6.Location = new System.Drawing.Point(55, 511);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(375, 45);
-            this.button6.TabIndex = 17;
-            this.button6.Text = "Forgotten password";
-            this.button6.UseVisualStyleBackColor = false;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.forgottenPasswordButton.BackColor = System.Drawing.SystemColors.Highlight;
+            this.forgottenPasswordButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.forgottenPasswordButton.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
+            this.forgottenPasswordButton.ForeColor = System.Drawing.Color.White;
+            this.forgottenPasswordButton.Location = new System.Drawing.Point(55, 511);
+            this.forgottenPasswordButton.Name = "forgottenPasswordButton";
+            this.forgottenPasswordButton.Size = new System.Drawing.Size(375, 45);
+            this.forgottenPasswordButton.TabIndex = 17;
+            this.forgottenPasswordButton.Text = "Forgotten password";
+            this.forgottenPasswordButton.UseVisualStyleBackColor = false;
+            this.forgottenPasswordButton.Click += new System.EventHandler(this.button6_Click);
             // 
-            // button3
+            // switchToRegisterButton
             // 
-            this.button3.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button3.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.button3.ForeColor = System.Drawing.Color.White;
-            this.button3.Location = new System.Drawing.Point(55, 462);
-            this.button3.Margin = new System.Windows.Forms.Padding(2);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(375, 44);
-            this.button3.TabIndex = 4;
-            this.button3.Text = "Register";
-            this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.switchToRegisterButton.BackColor = System.Drawing.SystemColors.Highlight;
+            this.switchToRegisterButton.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.switchToRegisterButton.ForeColor = System.Drawing.Color.White;
+            this.switchToRegisterButton.Location = new System.Drawing.Point(55, 462);
+            this.switchToRegisterButton.Margin = new System.Windows.Forms.Padding(2);
+            this.switchToRegisterButton.Name = "switchToRegisterButton";
+            this.switchToRegisterButton.Size = new System.Drawing.Size(375, 44);
+            this.switchToRegisterButton.TabIndex = 4;
+            this.switchToRegisterButton.Text = "Register";
+            this.switchToRegisterButton.UseVisualStyleBackColor = false;
+            this.switchToRegisterButton.Click += new System.EventHandler(this.button3_Click);
             // 
-            // pictureBox1
+            // LoginPicturebox
             // 
-            this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pictureBox1.Location = new System.Drawing.Point(401, 37);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(100, 50);
-            this.pictureBox1.TabIndex = 16;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.LoginPicturebox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.LoginPicturebox.Location = new System.Drawing.Point(401, 37);
+            this.LoginPicturebox.Name = "LoginPicturebox";
+            this.LoginPicturebox.Size = new System.Drawing.Size(100, 50);
+            this.LoginPicturebox.TabIndex = 16;
+            this.LoginPicturebox.TabStop = false;
+            this.LoginPicturebox.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // label10
             // 
@@ -214,92 +216,95 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "groupBox3";
             // 
-            // button2
+            // registerButton
             // 
-            this.button2.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button2.Enabled = false;
-            this.button2.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
-            this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Location = new System.Drawing.Point(58, 632);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(375, 45);
-            this.button2.TabIndex = 5;
-            this.button2.Text = "Register";
-            this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.registerButton.BackColor = System.Drawing.SystemColors.Highlight;
+            this.registerButton.Enabled = false;
+            this.registerButton.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
+            this.registerButton.ForeColor = System.Drawing.Color.White;
+            this.registerButton.Location = new System.Drawing.Point(58, 632);
+            this.registerButton.Name = "registerButton";
+            this.registerButton.Size = new System.Drawing.Size(375, 45);
+            this.registerButton.TabIndex = 5;
+            this.registerButton.Text = "Register";
+            this.registerButton.UseVisualStyleBackColor = false;
+            this.registerButton.Click += new System.EventHandler(this.button2_Click);
             // 
-            // textBox4
+            // passwordRegisterTextbox
             // 
-            this.textBox4.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.textBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.textBox4.Location = new System.Drawing.Point(227, 264);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.PasswordChar = '*';
-            this.textBox4.Size = new System.Drawing.Size(206, 23);
-            this.textBox4.TabIndex = 2;
-            this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
+            this.passwordRegisterTextbox.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.passwordRegisterTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.passwordRegisterTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.passwordRegisterTextbox.Location = new System.Drawing.Point(227, 264);
+            this.passwordRegisterTextbox.Name = "passwordRegisterTextbox";
+            this.passwordRegisterTextbox.PasswordChar = '*';
+            this.passwordRegisterTextbox.Size = new System.Drawing.Size(206, 23);
+            this.passwordRegisterTextbox.TabIndex = 2;
+            this.passwordRegisterTextbox.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
+            this.passwordRegisterTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.usernameLoginTextbox_KeyDown);
             // 
-            // textBox3
+            // usernameRegisterTextbox
             // 
-            this.textBox3.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.textBox3.Location = new System.Drawing.Point(227, 171);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(209, 23);
-            this.textBox3.TabIndex = 1;
+            this.usernameRegisterTextbox.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.usernameRegisterTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.usernameRegisterTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.usernameRegisterTextbox.Location = new System.Drawing.Point(227, 171);
+            this.usernameRegisterTextbox.Name = "usernameRegisterTextbox";
+            this.usernameRegisterTextbox.Size = new System.Drawing.Size(209, 23);
+            this.usernameRegisterTextbox.TabIndex = 1;
+            this.usernameRegisterTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.usernameLoginTextbox_KeyDown);
             // 
-            // textBox5
+            // rPasswordRegisterTextbox
             // 
-            this.textBox5.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.textBox5.Location = new System.Drawing.Point(263, 351);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.PasswordChar = '*';
-            this.textBox5.Size = new System.Drawing.Size(170, 23);
-            this.textBox5.TabIndex = 3;
+            this.rPasswordRegisterTextbox.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.rPasswordRegisterTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rPasswordRegisterTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.rPasswordRegisterTextbox.Location = new System.Drawing.Point(263, 351);
+            this.rPasswordRegisterTextbox.Name = "rPasswordRegisterTextbox";
+            this.rPasswordRegisterTextbox.PasswordChar = '*';
+            this.rPasswordRegisterTextbox.Size = new System.Drawing.Size(170, 23);
+            this.rPasswordRegisterTextbox.TabIndex = 3;
+            this.rPasswordRegisterTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.usernameLoginTextbox_KeyDown);
             // 
-            // groupBox2
+            // registerGroupbox
             // 
-            this.groupBox2.Controls.Add(this.button5);
-            this.groupBox2.Controls.Add(this.label9);
-            this.groupBox2.Controls.Add(this.label8);
-            this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Controls.Add(this.pictureBox2);
-            this.groupBox2.Controls.Add(this.button4);
-            this.groupBox2.Controls.Add(this.groupBox7);
-            this.groupBox2.Controls.Add(this.groupBox6);
-            this.groupBox2.Controls.Add(this.groupBox5);
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.label11);
-            this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Controls.Add(this.textBox5);
-            this.groupBox2.Controls.Add(this.textBox3);
-            this.groupBox2.Controls.Add(this.textBox4);
-            this.groupBox2.Controls.Add(this.button2);
-            this.groupBox2.Location = new System.Drawing.Point(512, -12);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(547, 859);
-            this.groupBox2.TabIndex = 7;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Visible = false;
+            this.registerGroupbox.Controls.Add(this.CaptchaButton);
+            this.registerGroupbox.Controls.Add(this.label9);
+            this.registerGroupbox.Controls.Add(this.label8);
+            this.registerGroupbox.Controls.Add(this.label7);
+            this.registerGroupbox.Controls.Add(this.label6);
+            this.registerGroupbox.Controls.Add(this.RegisterPicturebox);
+            this.registerGroupbox.Controls.Add(this.switchToLoginButton);
+            this.registerGroupbox.Controls.Add(this.groupBox7);
+            this.registerGroupbox.Controls.Add(this.groupBox6);
+            this.registerGroupbox.Controls.Add(this.groupBox5);
+            this.registerGroupbox.Controls.Add(this.label3);
+            this.registerGroupbox.Controls.Add(this.label11);
+            this.registerGroupbox.Controls.Add(this.label5);
+            this.registerGroupbox.Controls.Add(this.label4);
+            this.registerGroupbox.Controls.Add(this.rPasswordRegisterTextbox);
+            this.registerGroupbox.Controls.Add(this.usernameRegisterTextbox);
+            this.registerGroupbox.Controls.Add(this.passwordRegisterTextbox);
+            this.registerGroupbox.Controls.Add(this.registerButton);
+            this.registerGroupbox.Location = new System.Drawing.Point(512, -12);
+            this.registerGroupbox.Name = "registerGroupbox";
+            this.registerGroupbox.Size = new System.Drawing.Size(547, 859);
+            this.registerGroupbox.TabIndex = 7;
+            this.registerGroupbox.TabStop = false;
+            this.registerGroupbox.Visible = false;
             // 
-            // button5
+            // CaptchaButton
             // 
-            this.button5.BackColor = System.Drawing.Color.Red;
-            this.button5.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
-            this.button5.ForeColor = System.Drawing.Color.White;
-            this.button5.Location = new System.Drawing.Point(58, 581);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(375, 45);
-            this.button5.TabIndex = 4;
-            this.button5.Text = "CAPTCHA";
-            this.button5.UseVisualStyleBackColor = false;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.CaptchaButton.BackColor = System.Drawing.Color.Red;
+            this.CaptchaButton.Font = new System.Drawing.Font("Bahnschrift", 14F, System.Drawing.FontStyle.Bold);
+            this.CaptchaButton.ForeColor = System.Drawing.Color.White;
+            this.CaptchaButton.Location = new System.Drawing.Point(58, 581);
+            this.CaptchaButton.Name = "CaptchaButton";
+            this.CaptchaButton.Size = new System.Drawing.Size(375, 45);
+            this.CaptchaButton.TabIndex = 4;
+            this.CaptchaButton.Text = "CAPTCHA";
+            this.CaptchaButton.UseVisualStyleBackColor = false;
+            this.CaptchaButton.Click += new System.EventHandler(this.button5_Click);
             // 
             // label9
             // 
@@ -345,29 +350,29 @@
             this.label6.TabIndex = 22;
             this.label6.Text = "count of chars. has to be 12 and more";
             // 
-            // pictureBox2
+            // RegisterPicturebox
             // 
-            this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pictureBox2.Location = new System.Drawing.Point(401, 25);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(100, 50);
-            this.pictureBox2.TabIndex = 21;
-            this.pictureBox2.TabStop = false;
-            this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
+            this.RegisterPicturebox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.RegisterPicturebox.Location = new System.Drawing.Point(401, 25);
+            this.RegisterPicturebox.Name = "RegisterPicturebox";
+            this.RegisterPicturebox.Size = new System.Drawing.Size(100, 50);
+            this.RegisterPicturebox.TabIndex = 21;
+            this.RegisterPicturebox.TabStop = false;
+            this.RegisterPicturebox.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
-            // button4
+            // switchToLoginButton
             // 
-            this.button4.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button4.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.button4.ForeColor = System.Drawing.Color.White;
-            this.button4.Location = new System.Drawing.Point(58, 682);
-            this.button4.Margin = new System.Windows.Forms.Padding(2);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(375, 45);
-            this.button4.TabIndex = 6;
-            this.button4.Text = "Log in";
-            this.button4.UseVisualStyleBackColor = false;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.switchToLoginButton.BackColor = System.Drawing.SystemColors.Highlight;
+            this.switchToLoginButton.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.switchToLoginButton.ForeColor = System.Drawing.Color.White;
+            this.switchToLoginButton.Location = new System.Drawing.Point(58, 682);
+            this.switchToLoginButton.Margin = new System.Windows.Forms.Padding(2);
+            this.switchToLoginButton.Name = "switchToLoginButton";
+            this.switchToLoginButton.Size = new System.Drawing.Size(375, 45);
+            this.switchToLoginButton.TabIndex = 6;
+            this.switchToLoginButton.Text = "Log in";
+            this.switchToLoginButton.UseVisualStyleBackColor = false;
+            this.switchToLoginButton.Click += new System.EventHandler(this.button4_Click);
             // 
             // groupBox7
             // 
@@ -489,8 +494,8 @@
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.registerGroupbox);
+            this.Controls.Add(this.loginGroupbox);
             this.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "main";
@@ -499,34 +504,34 @@
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.main_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.main_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.main_MouseUp);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            this.loginGroupbox.ResumeLayout(false);
+            this.loginGroupbox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LoginPicturebox)).EndInit();
+            this.registerGroupbox.ResumeLayout(false);
+            this.registerGroupbox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RegisterPicturebox)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button loginButton;
+        private System.Windows.Forms.TextBox usernameLoginTextbox;
+        private System.Windows.Forms.TextBox passwordLoginTextbox;
+        private System.Windows.Forms.GroupBox loginGroupbox;
+        private System.Windows.Forms.Button registerButton;
+        private System.Windows.Forms.TextBox passwordRegisterTextbox;
+        private System.Windows.Forms.TextBox usernameRegisterTextbox;
+        private System.Windows.Forms.TextBox rPasswordRegisterTextbox;
+        private System.Windows.Forms.GroupBox registerGroupbox;
+        private System.Windows.Forms.Button switchToRegisterButton;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button switchToLoginButton;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.GroupBox groupBox5;
@@ -538,14 +543,14 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.PictureBox LoginPicturebox;
+        private System.Windows.Forms.PictureBox RegisterPicturebox;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button CaptchaButton;
+        private System.Windows.Forms.Button forgottenPasswordButton;
     }
 }
 

@@ -38,18 +38,18 @@ namespace Password_manager
 
             this.Height = 600;
             this.Width = 470;
-            this.AcceptButton = button1;
+            this.AcceptButton = loginButton;
 
-            pictureBox1.Image = Properties.Resources.Blue;
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.Size = new System.Drawing.Size(35, 35);
-            pictureBox1.Location = new System.Drawing.Point(441, 11);
+            LoginPicturebox.Image = Properties.Resources.Blue;
+            LoginPicturebox.SizeMode = PictureBoxSizeMode.Zoom;
+            LoginPicturebox.Size = new System.Drawing.Size(35, 35);
+            LoginPicturebox.Location = new System.Drawing.Point(441, 11);
 
-            pictureBox2.Image = Properties.Resources.Blue;
-            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox2.Location = new System.Drawing.Point(444, 11);
-            pictureBox2.Size = new System.Drawing.Size(35, 35);
-            
+            RegisterPicturebox.Image = Properties.Resources.Blue;
+            RegisterPicturebox.SizeMode = PictureBoxSizeMode.Zoom;
+            RegisterPicturebox.Location = new System.Drawing.Point(444, 11);
+            RegisterPicturebox.Size = new System.Drawing.Size(35, 35);
+
 
             AddMouseEventsToAllControls(this);
         }
@@ -73,8 +73,8 @@ namespace Password_manager
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string user = textBox1.Text.Trim();
-            string pass = textBox2.Text;
+            string user = usernameLoginTextbox.Text.Trim();
+            string pass = passwordLoginTextbox.Text;
 
             try
             {
@@ -103,9 +103,9 @@ namespace Password_manager
 
 
                             this.Show();
-                            textBox1.Text = "";
-                            textBox1.Focus();
-                            textBox2.Text = "";
+                            usernameLoginTextbox.Text = "";
+                            usernameLoginTextbox.Focus();
+                            passwordLoginTextbox.Text = "";
 
                             SecurePasswordManager.ClearCredentials();
                         }
@@ -140,9 +140,9 @@ namespace Password_manager
         }
         private void button2_Click(object sender, EventArgs e)
         {
-            string user = textBox3.Text.Trim();
-            string pass = textBox4.Text;
-            string passRe = textBox5.Text;
+            string user = usernameRegisterTextbox.Text.Trim();
+            string pass = passwordRegisterTextbox.Text;
+            string passRe = rPasswordRegisterTextbox.Text;
 
             try
             {
@@ -207,10 +207,12 @@ namespace Password_manager
                     messagebox.ShowDialog();
 
                     button4_Click(sender, e);
-                    textBox3.Clear();
-                    textBox4.Clear();
-                    textBox5.Clear();
+                    usernameRegisterTextbox.Clear();
+                    passwordRegisterTextbox.Clear();
+                    rPasswordRegisterTextbox.Clear();
                 }
+
+
             }
             catch (MySqlException ex)
             {
@@ -233,23 +235,23 @@ namespace Password_manager
 
         private void button3_Click(object sender, EventArgs e)
         {
-            groupBox1.Visible = false;
-            groupBox2.Visible = true;
+            loginGroupbox.Visible = false;
+            registerGroupbox.Visible = true;
             this.Height = 780;
             this.Width = 470;
             this.CenterToScreen();
-            this.AcceptButton = button2;
-            groupBox2.Location = new Point(-10, -12);
+            this.AcceptButton = registerButton;
+            registerGroupbox.Location = new Point(-10, -12);
 
-            button5.BackColor = Color.Red;
-            button5.Enabled = true;
+            CaptchaButton.BackColor = Color.Red;
+            CaptchaButton.Enabled = true;
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            groupBox2.Visible = false;
-            groupBox1.Visible = true;
-            this.AcceptButton = button1;
+            registerGroupbox.Visible = false;
+            loginGroupbox.Visible = true;
+            this.AcceptButton = loginButton;
             this.CenterToScreen();
             this.Height = 600;
             this.Width = 470;
@@ -263,7 +265,7 @@ namespace Password_manager
                 SecurePasswordManager.ClearCredentials();
                 Application.Exit();
             }
-            
+
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
@@ -277,7 +279,7 @@ namespace Password_manager
 
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
-            string password = textBox4.Text;
+            string password = passwordRegisterTextbox.Text;
 
             string specialCharsPattern = @"[^a-zA-Z0-9\s]";
             string numbersPattern = @"\d+";
@@ -327,13 +329,13 @@ namespace Password_manager
                 label7.ForeColor == System.Drawing.Color.Green &&
                 label8.ForeColor == System.Drawing.Color.Green &&
                 label9.ForeColor == System.Drawing.Color.Green &&
-                button5.BackColor == System.Drawing.Color.Green)
+                CaptchaButton.BackColor == System.Drawing.Color.Green)
             {
-                button2.Enabled = true;
+                registerButton.Enabled = true;
             }
             else
             {
-                button2.Enabled = false;
+                registerButton.Enabled = false;
             }
         }
 
@@ -343,25 +345,25 @@ namespace Password_manager
 
             if (form.ShowDialog() == DialogResult.OK)
             {
-                button5.BackColor = Color.Green;
-                button5.Enabled = false;
+                CaptchaButton.BackColor = Color.Green;
+                CaptchaButton.Enabled = false;
 
                 if (label6.ForeColor == System.Drawing.Color.Green &&
                 label7.ForeColor == System.Drawing.Color.Green &&
                 label8.ForeColor == System.Drawing.Color.Green &&
                 label9.ForeColor == System.Drawing.Color.Green &&
-                button5.BackColor == System.Drawing.Color.Green)
+                CaptchaButton.BackColor == System.Drawing.Color.Green)
                 {
-                    button2.Enabled = true;
+                    registerButton.Enabled = true;
                 }
                 else
                 {
-                    button2.Enabled = false;
+                    registerButton.Enabled = false;
                 }
             }
         }
 
-     
+
 
         private void button6_Click(object sender, EventArgs e)
         {
@@ -405,6 +407,16 @@ namespace Password_manager
         private void main_MouseUp(object sender, MouseEventArgs e)
         {
             mouseDown = false;
+        }
+
+        private void usernameLoginTextbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Back || e.Control && e.KeyCode == Keys.Delete)
+            {
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+
+            }
         }
     }
 }

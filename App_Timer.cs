@@ -22,8 +22,11 @@ public class AppTimer : IMessageFilter
             form.Hide();
         }
 
-        Form messagebox = new MyMessageBox("The application has\nbeen inactive for\ntoo long and will now\nclose.",
-                "Inactivity Detected",
+        Form messagebox = new MyMessageBox("The application has\n" +
+                                            "been inactive for\n" +
+                                            "too long and will now\n" +
+                                            "close.",
+                                            "Inactivity Detected",  
                 MessageBoxIcon.Information);
         messagebox.ShowDialog();
         Application.Exit(); 

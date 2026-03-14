@@ -1,4 +1,8 @@
-﻿using MySql.Data.MySqlClient;
+﻿
+using MySql.Data.MySqlClient;
+
+
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -77,6 +81,7 @@ namespace Password_manager
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.None;
             this.Close();
         }
 
@@ -89,23 +94,20 @@ namespace Password_manager
 
             if (string.IsNullOrWhiteSpace(newUsername))
             {
-                Form messagebox = new MyMessageBox("Username cannot be empty.", "Error", MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Username cannot be empty.", 
+                    "Error", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
+                textBox3.Text = currentUsername ;
                 return;
             }
 
-            if (!string.IsNullOrEmpty(newPassword) || !string.IsNullOrEmpty(repeatPassword))
+            if (!string.IsNullOrEmpty(newPassword) || 
+                !string.IsNullOrEmpty(repeatPassword))
             {
                 if (newPassword != repeatPassword)
                 {
-                    Form messagebox = new MyMessageBox("Passwords do not match.", "Error", MessageBoxIcon.Warning);
-                    messagebox.ShowDialog();
-                    return;
-                }
-
-                if (newPassword.Length < 6)
-                {
-                    Form messagebox = new MyMessageBox("Password must be at least 6 characters long.", "Error", MessageBoxIcon.Warning);
+                    Form messagebox = new MyMessageBox("Passwords do not match.", 
+                        "Error", MessageBoxIcon.Warning);
                     messagebox.ShowDialog();
                     return;
                 }
@@ -120,7 +122,8 @@ namespace Password_manager
 
                 if (newUsername != currentUsername) 
                 {
-                    string checkQuery = "SELECT COUNT(*) FROM users WHERE username = @username AND id != @userId";
+                    string checkQuery = "SELECT COUNT(*) FROM users WHERE username = @username " +
+                                                                    "AND id != @userId";
                     using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
                     {
                         checkCmd.Parameters.AddWithValue("@username", newUsername);
@@ -128,7 +131,8 @@ namespace Password_manager
                         int count = Convert.ToInt32(checkCmd.ExecuteScalar());
                         if (count > 0)
                         {
-                            Form messagebox = new MyMessageBox("Username already exists.", "Error", MessageBoxIcon.Warning);
+                            Form messagebox = new MyMessageBox("Username already exists.", 
+                                                    "Error", MessageBoxIcon.Warning);
                             messagebox.ShowDialog();
                             return;
                         }
@@ -212,6 +216,16 @@ namespace Password_manager
                         this.Close();
                     }
                 }
+
+                if (hasChanges) { 
+                    this.DialogResult = DialogResult.OK;
+
+                }
+                else
+                {
+                    this.DialogResult = DialogResult.None;
+                }
+
             }
             catch (MySqlException ex)
             {
@@ -276,7 +290,18 @@ namespace Password_manager
 
         private void button2_Click(object sender, EventArgs e)
         {
+            this.DialogResult =DialogResult.None;
             this.Close();
+        }
+
+        private void textBox3_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Back || e.Control && e.KeyCode == Keys.Delete)
+            {
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+
+            }
         }
     }
 }

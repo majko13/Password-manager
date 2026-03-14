@@ -30,7 +30,7 @@ namespace Password_manager
 
                 int currentComboBoxIndex = comboBox1.SelectedIndex;
 
-                if (currentComboBoxIndex < 0 || group_ids_array == null || currentComboBoxIndex >= group_ids_array.Length)
+                if (currentComboBoxIndex < 0  || currentComboBoxIndex >= group_ids_array.Length)
                 {
                     comboBox2.Enabled = false;
                     button1.Enabled = false;
@@ -40,7 +40,7 @@ namespace Password_manager
                 int selectedGroupId = group_ids_array[currentComboBoxIndex];
                 List<Item_2> items = new List<Item_2>();
 
-                string query = "SELECT id, username FROM users WHERE id != @user_id";
+                string query = "SELECT id, username FROM users WHERE id != @user_id ORDER BY username ASC";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@user_id", user_id);
@@ -56,7 +56,7 @@ namespace Password_manager
                     }
                 }
 
-                query = "SELECT reciever_id FROM shared_groups WHERE group_id = @group_id";
+                query = "SELECT reciever_id FROM shared_groups WHERE group_id = @group_id ";
                 List<int> alreadySharedUsers = new List<int>();
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
@@ -80,12 +80,14 @@ namespace Password_manager
                 {
                     button1.Enabled = false;
                     comboBox2.Enabled = false;
-                    comboBox2.Text = "No users to share with";
+                    comboBox2.DropDownStyle = ComboBoxStyle.Simple;
+                    comboBox2.Text = "Shared with all users.";
                 }
                 else
                 {
                     comboBox2.Enabled = true;
                     button1.Enabled = true;
+                    comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;
                     comboBox2.DisplayMember = "Name";
                     comboBox2.ValueMember = "Id";
                 }
@@ -106,7 +108,7 @@ namespace Password_manager
 
                 List<Item> items = new List<Item>();
 
-                string query = "SELECT id, name, user_id FROM credentials_groups WHERE user_id = @user_id";
+                string query = "SELECT id, name, user_id FROM credentials_groups WHERE user_id = @user_id ORDER BY name ASC";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@user_id", user_id);
@@ -192,33 +194,26 @@ namespace Password_manager
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (comboBox2.SelectedItem == null)
-            {
-                Form messagebox = new MyMessageBox("Select a user", "Warning", MessageBoxIcon.Warning);
-                messagebox.ShowDialog();
-                return;
-            }
 
             Item_2 selectedItem = comboBox2.SelectedItem as Item_2;
             int currentComboBoxIndex = comboBox1.SelectedIndex;
 
-            if (currentComboBoxIndex < 0 || group_ids_array == null || currentComboBoxIndex >= group_ids_array.Length)
-            {
-                Form messagebox = new MyMessageBox("No group selected", "Warning", MessageBoxIcon.Warning);
-                messagebox.ShowDialog();
-                return;
-            }
-
             try
             {
 
-                if (DialogResult.No == new MyMessageBox("Do you really want to share this group?", "Confirm sharing", MessageBoxIcon.Question, MessageBoxButtons.YesNo).ShowDialog()) { 
+                if (DialogResult.No == new MyMessageBox("Do you really want to share this group?", 
+                           "Confirm sharing", 
+                           MessageBoxIcon.Question, 
+                           MessageBoxButtons.YesNo).ShowDialog())
+                {
                     return;
                 }
+
                 if (conn.State != ConnectionState.Open)
                     conn.Open();
 
-                string query = "INSERT INTO shared_groups (reciever_id, group_id) VALUES (@reciever_id, @group_id)";
+                string query = "INSERT INTO shared_groups (reciever_id, group_id)" +
+                                " VALUES (@reciever_id, @group_id)";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@reciever_id", selectedItem.Id);
@@ -228,33 +223,20 @@ namespace Password_manager
 
                     if (rowsAffected > 0)
                     {
-                        Form messagebox = new MyMessageBox("Group was successfully shared", "Success", MessageBoxIcon.Information);
+                        Form messagebox = new MyMessageBox("Group was successfully shared", 
+                                               "Success", MessageBoxIcon.Information);
                         messagebox.ShowDialog();
 
-                        comboBox_groups_Load();
-                        if (comboBox1.Items.Count > 0)
-                        {
-                            comboBox1.Text = "prazdny";
-                        }
+                        
                         comboBox_users_Load();
-
-                        AddMouseEventsToAllControls(this);
 
                     }
                 }
             }
             catch (MySqlException ex)
             {
-                if (ex.Number == 1062)
-                {
-                    Form messagebox = new MyMessageBox("This group is already shared with this user", "Warning", MessageBoxIcon.Warning);
-                    messagebox.ShowDialog();
-                }
-                else
-                {
-                    Form messagebox = new MyMessageBox("Database error: " + ex.Message, "Error", MessageBoxIcon.Error);
-                    messagebox.ShowDialog();
-                }
+                Form messagebox = new MyMessageBox("Database error: " + ex.Message, "Error", MessageBoxIcon.Error);
+                messagebox.ShowDialog();
             }
             catch (Exception ex)
             {

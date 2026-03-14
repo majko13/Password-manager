@@ -22,16 +22,6 @@ namespace Password_manager
             }
         }
 
-        public static byte[] GenerateRandomSalt(int size = 32)
-        {
-            byte[] salt = new byte[size];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(salt);
-            }
-            return salt;
-        }
-
         public static byte[] GenerateRandomIV()
         {
             byte[] iv = new byte[16];
@@ -40,13 +30,6 @@ namespace Password_manager
                 rng.GetBytes(iv);
             }
             return iv;
-        }
-
-        public static (byte[] encryptedData, byte[] iv) EncryptWithIV(string plainText, byte[] key)
-        {
-            byte[] iv = GenerateRandomIV();
-            byte[] encrypted = Encrypt(plainText, key, iv);
-            return (encrypted, iv);
         }
 
         public static byte[] Encrypt(string plainText, byte[] key, byte[] iv)
@@ -84,6 +67,40 @@ namespace Password_manager
                     return sr.ReadToEnd();
                 }
             }
+        }
+        public static string DecryptPasswordWithMasterKey(byte[] encryptedBytes, byte[] iv, byte[] userSalt)
+        {
+            string masterPassword = null;
+            try
+            {
+                masterPassword = SecurePasswordManager.GetMasterPasswordAsString();
+                if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
+                {
+                    return "***NOT LOGGED IN***";
+                }
+
+                if (iv == null || iv.Length == 0)
+                {
+                    return "***INVALID IV - OLD RECORD***";
+                }
+
+                byte[] key = SecureEncryptor.DeriveKeyFromPassword(masterPassword, userSalt);
+
+                return SecureEncryptor.Decrypt(encryptedBytes, key, iv);
+            }
+            catch (CryptographicException)
+            {
+                return "***WRONG KEY***";
+
+            }
+            finally
+            {
+                if (masterPassword != null)
+                {
+                    SecurePasswordManager.ClearString(ref masterPassword);
+                }
+            }
+
         }
     }
 }

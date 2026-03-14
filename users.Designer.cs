@@ -50,7 +50,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Bauhaus 93", 36F, System.Drawing.FontStyle.Bold);
             this.label1.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label1.Location = new System.Drawing.Point(114, 41);
+            this.label1.Location = new System.Drawing.Point(142, 40);
             this.label1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(184, 68);
@@ -133,7 +133,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(291, 45);
             this.button2.TabIndex = 16;
-            this.button2.Text = "Select";
+            this.button2.Text = "Edit";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 

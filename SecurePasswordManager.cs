@@ -66,11 +66,6 @@ namespace Password_manager
             return ConvertFromSecureString(_masterPassword);
         }
 
-        public static (SecureString masterPassword, byte[] userSalt, int userId) GetCredentials()
-        {
-            return (MasterPassword, UserSalt, UserId);
-        }
-
         public static SecureString ConvertToSecureString(string password)
         {
             var securePassword = new SecureString();

@@ -15,59 +15,33 @@ namespace Password_manager
         private bool mouseDown;
         private Point lastLocation;
 
-        // Referencie na dynamicky vytvorené tlačidlá
         private Button modreTlacitko;
-        private NoFocusButton cerveneTlacitko;
+        private RedButton cerveneTlacitko;
         private Button vedlajsieTlacitko;
-        private NoFocusButton vedlajsieCTlacitko;
+        private RedButton vedlajsieCTlacitko;
 
         private void SetIcon(MessageBoxIcon icon)
         {
-            switch (icon)
+            if (icon == MessageBoxIcon.Information || icon == MessageBoxIcon.Question)
             {
-                case MessageBoxIcon.Information:
-                    pictureBox2.Image = SystemIcons.Information.ToBitmap();
-                    panel1.BackColor = SystemColors.Highlight;
-                    panel2.BackColor = SystemColors.Highlight;
-                    panel3.BackColor = SystemColors.Highlight;
-                    panel4.BackColor = SystemColors.Highlight;
-                    pictureBox1.Image = Properties.Resources.Blue;
-                    break;
-
-                case MessageBoxIcon.Warning:
-                    pictureBox2.Image = SystemIcons.Warning.ToBitmap();
-                    panel1.BackColor = Color.Red;
-                    panel2.BackColor = Color.Red;
-                    panel3.BackColor = Color.Red;
-                    panel4.BackColor = Color.Red;
-                    pictureBox1.Image = Properties.Resources.Red;
-                    break;
-
-                case MessageBoxIcon.Error:
-                    pictureBox2.Image = SystemIcons.Error.ToBitmap();
-                    panel1.BackColor = Color.Red;
-                    panel2.BackColor = Color.Red;
-                    panel3.BackColor = Color.Red;
-                    panel4.BackColor = Color.Red;
-                    pictureBox1.Image = Properties.Resources.Red;
-                    break;
-
-                case MessageBoxIcon.Question:
-                    pictureBox2.Image = SystemIcons.Question.ToBitmap();
-                    panel1.BackColor = SystemColors.Highlight;
-                    panel2.BackColor = SystemColors.Highlight;
-                    panel3.BackColor = SystemColors.Highlight;
-                    panel4.BackColor = SystemColors.Highlight;
-                    pictureBox1.Image = Properties.Resources.Blue;
-                    break;
-
-                default:
-                    pictureBox2.Visible = false;
-                    break;
+                pictureBox2.Image = SystemIcons.Information.ToBitmap();
+                panel1.BackColor = SystemColors.Highlight;
+                panel2.BackColor = SystemColors.Highlight;
+                panel3.BackColor = SystemColors.Highlight;
+                panel4.BackColor = SystemColors.Highlight;
+                pictureBox1.Image = Properties.Resources.Blue;
+            }
+            else if (icon == MessageBoxIcon.Error || icon == MessageBoxIcon.Warning)
+            {
+                pictureBox2.Image = SystemIcons.Warning.ToBitmap();
+                panel1.BackColor = Color.Red;
+                panel2.BackColor = Color.Red;
+                panel3.BackColor = Color.Red;
+                panel4.BackColor = Color.Red;
+                pictureBox1.Image = Properties.Resources.Red;
             }
         }
 
-        // Metóda na nastavenie spoločných properties pre tlačidlá
         private void NastavPropertiesTlacidla(Button button, string text, Color backColor, int x, int y)
         {
             button.BackColor = backColor;
@@ -79,7 +53,7 @@ namespace Password_manager
             button.Cursor = Cursors.Hand;
         }
 
-        private void NastavPropertiesTlacidla(NoFocusButton button, string text, Color backColor, int x, int y)
+        private void NastavPropertiesTlacidla(RedButton button, string text, Color backColor, int x, int y)
         {
             button.BackColor = backColor;
             button.ForeColor = Color.White;
@@ -90,7 +64,6 @@ namespace Password_manager
             button.Cursor = Cursors.Hand;
         }
 
-        // Konštruktor s ikonou - jedno tlačidlo OK
         public MyMessageBox(string description, string header, MessageBoxIcon icon)
         {
             InitializeComponent();
@@ -130,13 +103,11 @@ namespace Password_manager
                     Math.Max(textHeight, minHeight)
                 );
 
-                // Vytvorenie tlačidla podľa ikony až po načítaní formu
                 int buttonX = 261;
                 int buttonY = 85;
 
                 if (icon == MessageBoxIcon.Information || icon == MessageBoxIcon.Question)
                 {
-                    // Modré tlačidlo
                     modreTlacitko = new Button();
                     NastavPropertiesTlacidla(modreTlacitko, "OK", SystemColors.Highlight, buttonX, buttonY);
                     modreTlacitko.DialogResult = DialogResult.OK;
@@ -146,9 +117,7 @@ namespace Password_manager
                 }
                 else
                 {
-                    // Červené tlačidlo (NoFocusButton)
-                    cerveneTlacitko = new NoFocusButton();
-                    // Pre NoFocusButton musíme nastaviť properties ručne
+                    cerveneTlacitko = new RedButton();
                     NastavPropertiesTlacidla(cerveneTlacitko, "OK", Color.Red, buttonX + 15, buttonY + 5);
                     cerveneTlacitko.DialogResult = DialogResult.OK;
                     pictureBox2.Location = new Point(295, 30);
@@ -175,7 +144,6 @@ namespace Password_manager
             }
         }
 
-        // Konštruktor bez ikony
         public MyMessageBox(string description, string header)
         {
             InitializeComponent();
@@ -210,7 +178,6 @@ namespace Password_manager
                     Math.Max(textHeight, minHeight)
                 );
 
-                // Vytvoríme modré tlačidlo
                 int buttonX = 240;
                 int buttonY = 270;
 
@@ -225,7 +192,6 @@ namespace Password_manager
             };
         }
 
-        // Konštruktor s ikonou a tlačidlami (Yes/No)
         public MyMessageBox(string description, string header, MessageBoxIcon icon, MessageBoxButtons buttons)
         {
             InitializeComponent();
@@ -246,11 +212,17 @@ namespace Password_manager
             pictureBox2.Location = new Point(322, 30);
             pictureBox2.Size = new Size(45, 45);
             pictureBox2.SendToBack();
+            
+
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Location = new Point(415, -2);
             pictureBox1.Size = new Size(35, 35);
             pictureBox1.SendToBack();
+            pictureBox1.Click += delegate
+            {
+                this.DialogResult = DialogResult.No;
+            };
 
             this.Load += (s, e) =>
             {
@@ -267,20 +239,16 @@ namespace Password_manager
 
                 pictureBox2.Location = new Point(pictureBox2.Location.X, ((this.ClientSize.Height - pictureBox2.Height) / 2)-15);
 
-                // Konstanty pre umiestnenie - 20px od pravého okraja a 20px od spodku
                 int marginRight = 20;
                 int marginBottom = 20;
                 int medzeraMedziTlacitkami = 10;
 
-                // Vytvorenie tlačidiel podľa ikony
                 if (icon == MessageBoxIcon.Information || icon == MessageBoxIcon.Question)
                 {
-                    // Vedľajšie tlačidlo - modré (No) - bude viac vpravo
                     vedlajsieTlacitko = new Button();
                     NastavPropertiesTlacidla(vedlajsieTlacitko, "NO", SystemColors.Highlight, 0, 0);
                     vedlajsieTlacitko.DialogResult = DialogResult.No;
-
-                    // Umiestnenie - od pravého okraja
+                  
                     vedlajsieTlacitko.Location = new Point(
                         this.ClientSize.Width - vedlajsieTlacitko.Width - marginRight,
                         this.ClientSize.Height - vedlajsieTlacitko.Height - marginBottom
@@ -289,12 +257,10 @@ namespace Password_manager
                     vedlajsieTlacitko.BringToFront();
                     this.Controls.Add(vedlajsieTlacitko);
 
-                    // Hlavné tlačidlo - modré (Yes) - bude naľavo od vedľajšieho
                     modreTlacitko = new Button();
                     NastavPropertiesTlacidla(modreTlacitko, "YES", SystemColors.Highlight, 0, 0);
                     modreTlacitko.DialogResult = DialogResult.Yes;
 
-                    // Umiestnenie - vedľa No tlačidla s medzerou
                     modreTlacitko.Location = new Point(
                         vedlajsieTlacitko.Location.X - modreTlacitko.Width - medzeraMedziTlacitkami,
                         this.ClientSize.Height - modreTlacitko.Height - marginBottom
@@ -304,11 +270,12 @@ namespace Password_manager
                     this.Controls.Add(modreTlacitko);
                     AcceptButton = modreTlacitko;
                 }
-                else // Červená
+                else 
                 {
-                    vedlajsieCTlacitko = new NoFocusButton();
+                    vedlajsieCTlacitko = new RedButton();
                     NastavPropertiesTlacidla(vedlajsieCTlacitko, "NO", Color.Red, 0, 0);
                     vedlajsieCTlacitko.DialogResult = DialogResult.No;
+
 
                     vedlajsieCTlacitko.Location = new Point(
                         this.ClientSize.Width - vedlajsieCTlacitko.Width - marginRight,
@@ -318,7 +285,7 @@ namespace Password_manager
                     vedlajsieCTlacitko.BringToFront();
                     this.Controls.Add(vedlajsieCTlacitko);
 
-                    cerveneTlacitko = new NoFocusButton();
+                    cerveneTlacitko = new RedButton();
                     NastavPropertiesTlacidla(cerveneTlacitko, "YES", Color.Red, 0, 0);
 
 
@@ -333,7 +300,6 @@ namespace Password_manager
                     this.Controls.Add(cerveneTlacitko);
                     AcceptButton = cerveneTlacitko;
                 }
-
                 AddMouseEventsToAllControls(this);
             };
         }

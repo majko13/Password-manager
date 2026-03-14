@@ -31,40 +31,7 @@ namespace Password_manager
         private string masterPassword;
 
 
-        private string DecryptPasswordWithMasterKey(byte[] encryptedBytes, byte[] iv)
-        {
-            string masterPassword = null;
-            try
-            {
-                masterPassword = SecurePasswordManager.GetMasterPasswordAsString();
-                if (string.IsNullOrEmpty(masterPassword) || userSalt == null)
-                {
-                    return "***NOT LOGGED IN***";
-                }
 
-                if (iv == null || iv.Length == 0)
-                {
-                    return "***INVALID IV - OLD RECORD***";
-                }
-
-                byte[] key = SecureEncryptor.DeriveKeyFromPassword(masterPassword, userSalt);
-
-                return SecureEncryptor.Decrypt(encryptedBytes, key, iv);
-            }
-            catch (CryptographicException)
-            {
-                return "***WRONG KEY***";
-
-            }
-            finally
-            {
-                if (masterPassword != null)
-                {
-                    SecurePasswordManager.ClearString(ref masterPassword);
-                }
-            }
-
-        }
         private void comboBox_load()
         {
             try
@@ -75,15 +42,15 @@ namespace Password_manager
 
                     List<Item> items = new List<Item>();
 
-                    string query = "SELECT * FROM credentials_groups WHERE user_id = @user_id";
+                    string query = "SELECT * FROM credentials_groups WHERE user_id = @user_id ORDER BY name ASC";
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
                         cmd.Parameters.AddWithValue("@user_id", user_id);
 
                         using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
-                            items.Add(new Item(-1, "all", -1));
-                            items.Add(new Item(0, "without group", 0));
+                            items.Add(new Item(-1, "All", -1));
+                            items.Add(new Item(0, "Without group", 0));
 
                             while (reader.Read())
                             {
@@ -164,7 +131,7 @@ namespace Password_manager
                                 byte[] encryptedBytes = (byte[])reader["password"];
                                 byte[] iv = (byte[])reader["iv"];
 
-                                string password = DecryptPasswordWithMasterKey(encryptedBytes, iv);
+                                string password = SecureEncryptor.DecryptPasswordWithMasterKey(encryptedBytes, iv, userSalt);
 
                                 var row = new DataGridViewRow();
                                 row.CreateCells(dataGridView1,
@@ -494,11 +461,11 @@ namespace Password_manager
             }
 
             if (DialogResult.Yes != new MyMessageBox(
-        "Do you really want to delete the selected records?\n\n" +
-        "This action cannot be undone!",
-        "Delete Records",
-        MessageBoxIcon.Warning,
-        MessageBoxButtons.YesNo).ShowDialog())
+                    "Do you really want to delete the selected records?\n\n" +
+                    "This action cannot be undone!",
+                    "Delete Records",
+                    MessageBoxIcon.Question,
+                    MessageBoxButtons.YesNo).ShowDialog())
             {
                 return;
             }
@@ -554,11 +521,10 @@ namespace Password_manager
                 if (credentials_groups.ShowDialog() == DialogResult.OK)
                 {
                     comboBox_load();
+                }else if(credentials_groups.DialogResult == DialogResult.Yes)
+                {
+                    load();
                 }
-
-
-
-
             }
             else
             {
@@ -577,40 +543,8 @@ namespace Password_manager
         {
             if (comboBox1.Items.Count != 2)
             {
-                int foundGroupId = -1;
-                try
-                {
-                    conn.Open();
-
-                    string query = "SELECT id FROM credentials_groups WHERE user_id = @user_id";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@user_id", user_id);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                foundGroupId = Convert.ToInt32(reader["id"]);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Form messagebox = new MyMessageBox("Error loading groups: " + ex.Message, "Error", MessageBoxIcon.Error);
-                    messagebox.ShowDialog();
-                    return;
-                }
-                finally
-                {
-                    conn.Close();
-                }
-
-                if (foundGroupId != -1)
-                {
                     Form share = new share(user_id);
                     share.ShowDialog();
-                }
             }
             else
             {
@@ -631,9 +565,13 @@ namespace Password_manager
 
         private void button8_Click(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedIndex < 0)
+            if (comboBox1.Items.Count == 2)
             {
-                new MyMessageBox("Please select a group to delete.", "Information", MessageBoxIcon.Information).ShowDialog();
+                new MyMessageBox(
+                        "You do not have any groups to delete.\n\n" +
+                        "You just have default groups:\n" +
+                        "All and Without group",
+                        "Warning", MessageBoxIcon.Warning).ShowDialog();
                 return;
             }
 
@@ -647,13 +585,11 @@ namespace Password_manager
                 return;
             }
 
-            Item selectedGroup = comboBox1.SelectedItem as Item;
+          
 
-            if (selectedGroup == null)
-            {
-                new MyMessageBox("Error selecting group.", "Error", MessageBoxIcon.Error).ShowDialog();
-                return;
-            }
+            Item selectedGroup 
+                = comboBox1.SelectedItem as Item;
+
 
 
             DialogResult result = new MyMessageBox(
@@ -683,15 +619,11 @@ namespace Password_manager
 
                 if (deletedGroup > 0)
                 {
-
-                    
-                    Form messagebox = new MyMessageBox($"Group '{selectedGroup.Name}' has been successfully deleted.\n", "Deletion Successful", MessageBoxIcon.Information);
+                    Form messagebox = new MyMessageBox($"Group '{selectedGroup.Name}' has been successfully deleted.\n",
+                                                        "Deletion Successful", MessageBoxIcon.Information);
                     messagebox.ShowDialog();
-
                     conn.Close();
-
                     comboBox_load();
-                    
                 }
                 else
                 {

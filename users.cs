@@ -29,29 +29,30 @@ namespace Password_manager
                 conn.Open();
 
                 string query = @"
-            SELECT id, username, role_id
-            FROM users
-            ORDER BY id";
+                        SELECT id, username, role_id
+                        FROM users
+                        WHERE id != @user_id
+                        ORDER BY id";
 
-                MySqlCommand cmd = new MySqlCommand(query, conn);
-                MySqlDataReader reader = cmd.ExecuteReader();
-
-                dataGridView1.Rows.Clear();
-
-                while (reader.Read())
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
-                    string role = Convert.ToInt32(reader["role_id"]) == 1 ? "Admin" : "User";
+                    cmd.Parameters.AddWithValue("@user_id", user_id);
+                    dataGridView1.Rows.Clear();
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string role = Convert.ToInt32(reader["role_id"]) == 1 ? "Admin" : "User";
 
-                    dataGridView1.Rows.Add(
-                        reader["id"],      
-                        reader["username"], 
-                        role
-                    );
+                            dataGridView1.Rows.Add(
+                                reader["id"],
+                                reader["username"],
+                                role
+                            );
+                        }
+                    }
                 }
 
-                reader.Close();
-
-               
             }
             catch (MySqlException ex)
             {
@@ -159,12 +160,7 @@ namespace Password_manager
                         continue;
                     }
 
-                    if (id==user_id)
-                    {
-                        Form messagebox = new MyMessageBox("You couldn't delete yourself.", "Warning", MessageBoxIcon.Warning);
-                        messagebox.ShowDialog();
-                        return;
-                    }
+                   
 
                     string deleteQuery = "DELETE FROM users WHERE id = @id";
                     using (MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn))
@@ -208,9 +204,10 @@ namespace Password_manager
             int roleId = role == "Admin" ? 1 : 2;                      
 
             new_password changeForm = new new_password(userId, username, roleId);
-            changeForm.ShowDialog();
-
-            load();
+            if (changeForm.ShowDialog() == DialogResult.OK)
+            {
+                load();
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)

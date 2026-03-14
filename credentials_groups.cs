@@ -27,7 +27,8 @@ namespace Password_manager
 
                 List<Item> items = new List<Item>();
 
-                string query = "SELECT * FROM credentials_groups WHERE user_id = @user_id";
+
+                string query = "SELECT * FROM credentials_groups WHERE user_id = @user_id ORDER BY name ASC";
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@user_id", user_id);
 
@@ -43,18 +44,20 @@ namespace Password_manager
                     }
                 }
 
-                if (items.Count > 0)
+                items.Add(new Item(0, "Without group", 0));
+                if (items.Count != 1)
                 {
                     comboBox1.DataSource = items;
-                    comboBox1.DisplayMember = "Name";
                     comboBox1.SelectedIndex = 0;
                     button1.Enabled = true;
                     comboBox1.Enabled = true;
+                    comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
                 }
                 else
                 {
                     button1.Enabled = false;
                     comboBox1.Enabled = false;
+                    comboBox1.DropDownStyle = ComboBoxStyle.Simple;
                     comboBox1.Text = "No groups";
                 }
             }
@@ -110,34 +113,85 @@ namespace Password_manager
         private void button1_Click(object sender, EventArgs e)
         {
             Item selectedItem = comboBox1.SelectedItem as Item;
-            if (selectedItem == null) return;
 
             try
             {
                 conn.Open();
 
-                string query = "UPDATE credentials SET group_id = @group_id WHERE id = @id AND user_id = @user_id";
+                int Old_group_id = 0;
+                int New_group_id = 0;
+                int notUpdatedCount = 0;
 
                 foreach (int id in ids)
                 {
+
+                    string OldQuery = "SELECT group_id FROM credentials WHERE id = @id AND user_id = @user_id";
+                    using (MySqlCommand cmd1 = new MySqlCommand(OldQuery, conn))
+                    {
+                        cmd1.Parameters.AddWithValue("@id", id);
+                        cmd1.Parameters.AddWithValue("@user_id", user_id);
+                        object result = cmd1.ExecuteScalar();
+                        Old_group_id = result == DBNull.Value ? -1 : Convert.ToInt32(result);
+                    }
+
+
+
+                    string query = "UPDATE credentials SET group_id = @group_id WHERE id = @id AND user_id = @user_id";
+
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@group_id", selectedItem.Id);
+                        if (selectedItem.Id == 0)
+                        {
+                            cmd.Parameters.AddWithValue("@group_id", DBNull.Value);
+                            New_group_id = -1;
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@group_id", selectedItem.Id);
+                            New_group_id = selectedItem.Id;
+                        }
+
                         cmd.Parameters.AddWithValue("@id", id);
                         cmd.Parameters.AddWithValue("@user_id", user_id);
+
                         cmd.ExecuteNonQuery();
+
                     }
+                    if (Old_group_id == New_group_id)
+                    {
+                        notUpdatedCount++;
+                    }
+
+
+
                 }
+
+                if (notUpdatedCount == ids.Length)
+                {
+                    Form messagebox = new MyMessageBox(
+                        "No credentials were updated. You could not to update cretentials  group.",
+                        "Warning",
+                        MessageBoxIcon.Warning);
+                    messagebox.ShowDialog();
+                    this.DialogResult = DialogResult.None;
+                    return;
+                }
+
+                this.DialogResult = DialogResult.OK;
             }
             catch (MySqlException ex)
             {
                 Form messagebox = new MyMessageBox("Error assigning group: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
+                this.DialogResult = DialogResult.None;
             }
             finally
             {
                 conn.Close();
-                this.Close();
+                if (this.DialogResult == DialogResult.OK)
+                {
+                    this.Close();
+                }
             }
         }
 
@@ -169,7 +223,7 @@ namespace Password_manager
         {
             this.DialogResult = DialogResult.None;
             this.Close();
-       
+
         }
 
 
@@ -204,6 +258,17 @@ namespace Password_manager
                 return;
             }
 
+            if (newGroup == "All" || newGroup == "Without group")
+            {
+                Form messagebox = new MyMessageBox($"You must enter other group name than {newGroup}", 
+                                                    "Warning", MessageBoxIcon.Warning);
+                messagebox.ShowDialog();
+                this.DialogResult = DialogResult.None;
+                return;
+            }
+
+
+
             try
             {
                 conn.Open();
@@ -219,7 +284,7 @@ namespace Password_manager
                     {
                         Form messagebox = new MyMessageBox("This group already exists.", "Warning", MessageBoxIcon.Warning);
                         messagebox.ShowDialog();
-                        this.DialogResult = DialogResult.OK;
+                        this.DialogResult = DialogResult.None;
                         return;
                     }
                 }
@@ -267,9 +332,18 @@ namespace Password_manager
 
         private void button3_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.None;
             this.Close();
-            
+
+        }
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Back || e.Control && e.KeyCode == Keys.Delete)
+            {
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+
+            }
         }
     }
 }

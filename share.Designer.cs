@@ -94,7 +94,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(101, 127);
+            this.label2.Location = new System.Drawing.Point(40, 126);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(88, 28);
             this.label2.TabIndex = 15;
@@ -104,7 +104,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(100, 194);
+            this.label1.Location = new System.Drawing.Point(39, 193);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(73, 28);
             this.label1.TabIndex = 14;
@@ -115,10 +115,10 @@
             this.button1.BackColor = System.Drawing.SystemColors.Highlight;
             this.button1.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold);
             this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(105, 251);
+            this.button1.Location = new System.Drawing.Point(44, 251);
             this.button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(263, 51);
+            this.button1.Size = new System.Drawing.Size(369, 51);
             this.button1.TabIndex = 13;
             this.button1.Text = "Share Group";
             this.button1.UseVisualStyleBackColor = false;
@@ -129,10 +129,10 @@
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold);
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(196, 192);
+            this.comboBox2.Location = new System.Drawing.Point(135, 191);
             this.comboBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(172, 30);
+            this.comboBox2.Size = new System.Drawing.Size(278, 30);
             this.comboBox2.TabIndex = 12;
             // 
             // comboBox1
@@ -140,17 +140,17 @@
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold);
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(196, 129);
+            this.comboBox1.Location = new System.Drawing.Point(135, 128);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(172, 30);
+            this.comboBox1.Size = new System.Drawing.Size(278, 30);
             this.comboBox1.TabIndex = 11;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // pictureBox1
             // 
             this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pictureBox1.Location = new System.Drawing.Point(376, 139);
+            this.pictureBox1.Location = new System.Drawing.Point(368, 366);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(100, 50);
             this.pictureBox1.TabIndex = 21;
@@ -162,10 +162,10 @@
             this.button2.BackColor = System.Drawing.SystemColors.Highlight;
             this.button2.Font = new System.Drawing.Font("Bahnschrift", 13.8F, System.Drawing.FontStyle.Bold);
             this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Location = new System.Drawing.Point(105, 308);
+            this.button2.Location = new System.Drawing.Point(44, 308);
             this.button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(263, 51);
+            this.button2.Size = new System.Drawing.Size(369, 51);
             this.button2.TabIndex = 22;
             this.button2.Text = "Close";
             this.button2.UseVisualStyleBackColor = false;

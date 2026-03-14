@@ -62,7 +62,7 @@ namespace Password_manager
                 Form messagebox = new MyMessageBox("Please enter a username.", "Error", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
                 textBox1.Focus();
-                this.DialogResult = DialogResult.None;  // ZABRÁNI ZATVORENIU
+                this.DialogResult = DialogResult.None;  
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace Password_manager
                 Form messagebox = new MyMessageBox("Please enter a password.", "Error", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
                 textBox2.Focus();
-                this.DialogResult = DialogResult.None;  // ZABRÁNI ZATVORENIU
+                this.DialogResult = DialogResult.None;  
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace Password_manager
                 Form messagebox = new MyMessageBox("Please enter a URL.", "Error", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
                 textBox3.Focus();
-                this.DialogResult = DialogResult.None;  // ZABRÁNI ZATVORENIU
+                this.DialogResult = DialogResult.None;  
                 return;
             }
 
@@ -96,7 +96,7 @@ namespace Password_manager
                 {
                     Form messagebox = new MyMessageBox("Error: Invalid login credentials", "Error", MessageBoxIcon.Error);
                     messagebox.ShowDialog();
-                    this.DialogResult = DialogResult.None;  // ZABRÁNI ZATVORENIU
+                    this.DialogResult = DialogResult.None;  
                     return;
                 }
 
@@ -122,7 +122,6 @@ namespace Password_manager
                     Form messagebox = new MyMessageBox("Data saved successfully.", "Success", MessageBoxIcon.Information);
                     messagebox.ShowDialog();
 
-                    // LEN TU nastavíme DialogResult.OK a zatvoríme
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
@@ -131,13 +130,13 @@ namespace Password_manager
             {
                 Form messagebox = new MyMessageBox("Error saving to database: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
-                this.DialogResult = DialogResult.None;  // ZABRÁNI ZATVORENIU
+                this.DialogResult = DialogResult.None;  
             }
             catch (Exception ex)
             {
                 Form messagebox = new MyMessageBox("An unexpected error occurred: " + ex.Message, "Error", MessageBoxIcon.Error);
                 messagebox.ShowDialog();
-                this.DialogResult = DialogResult.None;  // ZABRÁNI ZATVORENIU
+                this.DialogResult = DialogResult.None;  
             }
             finally
             {
@@ -189,6 +188,16 @@ namespace Password_manager
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Back || e.Control && e.KeyCode == Keys.Delete)
+            {
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+
+            }
         }
     }
 }
