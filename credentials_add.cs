@@ -32,7 +32,7 @@ namespace Password_manager
 
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.Location = new System.Drawing.Point(327, -2);
+            pictureBox1.Location = new System.Drawing.Point(372, -2);
             pictureBox1.Size = new System.Drawing.Size(35, 35);
             AddMouseEventsToAllControls(this);
         }
@@ -77,7 +77,7 @@ namespace Password_manager
 
             if (string.IsNullOrEmpty(url))
             {
-                Form messagebox = new MyMessageBox("Please enter a URL.", "Error", MessageBoxIcon.Warning);
+                Form messagebox = new MyMessageBox("Please enter a name of applicatio/url.", "Error", MessageBoxIcon.Warning);
                 messagebox.ShowDialog();
                 textBox3.Focus();
                 this.DialogResult = DialogResult.None;  
@@ -106,7 +106,7 @@ namespace Password_manager
 
                 conn.Open();
 
-                string insertQuery = @"INSERT INTO credentials(username, password, url, user_id, iv) 
+                string insertQuery = @"INSERT INTO credentials(username, password, app_name, user_id, iv) 
                    VALUES(@username, @password, @url, @user_id, @iv)";
 
                 using (MySqlCommand command = new MySqlCommand(insertQuery, conn))

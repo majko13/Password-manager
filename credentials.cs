@@ -94,7 +94,8 @@ namespace Password_manager
 
                         if (selectedItem.Id == -1 && selectedItem.User_Id == -1)
                         {
-                            query = @"SELECT c.id, c.username, c.password, c.iv, c.url, cg.name 
+                            query = @"SELECT c.id, c.username, c.password, c.iv, c.app_name
+, cg.name 
                              FROM credentials c
                              LEFT JOIN credentials_groups cg ON c.group_id = cg.id
                              WHERE c.user_id = @user_id";
@@ -103,7 +104,7 @@ namespace Password_manager
                         }
                         else if (selectedItem.Id == 0 && selectedItem.User_Id == 0)
                         {
-                            query = @"SELECT c.id, c.username, c.password, c.iv, c.url, cg.name 
+                            query = @"SELECT c.id, c.username, c.password, c.iv, c.app_name, cg.name 
                              FROM credentials c
                              LEFT JOIN credentials_groups cg ON c.group_id = cg.id
                              WHERE c.user_id = @user_id AND c.group_id IS NULL";
@@ -112,7 +113,7 @@ namespace Password_manager
                         }
                         else
                         {
-                            query = @"SELECT c.id, c.username, c.password, c.iv, c.url, cg.name 
+                            query = @"SELECT c.id, c.username, c.password, c.iv, c.app_name, cg.name 
                              FROM credentials c
                              LEFT JOIN credentials_groups cg ON c.group_id = cg.id
                              WHERE c.user_id = @user_id 
@@ -138,7 +139,7 @@ namespace Password_manager
                                     reader["id"],
                                     reader["username"],
                                     password,
-                                    reader["url"],
+                                    reader["app_name"],
                                     reader["name"] ?? "");
 
                                 rows.Add(row);
@@ -381,14 +382,14 @@ namespace Password_manager
                             dbColumnName = "username";
                             break;
                         case "Column4":
-                            dbColumnName = "url";
+                            dbColumnName = "app_name";
                             break;
                         default:
                             dbColumnName = "name";
                             break;
                     }
 
-                    string[] allowedColumns = { "username", "url", "name" };
+                    string[] allowedColumns = { "username", "app_name", "name" };
                     bool isAllowed = false;
                     foreach (string col in allowedColumns)
                     {
